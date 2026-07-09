@@ -1,1 +1,40 @@
-{}
+{
+  "events": [
+    {
+      "id": "exquisite_collection_2026",
+      "name": "Exquisite Collection",
+      "type": "collector",
+      "end_date": "2026-06-30",
+      "status": "active",
+      "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
+      "image": "/assets/events/exquisite_collection_2026/banner.jpg"
+    },
+    {
+      "id": "sanrio_bingo_2026",
+      "name": "Sanrio Characters",
+      "type": "bingo",
+      "end_date": "2026-07-03",
+      "status": "active",
+      "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
+      "image": "/assets/events/sanrio_bingo_2026/banner.jpg"
+    },
+    {
+      "id": "exorcists_2026",
+      "name": "Exorcists",
+      "type": "themed_crest",
+      "end_date": "2026-10-31",
+      "status": "active",
+      "banner_gradient": "from-[#2a1a0a] via-[#7a3a1a] to-[#e8825a]",
+      "image": "/assets/events/exorcists_2026/banner.jpg"
+    },
+    {
+      "id": "jujutsu_kaisen_2026",
+      "name": "Jujutsu Kaisen",
+      "type": "themed_crest",
+      "end_date": null,
+      "status": "coming_soon",
+      "banner_gradient": "from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]",
+      "image": "/assets/events/jujutsu_kaisen_2026/banner.jpg"
+    }
+  ]
+}
