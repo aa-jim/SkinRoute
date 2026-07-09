@@ -10,17 +10,20 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        // Skin Route palette — placeholder, will be finalized against landing page design
-        navy: "#10152B",
-        "bg-page": "#F5F6FA",
+        // Skin Route palette — confirmed from landing page design
+        navy: "#0B0E1A",
+        "navy-light": "#151A2E",
         "accent-gold": "#D6A94B",
         "accent-blue": "#2E6BE6",
-        "accent-green": "#1DA35A",
+        "accent-green": "#3DDC5C",
         "accent-amber": "#EF9F27",
         "accent-coral": "#D85A30",
-        "text-primary": "#1A1B2E",
-        "text-muted": "#6B6C80",
-        "border-subtle": "#E4E5EE",
+        "badge-cyan": "#5EEAD4",
+        "badge-purple": "#C084FC",
+        "badge-green": "#A3E635",
+        "text-primary": "#F5F6FA",
+        "text-muted": "#9CA0B5",
+        "border-subtle": "#2A2E45",
       },
       fontFamily: {
         heading: ["var(--font-rajdhani)", "sans-serif"],
