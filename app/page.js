@@ -20,7 +20,7 @@ export default function Home() {
 
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div className="relative max-w-[1100px] mx-auto text-center px-6 pt-12 pb-10">
+          <div className="relative max-w-[1100px] mx-auto text-center px-6 pt-10 pb-8">
             <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
               Plan the cheapest path to your event skin
             </h1>
@@ -33,7 +33,7 @@ export default function Home() {
         {/* Event selector */}
         <section className="relative px-6 sm:px-10 pb-20">
           <div className="max-w-[2400px] mx-auto overflow-x-auto">
-            <div className="flex gap-6 w-max mx-auto px-6 py-6 justify-center">
+            <div className="flex gap-8 w-max mx-auto px-6 py-6 justify-center">
               {events.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}

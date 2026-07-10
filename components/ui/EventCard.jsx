@@ -50,7 +50,7 @@ export default function EventCard({ event }) {
         }}
       />
       <span
-        className={`absolute top-4 left-4 px-3 py-1 rounded-md text-xs font-semibold ${EVENT_TYPE_BADGE[event.type]}`}
+        className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold ${EVENT_TYPE_BADGE[event.type]}`}
       >
         {EVENT_TYPE_LABELS[event.type] ?? event.type}
       </span>
