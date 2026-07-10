@@ -13,16 +13,16 @@ export default function EventCard({ event }) {
 
   const dateLabel = isComingSoon
     ? "Coming Soon"
-    : `Ends on ${new Date(event.end_date + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" })}`;
+    : `Ends on ${new Date(event.end_date + "T06:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" })}`;
 
   const showImage = event.image && !imageFailed;
 
   const CardInner = (
     <div
-      className={`relative w-[260px] sm:w-[280px] h-[340px] shrink-0 rounded-2xl overflow-hidden border border-white/15 bg-gradient-to-br ${event.banner_gradient} ${
+      className={`relative w-[260px] sm:w-[280px] h-[340px] shrink-0 rounded-2xl overflow-hidden border-2 border-white/40 bg-gradient-to-br ${event.banner_gradient} ${
         isComingSoon
           ? "opacity-60 grayscale-[30%] cursor-not-allowed"
-          : "cursor-pointer hover:border-white/40 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-2"
+          : "cursor-pointer hover:border-white/50 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-2"
       } transition-all duration-300 ease-out`}
     >
       {showImage && (
@@ -38,7 +38,7 @@ export default function EventCard({ event }) {
       {/* Progressive tint panel behind text — layered radial/linear gradients simulate soft blur
           without backdrop-blur, which flickers during the hover transform animation */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-[150px] pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 h-[260px] pointer-events-none"
         style={{
           background: `linear-gradient(to top,
             ${event.text_panel_color ?? "#000000"} 0%,
