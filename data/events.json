@@ -4,16 +4,18 @@
       "id": "exquisite_collection",
       "name": "Exquisite Collection",
       "type": "collector",
-      "end_date": "2026-07-13",
+      "start_date": "2026-07-01",
+      "end_date": "2026-07-31",
       "status": "active",
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
-      "text_panel_color": "#1a3d47",
-      "image": "/assets/events/exquisite_collection/banner.png"
+      "text_panel_color": "#412814",
+      "image": "/assets/events/exquisite_collection/banner.jpg"
     },
     {
       "id": "sanrio_characters",
       "name": "Sanrio Characters",
       "type": "bingo",
+      "start_date": "2026-06-17",
       "end_date": "2026-07-17",
       "status": "ended",
       "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
@@ -23,27 +25,30 @@
     {
       "id": "street_fighter_2026",
       "name": "Street Fighter",
-      "type": "bingo",
-      "end_date": "2026-08-15",
+      "type": "themed_crest",
+      "start_date": "2026-07-03",
+      "end_date": "2026-08-16",
       "status": "active",
       "banner_gradient": "from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]",
-      "text_panel_color": "#5c1a3a",
+      "text_panel_color": "#3a2010",
       "image": "/assets/events/street_fighter_2026/banner.webp"
     },
     {
       "id": "exorcists_2026",
       "name": "Exorcists",
       "type": "themed_crest",
+      "start_date": null,
       "end_date": null,
       "status": "coming_soon",
       "banner_gradient": "from-[#2a1a0a] via-[#7a3a1a] to-[#e8825a]",
       "text_panel_color": "#3a2010",
-      "image": "/assets/events/exorcists_2026/banner.jpg"
+      "image": "/assets/events/exorcists_2026/banner.png"
     },
     {
       "id": "jujutsu_kaisen_2026",
       "name": "Jujutsu Kaisen",
       "type": "themed_crest",
+      "start_date": null,
       "end_date": null,
       "status": "coming_soon",
       "banner_gradient": "from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]",
