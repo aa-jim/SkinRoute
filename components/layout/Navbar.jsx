@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, HelpCircle } from "lucide-react";
+import { Home } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -21,7 +21,7 @@ export default function Navbar() {
             aria-label="Help"
             className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/70 text-white hover:bg-white/10 transition-colors"
           >
-            <HelpCircle size={24} strokeWidth={2} />
+            <span className="text-2xl font-heading font-bold leading-none">?</span>
           </Link>
         </nav>
       </div>
