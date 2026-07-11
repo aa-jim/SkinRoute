@@ -20,7 +20,7 @@ export default function Home() {
 
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div className="relative max-w-[1100px] mx-auto text-center px-6 pt-10 pb-8">
+          <div className="relative max-w-[1100px] mx-auto text-center px-6 pt-10 pb-6">
             <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
               Plan the cheapest path to your event skin
             </h1>
@@ -31,7 +31,7 @@ export default function Home() {
         </section>
 
         {/* Event selector */}
-        <section className="relative px-6 sm:px-10 pb-20">
+        <section className="relative px-6 sm:px-10 pb-18">
           <div className="max-w-[2400px] mx-auto overflow-x-auto">
             <div className="flex gap-8 w-max mx-auto px-6 py-6 justify-center">
               {events.map((event) => (
@@ -42,7 +42,7 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-white/10 py-8 text-center">
+        <footer className="mt-8 border-t border-white/10 py-6 text-center">
           <p className="text-sm text-white/50">
             Built for MLBB Players, by MLBB Player. Data Verified against official rules.
           </p>

@@ -12,14 +12,14 @@ export default function Navbar() {
           <Link
             href="/"
             aria-label="Home"
-            className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/70 text-white hover:bg-white/10 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/70 text-white hover:bg-white/20 transition-colors"
           >
             <Home size={24} strokeWidth={2} />
           </Link>
           <Link
             href="/help"
             aria-label="Help"
-            className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/70 text-white hover:bg-white/10 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/70 text-white hover:bg-white/20 transition-colors"
           >
             <span className="text-2xl font-heading font-bold leading-none">?</span>
           </Link>
