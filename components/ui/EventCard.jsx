@@ -38,12 +38,12 @@ export default function EventCard({ event }) {
       {/* Progressive tint panel behind text — layered radial/linear gradients simulate soft blur
           without backdrop-blur, which flickers during the hover transform animation */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-[260px] pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 h-[300px] sm:h-[260px] pointer-events-none"
         style={{
           background: `linear-gradient(to top,
             ${event.text_panel_color ?? "#000000"} 0%,
-            ${event.text_panel_color ?? "#000000"}E6 22%,
-            ${event.text_panel_color ?? "#000000"}B3 42%,
+            ${event.text_panel_color ?? "#000000"}E6 35%,
+            ${event.text_panel_color ?? "#000000"}B3 45%,
             ${event.text_panel_color ?? "#000000"}66 65%,
             ${event.text_panel_color ?? "#000000"}1A 85%,
             transparent 100%)`,
