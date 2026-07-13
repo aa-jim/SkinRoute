@@ -1,6 +1,8 @@
 import Navbar from "@/components/layout/Navbar";
 import eventsData from "@/data/events.json";
 import { notFound } from "next/navigation";
+import { WizardProvider } from "@/lib/wizardContext";
+import WizardShell from "@/components/wizard/WizardShell";
 
 export default function PlanPage({ params }) {
   const event = eventsData.events.find((e) => e.id === params.eventId);
@@ -10,16 +12,27 @@ export default function PlanPage({ params }) {
   }
 
   return (
-    <main className="min-h-screen bg-navy">
-      <Navbar />
-      <div className="max-w-[900px] mx-auto px-6 py-24 text-center">
-        <h1 className="font-heading text-3xl font-bold text-white mb-3">
-          {event.name}
-        </h1>
-        <p className="text-white/60">
-          The 4-step planner wizard (Resources → Target → Prize Pool → Result)
-          isn&apos;t built yet — coming in Part 2.
-        </p>
+    <main className="relative min-h-screen bg-navy overflow-hidden">
+      {/* Background image layer — same treatment as landing page */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20 blur-sm md:hidden"
+        style={{ backgroundImage: "url('/assets/bg/bg_image_mobile.png')" }}
+      />
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20 blur-sm hidden md:block xl:hidden"
+        style={{ backgroundImage: "url('/assets/bg/bg_image_tablet.png')" }}
+      />
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20 blur-sm hidden xl:block"
+        style={{ backgroundImage: "url('/assets/bg/bg_image2.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-navy/15" />
+
+      <div className="relative z-10">
+        <Navbar />
+        <WizardProvider event={event}>
+          <WizardShell />
+        </WizardProvider>
       </div>
     </main>
   );
