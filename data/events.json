@@ -9,7 +9,97 @@
       "status": "active",
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
       "text_panel_color": "#412814",
-      "image": "/assets/events/exquisite_collection/banner.jpg"
+      "image": "/assets/events/exquisite_collection/banner.jpg",
+      "shop_items": [
+        {
+          "id": "helcurt_kaiju_of_the_deep",
+          "name": "Kaiju of the Deep",
+          "hero": "Helcurt",
+          "tier": "collector",
+          "base_crest_cost": 800,
+          "crest_cost": 720,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/collector/helcurt_kaiju_of_the_deep.jpg"
+        },
+        {
+          "id": "lesley_falcon_mistress",
+          "name": "Falcon Mistress",
+          "hero": "Lesley",
+          "tier": "collector",
+          "base_crest_cost": 800,
+          "crest_cost": 800,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/collector/lesley_falcon_mistress.jpg"
+        },
+        {
+          "id": "aldous_realm_watcher",
+          "name": "Realm Watcher",
+          "hero": "Aldous",
+          "tier": "collector",
+          "base_crest_cost": 800,
+          "crest_cost": 800,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/collector/aldous_realm_watcher.jpg"
+        },
+        {
+          "id": "aurora_veil_of_the_celestials",
+          "name": "Veil of the Celestials",
+          "hero": "Aurora",
+          "tier": "collector",
+          "base_crest_cost": 800,
+          "crest_cost": 800,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/collector/aurora_veil_of_the_celestials.jpg"
+        },
+        {
+          "id": "esmeralda_light_envoy",
+          "name": "Light Envoy",
+          "hero": "Esmeralda",
+          "tier": "collector",
+          "base_crest_cost": 800,
+          "crest_cost": 800,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/collector/esmeralda_light_envoy.jpg"
+        },
+        {
+          "id": "franco_valhalla_ruler",
+          "name": "Valhalla Ruler",
+          "hero": "Franco",
+          "tier": "luckybox",
+          "base_crest_cost": 800,
+          "crest_cost": 640,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/luckybox/franco_valhalla_ruler.jpg"
+        },
+        {
+          "id": "fanny_skylark",
+          "name": "Skylark",
+          "hero": "Fanny",
+          "tier": "luckybox",
+          "base_crest_cost": 800,
+          "crest_cost": 640,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/luckybox/fanny_skylark.jpg"
+        },
+        {
+          "id": "martis_god_of_war",
+          "name": "God of War",
+          "hero": "Martis",
+          "tier": "luckybox",
+          "base_crest_cost": 800,
+          "crest_cost": 640,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/skins/luckybox/martis_god_of_war.jpg"
+        }
+      ]
     },
     {
       "id": "sanrio_characters",
@@ -20,18 +110,144 @@
       "status": "ended",
       "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
       "text_panel_color": "#5c1a3a",
-      "image": "/assets/events/sanrio_characters/banner.jpg"
+      "image": "/assets/events/sanrio_characters/banner.webp",
+      "shop_items": [
+        {
+          "id": "angela_heartstring",
+          "name": "Heartstring",
+          "hero": "Angela",
+          "is_skin": true,
+          "image": "/assets/events/sanrio_characters/target/angela_heartstring.jpg"
+        },
+        {
+          "id": "claude_bad_bro",
+          "name": "Bad Bro",
+          "hero": "Claude",
+          "is_skin": true,
+          "image": "/assets/events/sanrio_characters/target/claude_bad_bro.jpg"
+        },
+        {
+          "id": "change_moon_artist",
+          "name": "Moon Artist",
+          "hero": "Chang'e",
+          "is_skin": true,
+          "image": "/assets/events/sanrio_characters/target/change_moon_artist.jpg"
+        },
+        {
+          "id": "floryn_fluffydream",
+          "name": "Fluffy Dream",
+          "hero": "Floryn",
+          "is_skin": true,
+          "image": "/assets/events/sanrio_characters/target/floryn_fluffydream.jpg"
+        }
+      ],
+      "bingo": {
+        "type": "line_3x3",
+        "pool_size": 4,
+        "skins": [
+          {
+            "id": "angela_heartstring",
+            "name": "Heartstring (Angela)",
+            "guaranteed_pity": false
+          },
+          {
+            "id": "claude_bad_bro",
+            "name": "Bad Bro (Claude)",
+            "guaranteed_pity": false
+          },
+          {
+            "id": "change_moon_artist",
+            "name": "Moon Artist (Chang'e)",
+            "guaranteed_pity": false
+          },
+          {
+            "id": "floryn_fluffydream",
+            "name": "Fluffy Dream (Floryn)",
+            "guaranteed_pity": true
+          }
+        ],
+        "guaranteed_pity_skin_id": "floryn_fluffydream",
+        "shared_pool_event_id": null,
+        "sub_event_id": null
+      }
     },
     {
       "id": "street_fighter_2026",
       "name": "Street Fighter",
+      "card_label": "Street Fighter",
       "type": "themed_crest",
       "start_date": "2026-07-03",
       "end_date": "2026-08-16",
       "status": "active",
       "banner_gradient": "from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]",
       "text_panel_color": "#3a2010",
-      "image": "/assets/events/street_fighter_2026/banner.webp"
+      "image": "/assets/events/street_fighter_2026/banner.jpeg",
+      "shop_items": [
+        {
+          "id": "ryu_paquito_outfit2",
+          "name": "Ryu (Outfit 2)",
+          "hero": "Paquito",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/street_fighter_2026/target/ryu_paquito_outfit2.png",
+          "outfit1_variant": {
+            "name": "Ryu Painted Skin",
+            "hero": "Paquito",
+            "image": "/assets/events/street_fighter_2026/target/ryu_painted_skin.png",
+            "crest_cost": 200
+          }
+        },
+        {
+          "id": "ken_chou_outfit2",
+          "name": "Ken (Outfit 2)",
+          "hero": "Chou",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/street_fighter_2026/target/ken_chou_outfit2.png",
+          "outfit1_variant": {
+            "name": "Ken Painted Skin",
+            "hero": "Chou",
+            "image": "/assets/events/street_fighter_2026/target/ken_painted_skin.png",
+            "crest_cost": 200
+          }
+        },
+        {
+          "id": "chunli_guinevere_outfit2",
+          "name": "Chun-Li (Outfit 2)",
+          "hero": "Guinevere",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/street_fighter_2026/target/chunli_guinevere_outfit2.png",
+          "outfit1_variant": {
+            "name": "Chun-Li Painted Skin",
+            "hero": "Guinevere",
+            "image": "/assets/events/street_fighter_2026/target/chunli_painted_skin.png",
+            "crest_cost": 200
+          }
+        },
+        {
+          "id": "guile_dyrroth_outfit2",
+          "name": "Guile (Outfit 2)",
+          "hero": "Dyrroth",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/street_fighter_2026/target/guile_dyrroth_outfit2.png",
+          "outfit1_variant": {
+            "name": "Guile Painted Skin",
+            "hero": "Dyrroth",
+            "image": "/assets/events/street_fighter_2026/target/guile_painted_skin.png",
+            "crest_cost": 200
+          }
+        }
+      ]
     },
     {
       "id": "exorcists_2026",

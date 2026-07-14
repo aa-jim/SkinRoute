@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Gem, Ticket, Check } from "lucide-react";
@@ -127,7 +128,9 @@ export default function StepOne() {
               disabled={resources.weeklyPasses === 0}
               value={resources.firstPassDate}
               onChange={(e) => updateResources({ firstPassDate: e.target.value })}
-              className={`${inputClass} [color-scheme:dark] disabled:opacity-40 disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:rounded [&::-webkit-calendar-picker-indicator]:p-1 [&::-webkit-calendar-picker-indicator]:hover:bg-accent-gold/20 [&::-webkit-calendar-picker-indicator]:transition-colors`}
+              className={`${inputClass} [color-scheme:dark] disabled:opacity-40 disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:rounded [&::-webkit-calendar-picker-indicator]:p-1 [&::-webkit-calendar-picker-indicator]:hover:bg-accent-gold/20 [&::-webkit-calendar-picker-indicator]:transition-colors ${
+                !resources.firstPassDate ? "[&::-webkit-datetime-edit]:text-transparent" : ""
+              }`}
             />
             {!resources.firstPassDate && (
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-sm">
@@ -181,7 +184,13 @@ export default function StepOne() {
       <div className="flex justify-end">
         <button
           type="button"
-          onClick={goNext}
+          onClick={() => {
+            const patch = {};
+            if (resources.diamonds === "") patch.diamonds = "0";
+            if (showCoa && resources.coa === "") patch.coa = "0";
+            if (Object.keys(patch).length > 0) updateResources(patch);
+            goNext();
+          }}
           className="px-6 py-2.5 rounded-lg bg-accent-blue text-white font-heading font-bold hover:opacity-90 transition-opacity"
         >
           Next Step →

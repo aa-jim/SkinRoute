@@ -24,7 +24,23 @@ export default function ProgressBar({ currentStep }) {
                       : "bg-navy text-text-muted border border-border-subtle"
                 }`}
               >
-                {step.n}
+                {/* Conditionally show a checkmark icon if done, otherwise show the step number */}
+                {isDone ? (
+                  <svg
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3.5]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
+                  </svg>
+                ) : (
+                  step.n
+                )}
               </span>
               <span
                 className={`text-sm sm:text-base font-medium hidden xs:inline ${
