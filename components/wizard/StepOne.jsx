@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useState } from "react";
 import { Gem, Ticket, Check } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
 
@@ -17,12 +18,14 @@ const inputClass =
 export default function StepOne() {
   const { event, resources, updateResources, toggleFpClaimed, goNext } =
     useWizard();
+  const [showDateError, setShowDateError] = useState(false);
 
   const showCoa = event.type === "collector";
 
   const setPasses = (delta) => {
     const next = Math.max(0, Math.min(10, resources.weeklyPasses + delta));
     updateResources({ weeklyPasses: next });
+    if (next === 0) setShowDateError(false);
   };
 
   return (
@@ -127,10 +130,13 @@ export default function StepOne() {
               type="date"
               disabled={resources.weeklyPasses === 0}
               value={resources.firstPassDate}
-              onChange={(e) => updateResources({ firstPassDate: e.target.value })}
+              onChange={(e) => {
+                updateResources({ firstPassDate: e.target.value });
+                if (e.target.value) setShowDateError(false);
+              }}
               className={`${inputClass} [color-scheme:dark] disabled:opacity-40 disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:rounded [&::-webkit-calendar-picker-indicator]:p-1 [&::-webkit-calendar-picker-indicator]:hover:bg-accent-gold/20 [&::-webkit-calendar-picker-indicator]:transition-colors ${
                 !resources.firstPassDate ? "[&::-webkit-datetime-edit]:text-transparent" : ""
-              }`}
+              } ${showDateError ? "border-accent-coral" : ""}`}
             />
             {!resources.firstPassDate && (
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-sm">
@@ -138,6 +144,11 @@ export default function StepOne() {
               </span>
             )}
           </div>
+          {showDateError && (
+            <p className="text-xs text-accent-coral mt-1.5">
+              Enter the date of your first weekly pass purchase to continue
+            </p>
+          )}
         </div>
       </div>
 
@@ -185,6 +196,10 @@ export default function StepOne() {
         <button
           type="button"
           onClick={() => {
+            if (resources.weeklyPasses > 0 && !resources.firstPassDate) {
+              setShowDateError(true);
+              return;
+            }
             const patch = {};
             if (resources.diamonds === "") patch.diamonds = "0";
             if (showCoa && resources.coa === "") patch.coa = "0";

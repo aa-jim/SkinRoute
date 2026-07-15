@@ -99,6 +99,13 @@
           "limit": 1,
           "image": "/assets/skins/luckybox/martis_god_of_war.jpg"
         }
+      ],
+      "prize_pool": [
+        { "id": "special_skin", "name": "Special Skin", "type": "special", "count": 3, "crest_value": 45, "is_skin": true },
+        { "id": "elite_skin", "name": "Elite Skin", "type": "elite", "count": 3, "crest_value": 36, "is_skin": true },
+        { "id": "basic_skin", "name": "Basic Skin", "type": "basic", "count": 3, "crest_value": 16, "is_skin": true },
+        { "id": "avatar_border", "name": "Avatar Border", "type": "avatar_border", "count": 1, "crest_value": 16, "is_skin": false },
+        { "id": "battle_emote", "name": "Battle Emote", "type": "emote", "count": 1, "crest_value": 5, "is_skin": false }
       ]
     },
     {
@@ -247,6 +254,12 @@
             "crest_cost": 200
           }
         }
+      ],
+      "prize_pool": [
+        { "id": "recall_effect", "name": "Battle Hub Recall Effect", "type": "recall_effect", "count": 1, "crest_value": 90, "is_skin": false },
+        { "id": "elim_effect", "name": "Decisive K.O. Elimination Effect", "type": "elimination_effect", "count": 1, "crest_value": 68, "is_skin": false },
+        { "id": "avatar_border", "name": "Street Arcade Border", "type": "avatar_border", "count": 1, "crest_value": 30, "is_skin": false },
+        { "id": "battle_emote", "name": "Battle Emote", "type": "emote", "count": 2, "crest_value": 9, "is_skin": false }
       ]
     },
     {
