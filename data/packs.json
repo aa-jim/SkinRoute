@@ -1,1 +1,53 @@
-{}
+{
+  "weekly_pass": {
+    "bdt": 200,
+    "dia_instant": 80,
+    "dia_daily": 20,
+    "days": 7,
+    "recharge_task_value": 100,
+    "coa_box_daily": 10,
+    "note": "Passes are SEQUENTIAL (queue), not simultaneous. All instant bonuses paid on purchase day. Drip runs one pass at a time.",
+    "stacking_mechanics": "Buy N passes → get N×80 instant on purchase day. Daily drip (20/day) queues sequentially: pass 1 runs days 1-7, pass 2 runs days 8-14, etc. For a 30-day event: passes 1-4 fully within event (220 dia each). For a 31-day event: passes 1-4 fully (220 dia each), pass 5 partial (140 dia), passes 6-10 give instant only (80 dia each — drip falls outside event).",
+    "effective_dia_30day_event": { "pass_1_to_4": 220, "pass_5_plus": "instant_only_80" },
+    "effective_dia_31day_event": { "pass_1_to_4": 220, "pass_5": 140, "pass_6_to_10": 80 },
+    "recharge_task_note": "A pass counts as 100 dia recharge on the DAY IT IS PURCHASED. Buy during supply window to unlock that window's recharge tasks."
+  },
+  "coa_packs": {
+    "note": "Collector/Exquisite Collection event only",
+    "daily": { "bdt": 0, "dia_cost": 10, "coa_realistic": 12, "coa_optimistic": 22, "limit": "once_per_day" },
+    "monthly": { "bdt": 0, "dia_cost": 99, "coa_realistic": 130, "coa_optimistic": 184, "limit": "once_per_month" }
+  },
+  "first_purchase": [
+    { "id": "fp_50",  "bdt": 105,  "dia_base": 50,  "dia_bonus": 50,  "dia_extra": 5,  "total": 105  },
+    { "id": "fp_150", "bdt": 310,  "dia_base": 150, "dia_bonus": 150, "dia_extra": 15, "total": 315  },
+    { "id": "fp_250", "bdt": 500,  "dia_base": 250, "dia_bonus": 250, "dia_extra": 25, "total": 525  },
+    { "id": "fp_500", "bdt": 1020, "dia_base": 500, "dia_bonus": 500, "dia_extra": 65, "total": 1065 }
+  ],
+  "regular": [
+    { "id": "r_5",    "bdt": 13,    "total": 5    },
+    { "id": "r_11",   "bdt": 24,    "total": 11   },
+    { "id": "r_22",   "bdt": 48,    "total": 22   },
+    { "id": "r_56",   "bdt": 105,   "total": 56   },
+    { "id": "r_86",   "bdt": 165,   "total": 86   },
+    { "id": "r_112",  "bdt": 210,   "total": 112  },
+    { "id": "r_172",  "bdt": 325,   "total": 172  },
+    { "id": "r_257",  "bdt": 470,   "total": 257  },
+    { "id": "r_275",  "bdt": 500,   "total": 275  },
+    { "id": "r_312",  "bdt": 575,   "total": 312  },
+    { "id": "r_343",  "bdt": 635,   "total": 343  },
+    { "id": "r_429",  "bdt": 795,   "total": 429  },
+    { "id": "r_565",  "bdt": 1020,  "total": 565  },
+    { "id": "r_600",  "bdt": 1105,  "total": 600  },
+    { "id": "r_706",  "bdt": 1275,  "total": 706  },
+    { "id": "r_878",  "bdt": 1595,  "total": 878  },
+    { "id": "r_906",  "bdt": 1630,  "total": 906  },
+    { "id": "r_1130", "bdt": 2040,  "total": 1130 },
+    { "id": "r_1412", "bdt": 2545,  "total": 1412 },
+    { "id": "r_1669", "bdt": 3015,  "total": 1669 },
+    { "id": "r_2195", "bdt": 3850,  "total": 2195 },
+    { "id": "r_2901", "bdt": 5125,  "total": 2901 },
+    { "id": "r_4796", "bdt": 8155,  "total": 4796 },
+    { "id": "r_5132", "bdt": 8765,  "total": 5132 },
+    { "id": "r_5532", "bdt": 9700,  "total": 5532 }
+  ]
+}
