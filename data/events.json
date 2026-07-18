@@ -11,6 +11,32 @@
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
       "text_panel_color": "#412814",
       "image": "/assets/events/exquisite_collection/banner.jpg",
+      "draw_cost_1x": 50,
+      "draw_cost_10x": 500,
+      "discount_draw_cost": {
+        "daily_1x": 25,
+        "first_time_10x": 350
+      },
+      "draw_currency": "coa_and_diamonds",
+      "has_pity_first_10": true,
+      "milestones": [
+        { "draws": 20, "reward_type": "token", "tokens": 1 },
+        { "draws": 40, "reward_type": "token", "tokens": 1 },
+        { "draws": 90, "reward_type": "token", "tokens": 5 },
+        { "draws": 110, "reward_type": "crests", "crests": 50 }
+      ],
+      "premium_supply": [
+        {
+          "phase": 1, "start_day": 1, "duration_days": 7,
+          "tasks": [
+            { "type": "login", "tokens": 1 },
+            { "type": "starlight_activate", "tokens": 2 },
+            { "type": "spend_100", "tokens": 1, "threshold_dia": 100 },
+            { "type": "spend_250", "tokens": 2, "threshold_dia": 250 },
+            { "type": "spend_500", "tokens": 3, "threshold_dia": 500 }
+          ]
+        }
+      ],
       "shop_items": [
         {
           "id": "helcurt_kaiju_of_the_deep",
@@ -134,6 +160,16 @@
       "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
       "text_panel_color": "#5c1a3a",
       "image": "/assets/events/sanrio_characters/banner.webp",
+      "draw_cost_1x": 100,
+      "draw_cost_10x": 1000,
+      "discount_draw_cost": {
+        "daily_1x": 50,
+        "first_time_10x": 500
+      },
+      "draw_currency": "diamonds",
+      "has_pity_first_10": true,
+      "milestones": "PLACEHOLDER_NEEDS_CONFIRMATION",
+      "premium_supply": "PLACEHOLDER_NEEDS_CONFIRMATION",
       "shop_items": [
         {
           "id": "angela_heartstring",
@@ -206,6 +242,47 @@
       "banner_gradient": "from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]",
       "text_panel_color": "#3a2010",
       "image": "/assets/events/street_fighter_2026/banner.jpeg",
+      "draw_cost_1x": 50,
+      "draw_cost_10x": 500,
+      "discount_draw_cost": {
+        "daily_1x": 25,
+        "tenx_diamond_only_pct_off": 10
+      },
+      "draw_currency": "diamonds",
+      "has_pity_first_10": true,
+      "milestones": [
+        { "draws": 20, "reward_type": "token", "tokens": 1 },
+        { "draws": 60, "reward_type": "other", "note": "magic wheel potion - ignore" },
+        { "draws": 140, "reward_type": "token", "tokens": 10 },
+        { "draws": 170, "reward_type": "crests", "crests": 100 },
+        { "draws": 200, "reward_type": "crests", "crests": 180 }
+      ],
+      "premium_supply": [
+        {
+          "phase": 1, "start_day": 8, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+          ]
+        },
+        {
+          "phase": 2, "start_day": 15, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+          ]
+        }
+      ],
       "shop_items": [
         {
           "id": "ryu_paquito_outfit2",
