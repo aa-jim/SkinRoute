@@ -7,7 +7,9 @@ export default function StepThree() {
   const { event, ownedItems, setOwnedItems, goNext, goBack } = useWizard();
 
   const targetSkins = event.shop_items ?? [];
-  const groups = event.prize_pool ?? [];
+  const groups = (event.prize_pool ?? []).filter(
+  (g) => g.type !== "skin_group" && g.type !== "crest" && g.type !== "items"
+);
 
   const ownedSkinIds = ownedItems.skins ?? [];
   const groupCounts = ownedItems.groups ?? {};
