@@ -182,7 +182,7 @@ export default function StepFour() {
       )}
 
       {/* Recharge plan (themed_crest/legend/special only — collector uses CoA priority text plan) */}
-      {!isBingo && !isCollector && p.recharge && p.recharge.totalDia > 0 && (
+      {!isBingo && p.recharge && p.recharge.totalDia > 0 && (
         <PackRecommendation recharge={p.recharge} eventDurationDays={event.duration_days} />
       )}
 
