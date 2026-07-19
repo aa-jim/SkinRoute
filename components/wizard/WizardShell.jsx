@@ -5,13 +5,14 @@ import ProgressBar from "@/components/layout/ProgressBar";
 import StepOne from "@/components/wizard/StepOne";
 import StepTwo from "@/components/wizard/StepTwo";
 import StepThree from "@/components/wizard/StepThree";
+import StepFour from "@/components/wizard/StepFour";
 import { EVENT_TYPE_LABELS, EVENT_TYPE_BADGE } from "@/lib/eventHelpers";
 
 const STEP_COMPONENTS = {
   1: StepOne,
   2: StepTwo,
   3: StepThree,
-  // 4: StepFour,  ← Part 7 — same
+  4: StepFour,
 };
 
 export default function WizardShell() {
