@@ -140,21 +140,26 @@ export default function StepFour() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          {isCollector ? (
+            <SummaryCard
+              label="Diamonds Spent"
+              value={(p.daySchedule?.totals?.dia ?? 0).toLocaleString()}
+              icon={Wallet}
+              accent="gold"
+            />
+          ) : (
+            <SummaryCard
+              label="Total BDT"
+              value={`৳${(p.recharge?.totalBdt ?? 0).toLocaleString()}`}
+              icon={Wallet}
+              accent="gold"
+            />
+          )}
           <SummaryCard
-            label="Total BDT"
+            label={isCollector ? "CoA Spent" : "Diamonds Needed"}
             value={
               isCollector
-                ? "—"
-                : `৳${(p.recharge?.totalBdt ?? 0).toLocaleString()}`
-            }
-            icon={Wallet}
-            accent="gold"
-          />
-          <SummaryCard
-            label={isCollector ? "CoA + Diamonds" : "Diamonds Needed"}
-            value={
-              isCollector
-                ? "See plan"
+                ? (p.daySchedule?.totals?.coa ?? 0).toLocaleString()
                 : (p.netDiamondsNeeded?.netDiamondsNeeded ?? 0).toLocaleString()
             }
             icon={Gem}
