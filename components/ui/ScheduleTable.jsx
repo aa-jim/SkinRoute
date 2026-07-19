@@ -4,62 +4,35 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 /**
- * Builds display rows from whichever plan shape is passed (collector vs
- * themed_crest/legend/special). Each row: { day, action, tag, tagColor }
- * tag values: "supply" (purple tint), "final" (green tint), "gap" (coral tint), null (default)
+ * Themed Crest / Legend / Special row builder — reads plan.daySchedule.rows
+ * directly (built by planOrchestrator.js's buildThemedCrestDaySchedule()),
+ * same real-simulation pattern as buildCollectorRows() but diamonds-only
+ * (no CoA column).
  */
-function buildRows(plan, event) {
-  const rows = [];
+function buildThemedCrestRows(plan, event) {
+  const daySchedule = plan.daySchedule;
+  if (!daySchedule?.rows) return null;
+
   const duration = event.duration_days;
-  const isCollector = plan.eventType === "collector";
-
-  // Map supply window day ranges for tinting.
-  const supplyDayRanges = (plan.supplyWindows ?? []).map((w) => [w.startDay, w.endDay, w.phase]);
-  const dayInSupplyWindow = (day) => supplyDayRanges.find(([s, e]) => day >= s && day <= e);
-
-  // Balance gap days (themed crest only) for coral tint.
-  const gapDays = new Set((plan.idealPlan?.balanceGaps?.gaps ?? []).map((g) => g.day));
-
-  for (let day = 1; day <= duration; day++) {
-    const isFinal = day === duration;
-    const supplyWindow = dayInSupplyWindow(day);
-    const isGap = gapDays.has(day);
-
-    let action = "Daily 1x draw";
+  let cumulative = 0;
+  return daySchedule.rows.map((r) => {
+    const isFinal = r.day === duration;
     let tag = null;
+    if (isFinal) tag = "final";
+    else if (r.notes.some((n) => n.includes("spend") || n.includes("recharge") || n.includes("login task"))) tag = "supply";
+    else if (r.notes.some((n) => n.includes("insufficient balance") || n.includes("Short"))) tag = "gap";
 
-    if (isGap) {
-      tag = "gap";
-      action = "⚠ Insufficient diamonds for daily 1x — recharge needed";
-    } else if (isFinal) {
-      tag = "final";
-      action = "Daily 1x + final push (close remaining gap)";
-    } else if (supplyWindow) {
-      tag = "supply";
-      action = `Daily 1x — Premium Supply Phase ${supplyWindow[2]} active`;
-    }
+    cumulative += r.draws;
 
-    // Starlight / spend-window notes (collector only)
-    let note = null;
-    if (isCollector && plan.starlight?.day === day) {
-      note = "Buy Starlight (+300 CoA, +2 keys)";
-    }
-    if (isCollector && plan.spendPlan?.phase1 && day === plan.spendPlan.phase1.endDay) {
-      note = note ? `${note}; diamond spend window closes` : "Diamond spend window closes → switch to CoA-only";
-    }
-
-    // Recharge window notes (themed crest only)
-    if (!isCollector && supplyWindow) {
-      const phasePlan = (plan.idealPlan?.phases ?? []).find((p) => p.phase === supplyWindow[2]);
-      if (phasePlan && day === supplyWindow[0]) {
-        note = phasePlan.note;
-      }
-    }
-
-    rows.push({ day, action, tag, note });
-  }
-
-  return rows;
+    return {
+      day: r.day,
+      draws: r.draws,
+      cumulative,
+      dia: r.diaSpent,
+      action: r.notes.join(" · "),
+      tag,
+    };
+  });
 }
 
 /**
@@ -73,6 +46,7 @@ function buildCollectorRows(plan, event) {
   if (!daySchedule?.rows) return null;
 
   const duration = event.duration_days;
+  let cumulative = 0;
   return daySchedule.rows.map((r) => {
     const isFinal = r.day === duration;
     let tag = null;
@@ -80,9 +54,12 @@ function buildCollectorRows(plan, event) {
     else if (r.notes.some((n) => n.includes("Starlight"))) tag = "supply";
     else if (r.notes.some((n) => n.includes("insufficient balance"))) tag = "gap";
 
+    cumulative += r.draws;
+
     return {
       day: r.day,
       draws: r.draws,
+      cumulative,
       dia: r.diaSpent,
       coa: r.coaSpent,
       action: r.notes.join(" · "),
@@ -122,6 +99,7 @@ export default function ScheduleTable({ plan, event }) {
                 <th className="text-left px-4 py-2.5 font-medium w-14">Day</th>
                 <th className="text-left px-4 py-2.5 font-medium">Action</th>
                 <th className="text-right px-4 py-2.5 font-medium w-16">Draws</th>
+                <th className="text-right px-4 py-2.5 font-medium w-20">Cumulative</th>
                 <th className="text-right px-4 py-2.5 font-medium w-20">Dia</th>
                 <th className="text-right px-4 py-2.5 font-medium w-20">CoA</th>
               </tr>
@@ -132,6 +110,7 @@ export default function ScheduleTable({ plan, event }) {
                   <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
                   <td className="px-4 py-2.5 text-text-primary">{row.action}</td>
                   <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
+                  <td className="px-4 py-2.5 text-right text-accent-gold font-semibold">{row.cumulative}</td>
                   <td className="px-4 py-2.5 text-right text-accent-blue">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
                   <td className="px-4 py-2.5 text-right text-accent-teal">{row.coa > 0 ? row.coa.toLocaleString() : "—"}</td>
                 </tr>
@@ -141,6 +120,7 @@ export default function ScheduleTable({ plan, event }) {
               <tr className="border-t-2 border-border-subtle bg-navy-light">
                 <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total</td>
                 <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{totals.draws}</td>
+                <td className="px-4 py-2.5 text-right text-accent-gold font-heading font-bold">{totals.draws}</td>
                 <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{totals.dia.toLocaleString()}</td>
                 <td className="px-4 py-2.5 text-right text-accent-teal font-heading font-bold">{totals.coa.toLocaleString()}</td>
               </tr>
@@ -178,35 +158,51 @@ export default function ScheduleTable({ plan, event }) {
   }
 
   // ---------------------------------------------------------------------
-  // Themed Crest / Legend / Special layout — unchanged from before.
+  // Themed Crest / Legend / Special layout — real simulation, same format
+  // as Collector's table minus the CoA column (diamonds-only event type).
   // ---------------------------------------------------------------------
-  const rows = buildRows(plan, event);
+  const themedRows = buildThemedCrestRows(plan, event);
+  const rows = themedRows ?? [];
   const visibleRows = expanded ? rows : rows.slice(0, 10);
+  const themedTotals = plan.daySchedule?.totals;
 
   return (
     <div className="mb-6">
       <h3 className="text-sm font-heading font-bold text-text-primary uppercase tracking-wide mb-3">
         Day-by-Day Schedule
       </h3>
-      <div className="rounded-xl border border-border-subtle bg-navy overflow-hidden">
+      <div className="rounded-xl border border-border-subtle bg-navy overflow-hidden overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-navy-light text-text-muted text-xs uppercase tracking-wide">
-              <th className="text-left px-4 py-2.5 font-medium w-16">Day</th>
+              <th className="text-left px-4 py-2.5 font-medium w-14">Day</th>
               <th className="text-left px-4 py-2.5 font-medium">Action</th>
+              <th className="text-right px-4 py-2.5 font-medium w-16">Draws</th>
+              <th className="text-right px-4 py-2.5 font-medium w-20">Cumulative</th>
+              <th className="text-right px-4 py-2.5 font-medium w-20">Dia</th>
             </tr>
           </thead>
           <tbody>
             {visibleRows.map((row) => (
               <tr key={row.day} className={`border-t border-border-subtle ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
                 <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
-                <td className="px-4 py-2.5 text-text-primary">
-                  {row.action}
-                  {row.note && <p className="text-xs text-accent-gold mt-0.5">{row.note}</p>}
-                </td>
+                <td className="px-4 py-2.5 text-text-primary">{row.action}</td>
+                <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
+                <td className="px-4 py-2.5 text-right text-accent-gold font-semibold">{row.cumulative}</td>
+                <td className="px-4 py-2.5 text-right text-accent-blue">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
               </tr>
             ))}
           </tbody>
+          {themedTotals && (
+            <tfoot>
+              <tr className="border-t-2 border-border-subtle bg-navy-light">
+                <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total</td>
+                <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{themedTotals.draws}</td>
+                <td className="px-4 py-2.5 text-right text-accent-gold font-heading font-bold">{themedTotals.draws}</td>
+                <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{themedTotals.dia.toLocaleString()}</td>
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
 
