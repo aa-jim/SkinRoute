@@ -29,7 +29,7 @@ function buildThemedCrestRows(plan, event) {
       draws: r.draws,
       cumulative,
       dia: r.diaSpent,
-      action: r.notes.join(" · "),
+      actionLines: r.notes,
       tag,
     };
   });
@@ -62,10 +62,46 @@ function buildCollectorRows(plan, event) {
       cumulative,
       dia: r.diaSpent,
       coa: r.coaSpent,
-      action: r.notes.join(" · "),
+      actionLines: r.notes,
       tag,
     };
   });
+}
+
+/**
+ * Renders a row's notes as separate lines instead of a middot-joined wall of
+ * text. Bullet sub-lines (from the "claim all keys" block, prefixed with two
+ * spaces + •) get extra indent; the "don't claim yet" reminder is muted; the
+ * "claim all keys" header and totals line are bolded for scan-ability.
+ */
+function ActionCell({ lines }) {
+  if (!lines || lines.length === 0) return null;
+  return (
+    <div className="space-y-0.5">
+      {lines.map((line, i) => {
+        const isBullet = line.startsWith("  \u2022");
+        const isReminder = line.includes("Don't claim tokens yet");
+        const isClaimHeader = line === "Claim all keys for this window:";
+        const isClaimTotal = line.includes("free draw") && line.includes("total \u2192");
+        return (
+          <p
+            key={i}
+            className={
+              isBullet
+                ? "pl-4 text-text-muted"
+                : isReminder
+                ? "text-text-muted italic"
+                : isClaimHeader || isClaimTotal
+                ? "font-semibold text-accent-green"
+                : "text-text-primary"
+            }
+          >
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  );
 }
 
 const TAG_STYLES = {
@@ -108,7 +144,7 @@ export default function ScheduleTable({ plan, event }) {
               {visibleRows.map((row) => (
                 <tr key={row.day} className={`border-t border-border-subtle ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
                   <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
-                  <td className="px-4 py-2.5 text-text-primary">{row.action}</td>
+                  <td className="px-4 py-2.5 text-text-primary"><ActionCell lines={row.actionLines} /></td>
                   <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
                   <td className="px-4 py-2.5 text-right text-accent-gold font-semibold">{row.cumulative}</td>
                   <td className="px-4 py-2.5 text-right text-accent-blue">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
@@ -186,7 +222,7 @@ export default function ScheduleTable({ plan, event }) {
             {visibleRows.map((row) => (
               <tr key={row.day} className={`border-t border-border-subtle ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
                 <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
-                <td className="px-4 py-2.5 text-text-primary">{row.action}</td>
+                <td className="px-4 py-2.5 text-text-primary"><ActionCell lines={row.actionLines} /></td>
                 <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
                 <td className="px-4 py-2.5 text-right text-accent-gold font-semibold">{row.cumulative}</td>
                 <td className="px-4 py-2.5 text-right text-accent-blue">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
