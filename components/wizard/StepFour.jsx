@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Gem, Layers, Target, Wallet, AlertTriangle } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
 import { buildPlan } from "@/lib/planOrchestrator";
@@ -8,23 +8,16 @@ import SummaryCard from "@/components/ui/SummaryCard";
 import ScheduleTable from "@/components/ui/ScheduleTable";
 import PackRecommendation from "@/components/ui/PackRecommendation";
 
-const CONFIDENCE_OPTIONS = [
-  { id: "optimistic", label: "Optimistic" },
-  { id: "realistic", label: "Realistic" },
-  { id: "worst", label: "Worst Case" },
-];
-
 export default function StepFour() {
   const { event, resources, target, ownedItems, goBack, setCurrentStep } = useWizard();
-  const [confidence, setConfidence] = useState("realistic");
 
   const plan = useMemo(() => {
     try {
-      return { data: buildPlan(event, resources, target, ownedItems, confidence), error: null };
+      return { data: buildPlan(event, resources, target, ownedItems, "realistic"), error: null };
     } catch (err) {
       return { data: null, error: err.message };
     }
-  }, [event, resources, target, ownedItems, confidence]);
+  }, [event, resources, target, ownedItems]);
 
   if (plan.error) {
     return (
@@ -49,23 +42,29 @@ export default function StepFour() {
 
   return (
     <div>
-      {/* Confidence toggle */}
-      {!isBingo && (
-        <div className="flex items-center gap-2 mb-6">
-          {CONFIDENCE_OPTIONS.map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              onClick={() => setConfidence(opt.id)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-heading font-bold transition-colors ${
-                confidence === opt.id
-                  ? "bg-accent-gold text-navy"
-                  : "bg-navy border border-border-subtle text-text-muted hover:text-text-primary"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+      {/* Draws needed overview (all 3 confidence levels) */}
+      {!isBingo && p.drawsNeededAll && (
+        <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 text-sm">
+          
+          {/* Optimistic: Custom 13px on mobile, back to sm (14px) on bigger screens */}
+          <span className="text-[13px] sm:text-sm text-accent-green font-semibold">
+            Optimistic: {p.drawsNeededAll.optimistic} draws
+          </span>
+          
+          <span className="text-text-muted hidden sm:inline">·</span>
+          
+          {/* Realistic: Inherits text-sm from the parent div, size never changes */}
+          <span className="px-3 py-1 rounded-lg bg-accent-gold/15 border border-accent-gold/40 text-accent-gold font-bold">
+            Realistic: {p.drawsNeededAll.realistic} draws
+          </span>
+          
+          <span className="text-text-muted hidden sm:inline">·</span>
+          
+          {/* Worst case: Custom 13px on mobile, back to sm (14px) on bigger screens */}
+          <span className="text-[13px] sm:text-sm text-accent-coral font-semibold">
+            Worst case: {p.drawsNeededAll.worst} draws
+          </span>
+          
         </div>
       )}
 
@@ -147,8 +146,8 @@ export default function StepFour() {
             accent="gold"
           />
           <SummaryCard
-            label="Diamonds Needed"
-            value={(p.totalDiamondsForPlan ?? 0).toLocaleString()}
+            label={isCollector ? "Diamonds Used" : "Diamonds Needed"}
+            value={(isCollector ? (p.daySchedule?.totals?.dia ?? 0) : (p.totalDiamondsForPlan ?? 0)).toLocaleString()}
             sublabel={
               isCollector
                 ? `${(p.daySchedule?.totals?.coa ?? 0).toLocaleString()} CoA spent`

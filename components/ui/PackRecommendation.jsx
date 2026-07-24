@@ -34,7 +34,7 @@ export default function PackRecommendation({ recharge, eventDurationDays }) {
               <tr key={i} className="border-t border-border-subtle">
                 <td className="px-4 py-2.5 text-text-primary font-medium flex items-center gap-1.5">
                   {pack.type === "pass" ? <Ticket size={13} className="text-accent-coral" /> : <Gem size={13} className="text-accent-gold" />}
-                  {pack.id}
+                  {pack.id.startsWith("r_") ? pack.id.replace("r_", "") + " dias" : pack.id}
                 </td>
                 <td className="px-4 py-2.5 text-text-muted capitalize">{pack.type}</td>
                 <td className="px-4 py-2.5 text-right text-text-primary">×{pack.count}</td>

@@ -129,6 +129,7 @@ export default function StepOne() {
             <input
               type="date"
               disabled={resources.weeklyPasses === 0}
+              max={event.start_date || undefined}
               value={resources.firstPassDate}
               onChange={(e) => {
                 updateResources({ firstPassDate: e.target.value });
