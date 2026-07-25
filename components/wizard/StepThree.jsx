@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
 
 export default function StepThree() {
-  const { event, ownedItems, setOwnedItems, goNext, goBack } = useWizard();
+  const { event, target, ownedItems, setOwnedItems, goNext, goBack } = useWizard();
 
   const targetSkins = event.shop_items ?? [];
   const groups = (event.prize_pool ?? []).filter(
@@ -51,22 +51,31 @@ export default function StepThree() {
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5 sm:gap-3">
             {targetSkins.map((skin) => {
               const isOwned = ownedSkinIds.includes(skin.id);
+              const isTarget = target?.itemId === skin.id;
               return (
                 <button
                   key={skin.id}
                   type="button"
-                  onClick={() => toggleSkinOwned(skin.id)}
-                  className={`relative rounded-lg overflow-hidden border-2 bg-navy text-left transition-all cursor-pointer ${
+                  disabled={isTarget}
+                  onClick={() => !isTarget && toggleSkinOwned(skin.id)}
+                  className={`relative rounded-lg overflow-hidden border-2 bg-navy text-left transition-all ${
+                    isTarget ? "border-accent-gold/50 opacity-70 cursor-not-allowed" :
                     isOwned
-                      ? "border-accent-green shadow-[0_0_0_2px_#1D9E75,0_6px_14px_rgba(29,158,117,0.3)]"
-                      : "border-border-subtle hover:border-accent-green/50"
+                      ? "border-accent-green shadow-[0_0_0_2px_#1D9E75,0_6px_14px_rgba(29,158,117,0.3)] cursor-pointer"
+                      : "border-border-subtle hover:border-accent-green/50 cursor-pointer"
                   }`}
                 >
                   <div
                     className="aspect-square bg-cover bg-center bg-navy-light relative"
                     style={skin.image ? { backgroundImage: `url(${skin.image})` } : undefined}
                   >
-                    {isOwned && (
+                    {isTarget ? (
+                      <div className="absolute inset-0 bg-accent-gold/20 flex items-center justify-center">
+                        <span className="flex items-center gap-1 bg-accent-gold text-navy text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                          TARGET
+                        </span>
+                      </div>
+                    ) : isOwned && (
                       <div className="absolute inset-0 bg-accent-green/40 flex items-center justify-center">
                         <span className="flex items-center gap-1 bg-accent-green text-navy text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                           <Check size={11} strokeWidth={3} />

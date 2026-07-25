@@ -2,6 +2,13 @@
 
 import { Gem, Ticket } from "lucide-react";
 
+const packNameMap = {
+  fp_50: "First Purchase Bonus 50 dias",
+  fp_150: "First Purchase Bonus 150 dias",
+  fp_250: "First Purchase Bonus 250 dias",
+  fp_500: "First Purchase Bonus 500 dias",
+};
+
 export default function PackRecommendation({ recharge, eventDurationDays }) {
   if (!recharge || recharge.impossible) {
     return (
@@ -18,8 +25,36 @@ export default function PackRecommendation({ recharge, eventDurationDays }) {
       <h3 className="text-sm font-heading font-bold text-text-primary uppercase tracking-wide mb-3">
         Recommended Recharge
       </h3>
-      <div className="rounded-xl border border-border-subtle bg-navy overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="sm:hidden flex flex-col gap-2.5 mb-3">
+        {recharge.packsUsed.map((pack, i) => (
+          <div key={i} className="rounded-xl border border-border-subtle bg-navy px-4 py-3">
+            <div className="flex items-center gap-2 mb-2">
+              {pack.type === "pass" ? <Ticket size={15} className="text-accent-coral" /> : <Gem size={15} className="text-accent-gold" />}
+              <span className="font-heading font-bold text-text-primary text-sm">
+                {packNameMap[pack.id] || (pack.id.startsWith("r_") ? pack.id.replace("r_", "") + " dias" : pack.id)}
+              </span>
+              <span className="ml-auto text-xs font-heading font-bold text-navy bg-accent-gold px-2 py-0.5 rounded-full">
+                x{pack.count}
+              </span>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-text-muted capitalize">{pack.type}</span>
+              <span className="text-[#4388F0]">{(pack.count * pack.dia).toLocaleString()} dia</span>
+              <span className="text-accent-gold font-semibold">৳{(pack.count * pack.bdt).toLocaleString()}</span>
+            </div>
+          </div>
+        ))}
+        <div className="rounded-xl border border-border-subtle bg-navy-light px-4 py-3 flex justify-between items-center">
+          <span className="font-heading font-bold text-text-primary text-sm">Total</span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#4388F0] font-heading font-bold text-sm">{recharge.totalDia.toLocaleString()} dia</span>
+            <span className="text-accent-gold font-heading font-bold text-sm">৳{recharge.totalBdt.toLocaleString()}</span>
+          </span>
+        </div>
+      </div>
+
+      <div className="hidden sm:block rounded-xl border border-border-subtle bg-navy overflow-x-auto">
+        <table className="w-full text-sm min-w-[480px]">
           <thead>
             <tr className="bg-navy-light text-text-muted text-xs uppercase tracking-wide">
               <th className="text-left px-4 py-2.5 font-medium">Pack</th>
@@ -34,7 +69,7 @@ export default function PackRecommendation({ recharge, eventDurationDays }) {
               <tr key={i} className="border-t border-border-subtle">
                 <td className="px-4 py-2.5 text-text-primary font-medium flex items-center gap-1.5">
                   {pack.type === "pass" ? <Ticket size={13} className="text-accent-coral" /> : <Gem size={13} className="text-accent-gold" />}
-                  {pack.id.startsWith("r_") ? pack.id.replace("r_", "") + " dias" : pack.id}
+                  {packNameMap[pack.id] || (pack.id.startsWith("r_") ? pack.id.replace("r_", "") + " dias" : pack.id)}
                 </td>
                 <td className="px-4 py-2.5 text-text-muted capitalize">{pack.type}</td>
                 <td className="px-4 py-2.5 text-right text-text-primary">×{pack.count}</td>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Gem, Key, Coins, Sparkles, Wallet, Ticket, AlertTriangle } from "lucide-react";
 
 /**
  * Themed Crest / Legend / Special row builder — reads plan.daySchedule.rows
@@ -15,6 +15,7 @@ function buildThemedCrestRows(plan, event) {
 
   const duration = event.duration_days;
   let cumulative = 0;
+  let cumulativeDia = 0;
   return daySchedule.rows.map((r) => {
     const isFinal = r.day === duration;
     let tag = null;
@@ -23,12 +24,14 @@ function buildThemedCrestRows(plan, event) {
     else if (r.notes.some((n) => n.includes("insufficient balance") || n.includes("Short"))) tag = "gap";
 
     cumulative += r.draws;
+    cumulativeDia += r.diaSpent;
 
     return {
       day: r.day,
       draws: r.draws,
       cumulative,
       dia: r.diaSpent,
+      cumulativeDia,
       actionLines: r.notes,
       tag,
     };
@@ -47,6 +50,8 @@ function buildCollectorRows(plan, event) {
 
   const duration = event.duration_days;
   let cumulative = 0;
+  let cumulativeDia = 0;
+  let cumulativeCoa = 0;
   return daySchedule.rows.map((r) => {
     const isFinal = r.day === duration;
     let tag = null;
@@ -55,6 +60,8 @@ function buildCollectorRows(plan, event) {
     else if (r.notes.some((n) => n.includes("insufficient balance"))) tag = "gap";
 
     cumulative += r.draws;
+    cumulativeDia += r.diaSpent;
+    cumulativeCoa += r.coaSpent;
 
     return {
       day: r.day,
@@ -62,6 +69,8 @@ function buildCollectorRows(plan, event) {
       cumulative,
       dia: r.diaSpent,
       coa: r.coaSpent,
+      cumulativeDia,
+      cumulativeCoa,
       actionLines: r.notes,
       tag,
     };
@@ -74,6 +83,23 @@ function buildCollectorRows(plan, event) {
  * spaces + •) get extra indent; the "don't claim yet" reminder is muted; the
  * "claim all keys" header and totals line are bolded for scan-ability.
  */
+function actionIcon(line) {
+  if (line.includes("Buy") && line.includes("weekly pass")) return <Ticket size={14} className="text-accent-coral shrink-0 mt-0.5" />;
+  if (line.startsWith("Claim") && line.includes("(Starlight)")) return <Key size={14} className="text-accent-gold shrink-0 mt-0.5" />;
+  if (line.includes("Starlight")) return <Sparkles size={14} className="text-[#AFA9EC] shrink-0 mt-0.5" />;
+  if (line.includes("Recharge") || (line.includes("Buy") && line.includes("dias pack"))) return <Wallet size={14} className="text-accent-green shrink-0 mt-0.5" />;
+  if (line.startsWith("Claim") && line.includes("token")) return <Coins size={14} className="text-accent-green shrink-0 mt-0.5" />;
+  if (line.startsWith("Claim")) return <Key size={14} className="text-accent-gold shrink-0 mt-0.5" />;
+  if (line.includes("insufficient balance") || line.includes("No draw")) return <AlertTriangle size={14} className="text-accent-coral shrink-0 mt-0.5" />;
+  if (line.includes("(CoA)") || line.includes("Final push (CoA)")) {
+    return <img src="/assets/icons/coa-star.png" alt="" className="w-3.5 h-3.5 shrink-0 mt-0.5 object-contain" />;
+  }
+  if (line.includes("daily") || line.includes("10x") || line.includes("single") || line.includes("Final push")) {
+    return <Gem size={14} className="text-accent-blue shrink-0 mt-0.5" />;
+  }
+  return null;
+}
+
 function ActionCell({ lines }) {
   if (!lines || lines.length === 0) return null;
   return (
@@ -83,10 +109,11 @@ function ActionCell({ lines }) {
         const isReminder = line.includes("Don't claim tokens yet");
         const isClaimHeader = line === "Claim all keys for this window:";
         const isClaimTotal = line.includes("free draw") && line.includes("total \u2192");
+        const icon = isBullet || isReminder ? null : actionIcon(line);
         return (
           <p
             key={i}
-            className={
+            className={`flex items-start gap-1.5 ${
               isBullet
                 ? "pl-4 text-text-muted"
                 : isReminder
@@ -94,9 +121,10 @@ function ActionCell({ lines }) {
                 : isClaimHeader || isClaimTotal
                 ? "font-semibold text-accent-green"
                 : "text-text-primary"
-            }
+            }`}
           >
-            {line}
+            {icon}
+            <span className="text-[13px] sm:text-sm">{line}</span>
           </p>
         );
       })}
@@ -109,6 +137,87 @@ const TAG_STYLES = {
   final: "bg-accent-green/10 border-l-2 border-accent-green",
   gap: "bg-accent-coral/10 border-l-2 border-accent-coral",
 };
+
+/**
+ * Icon legend — shown once above the schedule, scoped per event type so only
+ * icons that actually appear for that event's action set are listed (Collector
+ * has Starlight/keys/CoA-draws; Themed Crest has recharge/tokens instead).
+ */
+function IconLegend({ isCollector }) {
+  const items = isCollector
+    ? [
+        { icon: <Gem size={13} className="text-accent-blue" />, label: "Draw (diamonds)" },
+        { icon: <img src="/assets/icons/coa-star.png" alt="" className="w-3.5 h-3.5 object-contain" />, label: "Draw (CoA)" },
+        { icon: <Ticket size={13} className="text-accent-coral" />, label: "Buy weekly pass" },
+        { icon: <Sparkles size={13} className="text-[#AFA9EC]" />, label: "Starlight" },
+        { icon: <Key size={13} className="text-accent-gold" />, label: "Claim keys" },
+        { icon: <AlertTriangle size={13} className="text-accent-coral" />, label: "Insufficient balance" },
+      ]
+    : [
+        { icon: <Gem size={13} className="text-accent-blue" />, label: "Draw (diamonds)" },
+        { icon: <Ticket size={13} className="text-accent-coral" />, label: "Buy weekly pass" },
+        { icon: <Wallet size={13} className="text-accent-green" />, label: "Recharge / buy pack" },
+        { icon: <Coins size={13} className="text-accent-green" />, label: "Claim tokens" },
+        { icon: <AlertTriangle size={13} className="text-accent-coral" />, label: "Insufficient balance" },
+      ];
+
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-3 text-[11px] text-text-muted">
+      {items.map((item, i) => (
+        <span key={i} className="flex items-center gap-1.5">
+          {item.icon}
+          {item.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Mobile-only stacked card view (< sm breakpoint) — one card per day, replacing
+ * the cramped 4-6 column table on narrow screens. Reuses the same row objects
+ * as the table (day/draws/cumulative/dia/coa/actionLines/tag), just laid out
+ * vertically instead of in table cells. Table itself stays for sm: and up.
+ */
+function DayCards({ rows, showCoa }) {
+  return (
+    <div className="sm:hidden flex flex-col gap-2.5">
+      {rows.map((row) => (
+        <div
+          key={row.day}
+          className={`rounded-xl border border-border-subtle bg-navy px-4 py-3 ${row.tag ? TAG_STYLES[row.tag] : ""}`}
+        >
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <span className="font-heading font-bold text-text-primary text-sm">Day {row.day}</span>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-[11px] text-text-muted bg-navy-light px-2 py-0.5 rounded">
+                {row.draws} draw{row.draws === 1 ? "" : "s"}
+              </span>
+              <span className="text-[11px] text-accent-coral font-semibold bg-navy-light px-2 py-0.5 rounded">
+                total {row.cumulative}
+              </span>
+            </div>
+          </div>
+          <ActionCell lines={row.actionLines} />
+          {(row.dia > 0 || (showCoa && row.coa > 0)) && (
+            <div className="grid grid-cols-2 gap-3 mt-2 pt-2 border-t border-border-subtle">
+              <div>
+                <p className="text-[9px] text-text-muted uppercase tracking-wide mb-1">Spent today</p>
+                {row.dia > 0 && <p className="text-[11px] text-accent-blue m-0">{row.dia.toLocaleString()} dia</p>}
+                {showCoa && row.coa > 0 && <p className="text-[11px] text-accent-gold m-0">{row.coa.toLocaleString()} CoA</p>}
+              </div>
+              <div>
+                <p className="text-[9px] text-text-muted uppercase tracking-wide mb-1">Total spent</p>
+                {row.cumulativeDia > 0 && <p className="text-[11px] text-accent-blue m-0">{row.cumulativeDia.toLocaleString()} dia</p>}
+                {showCoa && row.cumulativeCoa > 0 && <p className="text-[11px] text-accent-gold m-0">{row.cumulativeCoa.toLocaleString()} CoA</p>}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function ScheduleTable({ plan, event }) {
   const [expanded, setExpanded] = useState(false);
@@ -128,14 +237,17 @@ export default function ScheduleTable({ plan, event }) {
         <h3 className="text-sm font-heading font-bold text-text-primary uppercase tracking-wide mb-3">
           Day-by-Day Schedule
         </h3>
-        <div className="rounded-xl border border-border-subtle bg-navy overflow-hidden overflow-x-auto">
+        <IconLegend isCollector />
+        <DayCards rows={visibleRows} showCoa />
+
+        <div className="hidden sm:block rounded-xl border border-border-subtle bg-navy overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-navy-light text-text-muted text-xs uppercase tracking-wide">
                 <th className="text-left px-4 py-2.5 font-medium w-14">Day</th>
                 <th className="text-left px-4 py-2.5 font-medium">Action</th>
                 <th className="text-right px-4 py-2.5 font-medium w-16">Draws</th>
-                <th className="text-right px-4 py-2.5 font-medium w-20">Cumulative</th>
+                <th className="text-right px-4 py-2.5 font-medium w-20">Total</th>
                 <th className="text-right px-4 py-2.5 font-medium w-20">Dia</th>
                 <th className="text-right px-4 py-2.5 font-medium w-20">CoA</th>
               </tr>
@@ -146,9 +258,9 @@ export default function ScheduleTable({ plan, event }) {
                   <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
                   <td className="px-4 py-2.5 text-text-primary"><ActionCell lines={row.actionLines} /></td>
                   <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
-                  <td className="px-4 py-2.5 text-right text-accent-gold font-semibold">{row.cumulative}</td>
+                  <td className="px-4 py-2.5 text-right text-accent-coral font-semibold">{row.cumulative}</td>
                   <td className="px-4 py-2.5 text-right text-accent-blue">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
-                  <td className="px-4 py-2.5 text-right text-accent-teal">{row.coa > 0 ? row.coa.toLocaleString() : "—"}</td>
+                  <td className="px-4 py-2.5 text-right text-accent-gold">{row.coa > 0 ? row.coa.toLocaleString() : "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -156,9 +268,9 @@ export default function ScheduleTable({ plan, event }) {
               <tr className="border-t-2 border-border-subtle bg-navy-light">
                 <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total</td>
                 <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{totals.draws}</td>
-                <td className="px-4 py-2.5 text-right text-accent-gold font-heading font-bold">{totals.draws}</td>
+                <td></td>
                 <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{totals.dia.toLocaleString()}</td>
-                <td className="px-4 py-2.5 text-right text-accent-teal font-heading font-bold">{totals.coa.toLocaleString()}</td>
+                <td className="px-4 py-2.5 text-right text-accent-gold font-heading font-bold">{totals.coa.toLocaleString()}</td>
               </tr>
             </tfoot>
           </table>
@@ -207,7 +319,10 @@ export default function ScheduleTable({ plan, event }) {
       <h3 className="text-sm font-heading font-bold text-text-primary uppercase tracking-wide mb-3">
         Day-by-Day Schedule
       </h3>
-      <div className="rounded-xl border border-border-subtle bg-navy overflow-hidden overflow-x-auto">
+      <IconLegend isCollector={false} />
+      <DayCards rows={visibleRows} showCoa={false} />
+
+      <div className="hidden sm:block rounded-xl border border-border-subtle bg-navy overflow-hidden overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-navy-light text-text-muted text-xs uppercase tracking-wide">
@@ -224,7 +339,7 @@ export default function ScheduleTable({ plan, event }) {
                 <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
                 <td className="px-4 py-2.5 text-text-primary"><ActionCell lines={row.actionLines} /></td>
                 <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
-                <td className="px-4 py-2.5 text-right text-accent-gold font-semibold">{row.cumulative}</td>
+                <td className="px-4 py-2.5 text-right text-accent-coral font-semibold">{row.cumulative}</td>
                 <td className="px-4 py-2.5 text-right text-accent-blue">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
               </tr>
             ))}
@@ -234,7 +349,7 @@ export default function ScheduleTable({ plan, event }) {
               <tr className="border-t-2 border-border-subtle bg-navy-light">
                 <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total</td>
                 <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{themedTotals.draws}</td>
-                <td className="px-4 py-2.5 text-right text-accent-gold font-heading font-bold">{themedTotals.draws}</td>
+                <td></td>
                 <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{themedTotals.dia.toLocaleString()}</td>
               </tr>
             </tfoot>
@@ -269,5 +384,5 @@ export default function ScheduleTable({ plan, event }) {
         </span>
       </div>
     </div>
-  );
+  );  
 }
