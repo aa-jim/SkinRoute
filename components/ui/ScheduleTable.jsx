@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Gem, Key, Coins, Sparkles, Wallet, Ticket, AlertTriangle } from "lucide-react";
+import { ChevronDown, ChevronUp, Gem, Key, Scroll, Sparkles, Wallet, Ticket, AlertTriangle } from "lucide-react";
 
 /**
  * Themed Crest / Legend / Special row builder — reads plan.daySchedule.rows
@@ -20,7 +20,7 @@ function buildThemedCrestRows(plan, event) {
     const isFinal = r.day === duration;
     let tag = null;
     if (isFinal) tag = "final";
-    else if (r.notes.some((n) => n.includes("spend") || n.includes("recharge") || n.includes("login task"))) tag = "supply";
+    else if (r.notes.some((n) => n.includes("spend") || n.includes("recharge") || n.includes("login task") || n.includes("Buy"))) tag = "supply";
     else if (r.notes.some((n) => n.includes("insufficient balance") || n.includes("Short"))) tag = "gap";
 
     cumulative += r.draws;
@@ -88,7 +88,7 @@ function actionIcon(line) {
   if (line.startsWith("Claim") && line.includes("(Starlight)")) return <Key size={14} className="text-accent-gold shrink-0 mt-0.5" />;
   if (line.includes("Starlight")) return <Sparkles size={14} className="text-[#AFA9EC] shrink-0 mt-0.5" />;
   if (line.includes("Recharge") || (line.includes("Buy") && line.includes("dias pack"))) return <Wallet size={14} className="text-accent-green shrink-0 mt-0.5" />;
-  if (line.startsWith("Claim") && line.includes("token")) return <Coins size={14} className="text-accent-green shrink-0 mt-0.5" />;
+  if (line.startsWith("Claim") && line.includes("token")) return <Scroll size={14} className="text-accent-gold shrink-0 mt-0.5" />;
   if (line.startsWith("Claim")) return <Key size={14} className="text-accent-gold shrink-0 mt-0.5" />;
   if (line.includes("insufficient balance") || line.includes("No draw")) return <AlertTriangle size={14} className="text-accent-coral shrink-0 mt-0.5" />;
   if (line.includes("(CoA)") || line.includes("Final push (CoA)")) {
@@ -157,7 +157,7 @@ function IconLegend({ isCollector }) {
         { icon: <Gem size={13} className="text-accent-blue" />, label: "Draw (diamonds)" },
         { icon: <Ticket size={13} className="text-accent-coral" />, label: "Buy weekly pass" },
         { icon: <Wallet size={13} className="text-accent-green" />, label: "Recharge / buy pack" },
-        { icon: <Coins size={13} className="text-accent-green" />, label: "Claim tokens" },
+        { icon: <Scroll size={13} className="text-accent-gold" />, label: "Claim tokens" },
         { icon: <AlertTriangle size={13} className="text-accent-coral" />, label: "Insufficient balance" },
       ];
 

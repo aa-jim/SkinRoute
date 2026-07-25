@@ -8,20 +8,22 @@ export default function Home() {
   return (
     <main className="relative min-h-screen bg-[#1D2331] overflow-hidden">
       {/* Background image layer — 20% opacity, blurred, per design spec */}
-      {/* Mobile: portrait-cropped image, only below md: */}
+      {/* Mobile: portrait-cropped image, only below md: — bg-top-ish position keeps
+          the character's face/torso in frame on short, wide phone viewports */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20 blur-sm md:hidden"
-        style={{ backgroundImage: "url('/assets/bg/bg_image_mobile.png')" }}
+        className="absolute inset-0 bg-cover opacity-20 blur-sm md:hidden bg-fixed"
+        style={{ backgroundImage: "url('/assets/bg/bg_image_mobile.png')", backgroundPosition: "50% 20%" }}
       />
       {/* Tablet: shown only between md: and xl: (covers iPad Pro at exactly 1024px) */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20 blur-sm hidden md:block xl:hidden"
-        style={{ backgroundImage: "url('/assets/bg/bg_image_tablet.png')" }}
+        className="absolute inset-0 bg-cover opacity-20 blur-sm hidden md:block xl:hidden bg-fixed"
+        style={{ backgroundImage: "url('/assets/bg/bg_image_tablet.png')", backgroundPosition: "50% 20%" }}
       />
-      {/* Desktop: landscape image, only from xl: up (1280px+) */}
+      {/* Desktop: landscape image, only from xl: up (1280px+) — subject sits right-of-center,
+          upper third, so shift position right/up to avoid cropping her out on ultra-wide screens */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20 blur-sm hidden xl:block"
-        style={{ backgroundImage: "url('/assets/bg/bg_image2.jpg')" }}
+        className="absolute inset-0 bg-cover opacity-20 blur-sm hidden xl:block bg-fixed"
+        style={{ backgroundImage: "url('/assets/bg/bg_image2.jpg')", backgroundPosition: "75% 30%" }}
       />
       {/* Overall layer opacity (85%) applied via a dark scrim on top of the image */}
       <div className="absolute inset-0 bg-[#1D2331]/15" />

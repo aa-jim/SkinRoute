@@ -250,6 +250,16 @@
       },
       "draw_currency": "diamonds",
       "has_pity_first_10": true,
+      "has_surprise_tasks": true,
+      "surprise_tasks": {
+        "active_days": 3,
+        "tasks": [
+          { "type": "recharge", "threshold_dia": 10, "tokens": 0 },
+          { "type": "recharge", "threshold_dia": 50, "tokens": 1 },
+          { "type": "recharge", "threshold_dia": 250, "tokens": 2 },
+          { "type": "recharge", "threshold_dia": 750, "tokens": 0 }
+        ]
+      },
       "milestones": [
         { "draws": 20, "reward_type": "token", "tokens": 1 },
         { "draws": 60, "reward_type": "other", "note": "magic wheel potion - ignore" },
