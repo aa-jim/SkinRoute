@@ -1,9 +1,20 @@
 import Navbar from "@/components/layout/Navbar";
 import EventCarousel from "@/components/ui/EventCarousel";
 import eventsData from "@/data/events.json";
+import { deriveStatus } from "@/lib/eventHelpers";
 
 export default function Home() {
-  const events = (eventsData.events ?? []).filter((e) => e.status !== "ended");
+  const events = (eventsData.events ?? [])
+    .filter((e) => e.status !== "hidden" && deriveStatus(e) !== "ended")
+    .sort((a, b) => {
+      const aStatus = deriveStatus(a);
+      const bStatus = deriveStatus(b);
+      // coming_soon always after active
+      if (aStatus === "coming_soon" && bStatus !== "coming_soon") return 1;
+      if (bStatus === "coming_soon" && aStatus !== "coming_soon") return -1;
+      // same status: sort by start_date ascending
+      return (a.start_date ?? "").localeCompare(b.start_date ?? "");
+    });
 
   return (
     <main className="relative min-h-screen bg-[#1D2331] overflow-hidden">

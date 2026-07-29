@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { EVENT_TYPE_LABELS, EVENT_TYPE_BADGE, daysLeft, urgencyStyle } from "@/lib/eventHelpers";
+import { EVENT_TYPE_LABELS, EVENT_TYPE_BADGE, daysLeft, urgencyStyle, deriveStatus } from "@/lib/eventHelpers";
 
 export default function EventCard({ event }) {
   const [imageFailed, setImageFailed] = useState(false);
-  const isComingSoon = event.status === "coming_soon";
+  const isComingSoon = deriveStatus(event) === "coming_soon";
   const days = daysLeft(event.end_date);
   const urgency = urgencyStyle(days);
 

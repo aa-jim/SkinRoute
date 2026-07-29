@@ -149,12 +149,15 @@
         { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.8082, "crest_values": [20, 15, 12, 10, 8, 5] }
       ]
     },
+
+
+
     {
       "id": "sanrio_characters",
       "name": "Sanrio Characters",
       "type": "bingo",
       "start_date": "2026-06-17",
-      "end_date": "2026-07-17",
+      "end_date": "2026-07-27",
       "duration_days": 31,
       "status": "ended",
       "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
@@ -230,6 +233,9 @@
         "sub_event_id": null
       }
     },
+
+
+
     {
       "id": "street_fighter_2026",
       "name": "Street Fighter",
@@ -375,27 +381,252 @@
         { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.9067, "crest_values": [20, 15, 12, 10, 8, 5] }
       ]
     },
+
+
+
     {
       "id": "exorcists_2026",
       "name": "Exorcists",
       "type": "themed_crest",
       "start_date": null,
       "end_date": null,
-      "status": "coming_soon",
+      "status": "hidden",
       "banner_gradient": "from-[#2a1a0a] via-[#7a3a1a] to-[#e8825a]",
       "text_panel_color": "#3a2010",
       "image": "/assets/events/exorcists_2026/banner.png"
     },
+
+
+
     {
       "id": "jujutsu_kaisen_2026",
       "name": "Jujutsu Kaisen",
       "type": "themed_crest",
-      "start_date": null,
+      "start_date": "2026-08-07",
       "end_date": null,
-      "status": "coming_soon",
+      "duration_days": 31,
+      "status": "coming soon",
       "banner_gradient": "from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]",
       "text_panel_color": "#1b3b50",
-      "image": "/assets/events/jujutsu_kaisen_2026/banner.jpg"
+      "image": "/assets/events/jujutsu_kaisen_2026/banner.jpg",
+      "draw_cost_1x": 50,
+      "draw_cost_10x": 500,
+      "discount_draw_cost": {
+        "daily_1x": 25,
+        "tenx_diamond_only_pct_off": 10
+      },
+      "draw_currency": "diamonds",
+      "has_pity_first_10": false,
+      "has_surprise_tasks": true,
+      "surprise_tasks": {
+        "active_days": 3,
+        "tasks": [
+          { "type": "recharge", "threshold_dia": 10, "tokens": 0 },
+          { "type": "recharge", "threshold_dia": 50, "tokens": 1 },
+          { "type": "recharge", "threshold_dia": 250, "tokens": 2 },
+          { "type": "recharge", "threshold_dia": 750, "tokens": 0 }
+        ]
+      },
+      "milestones": [
+        { "draws": 20, "reward_type": "token", "tokens": 1 },
+        { "draws": 60, "reward_type": "other", "note": "magic wheel potion - ignore" },
+        { "draws": 130, "reward_type": "token", "tokens": 10 },
+        { "draws": 160, "reward_type": "crests", "crests": 100 },
+        { "draws": 190, "reward_type": "crests", "crests": 180 }
+      ],
+      "premium_supply": [
+        {
+          "phase": 1, "start_day": 8, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+          ]
+        },
+        {
+          "phase": 2, "start_day": 15, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+          ]
+        }
+      ],
+      "shop_items": [
+        {
+          "id": "yin_yuji",
+          "name": "Itadori Yuji",
+          "hero": "Yin",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/jujutsu_kaisen_2026/target/yin_yuji.png"
+        },
+        {
+          "id": "julian_megumi",
+          "name": "Fushiguro Megumi",
+          "hero": "Julian",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/jujutsu_kaisen_2026/target/julian_megumi.png"
+        },
+        {
+          "id": "melissa_nobara",
+          "name": "Kugisaki Nobara",
+          "hero": "Melissa",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/jujutsu_kaisen_2026/target/melissa_nobara.png"
+        },
+        {
+          "id": "xavier_gojo",
+          "name": "Gojo Satoru",
+          "hero": "Xavier",
+          "base_crest_cost": 1200,
+          "crest_cost": 1200,
+          "is_skin": true,
+          "limit": 1,
+          "image": "/assets/events/jujutsu_kaisen_2026/target/xavier_gojo.png"
+        }
+      ],
+      "prize_pool": [
+        {
+          "id": "collab_skin_group",
+          "name": "Collab Skins",
+          "type": "skin_group",
+          "drop_rate": 0.0008,
+          "dup_value": 360,
+          "skin_ids": ["yin_yuji", "julian_megumi", "melissa_nobara", "xavier_gojo"]
+        },
+        { "id": "recall_effect", "name": "Recall Effect", "type": "recall_effect", "count": 1, "drop_rate": 0.003, "crest_value": 90, "is_skin": false },
+        { "id": "elim_effect", "name": "Elimination Effect", "type": "elimination_effect", "count": 1, "drop_rate": 0.005, "crest_value": 68, "is_skin": false },
+        { "id": "kill_notification", "name": "Kill Notification", "type": "kill_notification", "count": 1, "drop_rate": 0.005, "crest_value": 68, "is_skin": false },
+        { "id": "avatar_border", "name": "Border", "type": "avatar_border", "count": 1, "drop_rate": 0.007, "crest_value": 30, "is_skin": false },
+        { "id": "battle_emote", "name": "Battle Emote", "type": "emote", "count": 3, "drop_rate": 0.0775, "crest_value": 9, "is_skin": false },
+        { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.9067, "crest_values": [20, 15, 12, 10] }
+      ]
+    },
+
+
+
+    {
+      "id": "aspirants_2026",
+      "name": "The Aspirants",
+      "type": "bingo",
+      "start_date": "2026-07-28",
+      "end_date": "2026-08-28",
+      "duration_days": 31,
+      "status": "active",
+      "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
+      "text_panel_color": "#5c1a3a",
+      "image": "/assets/events/aspirants_2026/banner.jpe",
+      "draw_cost_1x": 210,
+      "draw_cost_10x": 2100,
+      "discount_draw_cost": {
+        "daily_1x": 105,
+        "first_time_10x": 1050
+      },
+      "draw_currency": "diamonds",
+      "has_pity_first_10": true,
+      "milestones": "PLACEHOLDER_NEEDS_CONFIRMATION",
+      "premium_supply": [
+        {
+          "phase": 1, "start_day": 8, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+          ]
+        },
+        {
+          "phase": 2, "start_day": 15, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+          ]
+        }
+      ],
+      "shop_items": [
+        {
+          "id": "angela_cyber_cherubin",
+          "name": "Cyber Cherubin",
+          "hero": "Angela",
+          "is_skin": true,
+          "image": "/assets/events/aspirants_2026/target/angela_cyber_cherubin.png"
+        },
+        {
+          "id": "ruby_mecha_maiden",
+          "name": "Mecha Maiden",
+          "hero": "Ruby",
+          "is_skin": true,
+          "image": "/assets/events/aspirants_2026/target/ruby_mecha_maiden.png"
+        },
+        {
+          "id": "change_tech_tensai",
+          "name": "Tech Tensai",
+          "hero": "Chang'e",
+          "is_skin": true,
+          "image": "/assets/events/aspirants_2026/target/change_tech_tensai.png"
+        },
+        {
+          "id": "lesley_deadeye_spectre",
+          "name": "Deadeye Spectre",
+          "hero": "Lesley",
+          "is_skin": true,
+          "image": "/assets/events/aspirants_2026/target/lesley_deadeye_spectre.png"
+        }
+      ],
+      "bingo": {
+        "type": "line_3x3",
+        "pool_size": 4,
+        "skins": [
+          {
+            "id": "angela_cyber_cherubin",
+            "name": "Cyber Cherubin (Angela)",
+            "guaranteed_pity": false
+          },
+          {
+            "id": "ruby_mecha_maiden",
+            "name": "Mecha Maiden (Ruby)",
+            "guaranteed_pity": false
+          },
+          {
+            "id": "change_tech_tensai",
+            "name": "Tech Tensai (Chang'e)",
+            "guaranteed_pity": false
+          },
+          {
+            "id": "lesley_deadeye_spectre",
+            "name": "Deadeye Spectre (Lesley)",
+            "guaranteed_pity": false
+          }
+        ],
+        "guaranteed_pity_skin_id": null,
+        "shared_pool_event_id": null,
+        "sub_event_id": null
+      }
     }
   ]
 }

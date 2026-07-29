@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
+﻿/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
-import { Gem, Ticket, Check } from "lucide-react";
+import { Gem, Ticket, Check, Clock } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
 
 const FP_OPTIONS = [
@@ -18,14 +18,14 @@ const inputClass =
 export default function StepOne() {
   const { event, resources, updateResources, toggleFpClaimed, goNext } =
     useWizard();
-  const [showDateError, setShowDateError] = useState(false);
+  const [showDayError, setShowDayError] = useState(false);
 
   const showCoa = event.type === "collector";
 
   const setPasses = (delta) => {
     const next = Math.max(0, Math.min(10, resources.weeklyPasses + delta));
     updateResources({ weeklyPasses: next });
-    if (next === 0) setShowDateError(false);
+    if (next === 0) setShowDayError(false);
   };
 
   return (
@@ -122,32 +122,34 @@ export default function StepOne() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            First weekly bought on
+          <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
+            Days remaining on weekly passes <Clock size={14} className="text-accent-coral" />
           </label>
           <div className="relative max-w-[240px]">
             <input
-              type="date"
+              type="number"
+              min="0"
+              max={resources.weeklyPasses * 7 || 0}
+              inputMode="numeric"
               disabled={resources.weeklyPasses === 0}
-              max={event.start_date || undefined}
-              value={resources.firstPassDate}
+              placeholder="e.g. 17"
+              value={resources.passDaysRemaining}
               onChange={(e) => {
-                updateResources({ firstPassDate: e.target.value });
-                if (e.target.value) setShowDateError(false);
+                updateResources({ passDaysRemaining: e.target.value });
+                if (e.target.value) setShowDayError(false);
               }}
-              className={`${inputClass} [color-scheme:dark] disabled:opacity-40 disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:rounded [&::-webkit-calendar-picker-indicator]:p-1 [&::-webkit-calendar-picker-indicator]:hover:bg-accent-gold/20 [&::-webkit-calendar-picker-indicator]:transition-colors ${
-                !resources.firstPassDate ? "[&::-webkit-datetime-edit]:text-transparent" : ""
-              } ${showDateError ? "border-accent-coral" : ""}`}
+              className={`${inputClass} disabled:opacity-40 disabled:cursor-not-allowed ${showDayError ? "border-accent-coral" : ""}`}
             />
-            {!resources.firstPassDate && (
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-sm">
-                dd/mm/yyyy
-              </span>
-            )}
           </div>
-          {showDateError && (
+          {resources.weeklyPasses > 0 && (
+            <p className="text-xs text-text-muted mt-1.5">
+              Check in-game: Passes → {resources.weeklyPasses} pass{resources.weeklyPasses > 1 ? "es" : ""},{" "}
+              {resources.weeklyPasses * 7} total days
+            </p>
+          )}
+          {showDayError && (
             <p className="text-xs text-accent-coral mt-1.5">
-              Enter the date of your first weekly pass purchase to continue
+              Enter the days remaining on your weekly passes to continue
             </p>
           )}
         </div>
@@ -197,8 +199,8 @@ export default function StepOne() {
         <button
           type="button"
           onClick={() => {
-            if (resources.weeklyPasses > 0 && !resources.firstPassDate) {
-              setShowDateError(true);
+            if (resources.weeklyPasses > 0 && !resources.passDaysRemaining) {
+              setShowDayError(true);
               return;
             }
             const patch = {};

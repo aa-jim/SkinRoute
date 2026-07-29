@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Gem, Key, Scroll, Sparkles, Wallet, Ticket, AlertTriangle } from "lucide-react";
+import { ChevronDown, ChevronUp, Gem, Key, Scroll, Sparkles, Wallet, Ticket, AlertTriangle, Coins, Clock } from "lucide-react";
 
 /**
  * Themed Crest / Legend / Special row builder — reads plan.daySchedule.rows
@@ -20,7 +20,7 @@ function buildThemedCrestRows(plan, event) {
     const isFinal = r.day === duration;
     let tag = null;
     if (isFinal) tag = "final";
-    else if (r.notes.some((n) => n.includes("spend") || n.includes("recharge") || n.includes("login task") || n.includes("Buy"))) tag = "supply";
+    else if (r.notes.some((n) => n.includes("Premium Supply") || n.includes("All tasks completed") || n.includes("Buy"))) tag = "supply";
     else if (r.notes.some((n) => n.includes("insufficient balance") || n.includes("Short"))) tag = "gap";
 
     cumulative += r.draws;
@@ -90,11 +90,14 @@ function actionIcon(line) {
   if (line.includes("Recharge") || (line.includes("Buy") && line.includes("dias pack"))) return <Wallet size={14} className="text-accent-green shrink-0 mt-0.5" />;
   if (line.startsWith("Claim") && line.includes("token")) return <Scroll size={14} className="text-accent-gold shrink-0 mt-0.5" />;
   if (line.startsWith("Claim")) return <Key size={14} className="text-accent-gold shrink-0 mt-0.5" />;
+  if (line.includes("Don't claim")) return <Clock size={14} className="text-accent-coral shrink-0 mt-0.5" />;
+  if (line.includes("recharge task") && line.includes("completed")) return <Coins size={14} className="text-accent-gold shrink-0 mt-0.5" />;
+  if (line.includes("spend task") && line.includes("completed")) return <Coins size={14} className="text-accent-gold shrink-0 mt-0.5" />;
   if (line.includes("insufficient balance") || line.includes("No draw")) return <AlertTriangle size={14} className="text-accent-coral shrink-0 mt-0.5" />;
   if (line.includes("(CoA)") || line.includes("Final push (CoA)")) {
     return <img src="/assets/icons/coa-star.png" alt="" className="w-3.5 h-3.5 shrink-0 mt-0.5 object-contain" />;
   }
-  if (line.includes("daily") || line.includes("10x") || line.includes("single") || line.includes("Final push")) {
+  if (line.includes("daily") || line.includes("10x") || line.includes("10-draw") || line.includes("single") || line.includes("Final push")) {
     return <Gem size={14} className="text-accent-blue shrink-0 mt-0.5" />;
   }
   return null;
@@ -106,18 +109,18 @@ function ActionCell({ lines }) {
     <div className="space-y-0.5">
       {lines.map((line, i) => {
         const isBullet = line.startsWith("  \u2022");
-        const isReminder = line.includes("Don't claim tokens yet");
+        const isDontClaim = line.includes("Don't claim any tokens");
         const isClaimHeader = line === "Claim all keys for this window:";
         const isClaimTotal = line.includes("free draw") && line.includes("total \u2192");
-        const icon = isBullet || isReminder ? null : actionIcon(line);
+        const icon = isBullet ? null : actionIcon(line);
         return (
           <p
             key={i}
             className={`flex items-start gap-1.5 ${
               isBullet
                 ? "pl-4 text-text-muted"
-                : isReminder
-                ? "text-text-muted italic"
+                : isDontClaim
+                ? "font-bold text-accent-coral"
                 : isClaimHeader || isClaimTotal
                 ? "font-semibold text-accent-green"
                 : "text-text-primary"
@@ -157,6 +160,8 @@ function IconLegend({ isCollector }) {
         { icon: <Gem size={13} className="text-accent-blue" />, label: "Draw (diamonds)" },
         { icon: <Ticket size={13} className="text-accent-coral" />, label: "Buy weekly pass" },
         { icon: <Wallet size={13} className="text-accent-green" />, label: "Recharge / buy pack" },
+        { icon: <Coins size={13} className="text-accent-gold" />, label: "Recharge/spend task completed" },
+        { icon: <Clock size={13} className="text-accent-coral" />, label: "Don't claim tokens yet" },
         { icon: <Scroll size={13} className="text-accent-gold" />, label: "Claim tokens" },
         { icon: <AlertTriangle size={13} className="text-accent-coral" />, label: "Insufficient balance" },
       ];
@@ -290,7 +295,7 @@ export default function ScheduleTable({ plan, event }) {
           </button>
         )}
 
-        <div className="flex flex-wrap gap-4 mt-3 text-[11px] text-text-muted">
+        <div className="hidden sm:flex flex-wrap gap-4 mt-3 text-[11px] text-text-muted">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-[#7F77DD]/60" /> Starlight day
           </span>
@@ -371,8 +376,8 @@ export default function ScheduleTable({ plan, event }) {
         </button>
       )}
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-3 text-[11px] text-text-muted">
+      {/* Legend — hidden on mobile since DayCards already show the colored tags */}
+      <div className="hidden sm:flex flex-wrap gap-4 mt-3 text-[11px] text-text-muted">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-[#7F77DD]/60" /> Premium Supply window
         </span>

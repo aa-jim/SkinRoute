@@ -54,29 +54,20 @@ export default function StepFour() {
 
   return (
     <div>
-      {/* Draws needed overview (all 3 confidence levels) */}
+      {/* Draws needed overview (all 3 confidence levels) — hidden for bingo since the card below shows the same info */}
       {!isBingo && p.drawsNeededAll && (
         <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 text-sm">
-          
-          {/* Optimistic: Custom 13px on mobile, back to sm (14px) on bigger screens */}
           <span className="text-[13px] sm:text-sm text-accent-green font-semibold">
             Optimistic: {p.drawsNeededAll.optimistic} draws
           </span>
-          
           <span className="text-text-muted hidden sm:inline">·</span>
-          
-          {/* Realistic: Inherits text-sm from the parent div, size never changes */}
           <span className="px-3 py-1 rounded-lg bg-accent-gold/15 border border-accent-gold/40 text-accent-gold font-bold">
             Realistic: {p.drawsNeededAll.realistic} draws
           </span>
-          
           <span className="text-text-muted hidden sm:inline">·</span>
-          
-          {/* Worst case: Custom 13px on mobile, back to sm (14px) on bigger screens */}
           <span className="text-[13px] sm:text-sm text-accent-coral font-semibold">
             Worst case: {p.drawsNeededAll.worst} draws
           </span>
-          
         </div>
       )}
 
@@ -123,11 +114,11 @@ export default function StepFour() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <SummaryCard
-              label="Diamonds (realistic)"
-              value={p.winCondition.diamondCost.realistic.toLocaleString()}
-              icon={Gem}
+              label="Total BDT"
+              value={`৳${(p.recharge?.totalBdt ?? 0).toLocaleString()}`}
+              icon={Wallet}
               accent="gold"
             />
             <SummaryCard
@@ -135,6 +126,12 @@ export default function StepFour() {
               value={`${p.winCondition.diamondCost.lucky[0].toLocaleString()}–${p.winCondition.diamondCost.lucky[1].toLocaleString()}`}
               icon={Gem}
               accent="green"
+            />
+            <SummaryCard
+              label="Diamonds (realistic)"
+              value={p.winCondition.diamondCost.realistic.toLocaleString()}
+              icon={Gem}
+              accent="gold"
             />
             <SummaryCard
               label="Diamonds (worst)"
@@ -208,13 +205,13 @@ export default function StepFour() {
         </div>
       )}
 
-      {/* Recharge plan (themed_crest/legend/special only — collector uses CoA priority text plan) */}
-      {!isBingo && p.recharge && p.recharge.totalDia > 0 && (
+      {/* Recharge plan — all event types that have a full day schedule */}
+      {p.daySchedule && p.recharge && p.recharge.totalDia > 0 && (
         <PackRecommendation recharge={p.recharge} eventDurationDays={event.duration_days} />
       )}
 
-      {/* Day-by-day schedule */}
-      {!isBingo && (
+      {/* Day-by-day schedule — all event types that have full day schedule */}
+      {p.daySchedule && (
         <ScheduleTable
           plan={p}
           event={event}
