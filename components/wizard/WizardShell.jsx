@@ -17,7 +17,8 @@ const STEP_COMPONENTS = {
 
 export default function WizardShell() {
   const { event, currentStep } = useWizard();
-  const ActiveStep = STEP_COMPONENTS[currentStep];
+  const effectiveStep = event.type === "bingo" && currentStep === 3 ? 4 : currentStep;
+  const ActiveStep = STEP_COMPONENTS[effectiveStep];
 
   const endDateLabel = event.end_date
     ? new Date(event.end_date + "T06:00:00").toLocaleDateString("en-US", {
@@ -48,7 +49,7 @@ export default function WizardShell() {
           )}
         </div>
 
-        <ProgressBar currentStep={currentStep} />
+        <ProgressBar currentStep={currentStep} eventType={event.type} />
 
         <div className="px-5 sm:px-8 pb-6 sm:pb-8">
           {ActiveStep ? (
@@ -61,7 +62,7 @@ export default function WizardShell() {
         </div>
 
         <div className="px-5 sm:px-8 pb-6 text-center">
-          <span className="text-xs text-text-muted">Step {currentStep} of 4</span>
+          <span className="text-xs text-text-muted">Step {effectiveStep} of {event.type === "bingo" ? 3 : 4}</span>
         </div>
       </div>
     </div>

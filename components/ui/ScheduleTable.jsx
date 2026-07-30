@@ -3,6 +3,14 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Gem, Key, Scroll, Sparkles, Wallet, Ticket, AlertTriangle, Coins, Clock } from "lucide-react";
 
+function dayToDate(startDate, day) {
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + day - 1);
+  const month = d.getMonth() + 1;
+  const date = d.getDate();
+  return `${month}/${date}`;
+}
+
 /**
  * Themed Crest / Legend / Special row builder — reads plan.daySchedule.rows
  * directly (built by planOrchestrator.js's buildThemedCrestDaySchedule()),
@@ -28,6 +36,7 @@ function buildThemedCrestRows(plan, event) {
 
     return {
       day: r.day,
+      date: dayToDate(event.start_date, r.day),
       draws: r.draws,
       cumulative,
       dia: r.diaSpent,
@@ -65,6 +74,7 @@ function buildCollectorRows(plan, event) {
 
     return {
       day: r.day,
+      date: dayToDate(event.start_date, r.day),
       draws: r.draws,
       cumulative,
       dia: r.diaSpent,
@@ -193,7 +203,7 @@ function DayCards({ rows, showCoa }) {
           className={`rounded-xl border border-border-subtle bg-navy px-4 py-3 ${row.tag ? TAG_STYLES[row.tag] : ""}`}
         >
           <div className="flex items-center justify-between gap-2 mb-2">
-            <span className="font-heading font-bold text-text-primary text-sm">Day {row.day}</span>
+            <span className="font-heading font-bold text-text-primary text-sm">{row.date}</span>
             <div className="flex items-center gap-1.5 shrink-0">
               <span className="text-[11px] text-text-muted bg-navy-light px-2 py-0.5 rounded">
                 {row.draws} draw{row.draws === 1 ? "" : "s"}
@@ -249,7 +259,7 @@ export default function ScheduleTable({ plan, event }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-navy-light text-text-muted text-xs uppercase tracking-wide">
-                <th className="text-left px-4 py-2.5 font-medium w-14">Day</th>
+                <th className="text-left px-4 py-2.5 font-medium w-16">Date</th>
                 <th className="text-left px-4 py-2.5 font-medium">Action</th>
                 <th className="text-right px-4 py-2.5 font-medium w-16">Draws</th>
                 <th className="text-right px-4 py-2.5 font-medium w-20">Total</th>
@@ -260,7 +270,7 @@ export default function ScheduleTable({ plan, event }) {
             <tbody>
               {visibleRows.map((row) => (
                 <tr key={row.day} className={`border-t border-border-subtle ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
-                  <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
+                  <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.date}</td>
                   <td className="px-4 py-2.5 text-text-primary"><ActionCell lines={row.actionLines} /></td>
                   <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
                   <td className="px-4 py-2.5 text-right text-accent-coral font-semibold">{row.cumulative}</td>
@@ -331,7 +341,7 @@ export default function ScheduleTable({ plan, event }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-navy-light text-text-muted text-xs uppercase tracking-wide">
-              <th className="text-left px-4 py-2.5 font-medium w-14">Day</th>
+              <th className="text-left px-4 py-2.5 font-medium w-16">Date</th>
               <th className="text-left px-4 py-2.5 font-medium">Action</th>
               <th className="text-right px-4 py-2.5 font-medium w-16">Draws</th>
               <th className="text-right px-4 py-2.5 font-medium w-20">Cumulative</th>
@@ -341,7 +351,7 @@ export default function ScheduleTable({ plan, event }) {
           <tbody>
             {visibleRows.map((row) => (
               <tr key={row.day} className={`border-t border-border-subtle ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
-                <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.day}</td>
+                <td className="px-4 py-2.5 text-text-muted font-heading font-bold">{row.date}</td>
                 <td className="px-4 py-2.5 text-text-primary"><ActionCell lines={row.actionLines} /></td>
                 <td className="px-4 py-2.5 text-right text-text-primary">{row.draws}</td>
                 <td className="px-4 py-2.5 text-right text-accent-coral font-semibold">{row.cumulative}</td>

@@ -17,7 +17,7 @@ export default function Home() {
     });
 
   return (
-    <main className="relative min-h-screen bg-[#1D2331] overflow-hidden">
+    <main className="relative min-h-screen bg-[#1D2331]">
       {/* Background image layer — 20% opacity, blurred, per design spec */}
       {/* Mobile: portrait-cropped image, only below md: — bg-top-ish position keeps
           the character's face/torso in frame on short, wide phone viewports */}

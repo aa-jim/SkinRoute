@@ -221,7 +221,7 @@ export default function StepFour() {
       <div className="flex justify-between gap-3 mt-8">
         <button
           type="button"
-          onClick={() => setCurrentStep(3)}
+          onClick={() => setCurrentStep(event.type === "bingo" ? 2 : 3)}
           className="px-4 sm:px-6 py-2.5 rounded-lg bg-accent-blue text-white font-heading font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
         >
           ← Adjust plan

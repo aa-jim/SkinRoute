@@ -4,11 +4,11 @@ import { Home } from "lucide-react";
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-navy/95 backdrop-blur-md border-b border-white/10">
-      <div className="max-w-[2400px] mx-auto flex items-center justify-between px-4 sm:px-10 h-[52px] sm:h-[68px]">
+      <div className="max-w-[2400px] mx-auto flex items-center justify-between px-2 sm:px-4 h-[52px] sm:h-[68px]">
         <Link href="/" className="font-heading text-2xl sm:text-3xl px-0 sm:px-0 font-bold tracking-wide text-white">
           SKIN ROUTE
         </Link>
-        <nav className="flex items-center gap-5">
+        <nav className="flex items-center gap-4 sm:gap-6">
           <Link
             href="/"
             aria-label="Home"

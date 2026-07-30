@@ -38,9 +38,11 @@ export default function StepThree() {
       <h2 className="font-heading text-xl sm:text-2xl font-bold text-accent-gold mb-1">
         Prize pool — what do you already own?
       </h2>
-      <p className="text-sm text-text-muted mb-6">
-        Owned items convert future pulls into crests instead of duplicates — speeds up reaching your target
-      </p>
+      {event.type !== "bingo" && (
+        <p className="text-sm text-text-muted mb-6">
+          Owned items convert future pulls into crests instead of duplicates — speeds up reaching your target
+        </p>
+      )}
 
       {/* Section A — target-tier skins, image grid, same pattern as Step 2 */}
       {targetSkins.length > 0 && (

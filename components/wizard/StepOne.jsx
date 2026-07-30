@@ -123,7 +123,7 @@ export default function StepOne() {
 
         <div>
           <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
-            Days remaining on weekly passes <Clock size={14} className="text-accent-coral" />
+            Days remaining <Clock size={14} className="text-accent-coral" />
           </label>
           <div className="relative max-w-[240px]">
             <input

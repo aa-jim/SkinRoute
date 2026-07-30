@@ -5,10 +5,14 @@ const STEPS = [
   { n: 4, label: "Result" },
 ];
 
-export default function ProgressBar({ currentStep }) {
+export default function ProgressBar({ currentStep, eventType }) {
+  const visibleSteps = eventType === "bingo"
+    ? STEPS.filter((s) => s.n !== 3).map((s, i) => ({ ...s, displayN: i + 1 }))
+    : STEPS.map((s) => ({ ...s, displayN: s.n }));
+
   return (
     <div className="flex items-center justify-center gap-2 sm:gap-3 py-6 px-4 flex-wrap">
-      {STEPS.map((step, i) => {
+      {visibleSteps.map((step, i) => {
         const isActive = step.n === currentStep;
         const isDone = step.n < currentStep;
 
@@ -39,7 +43,7 @@ export default function ProgressBar({ currentStep }) {
                     />
                   </svg>
                 ) : (
-                  step.n
+                  step.displayN
                 )}
               </span>
               <span
@@ -50,7 +54,7 @@ export default function ProgressBar({ currentStep }) {
                 {step.label}
               </span>
             </div>
-            {i < STEPS.length - 1 && (
+            {i < visibleSteps.length - 1 && (
               <span className="w-6 sm:w-10 h-px bg-border-subtle shrink-0" />
             )}
           </div>

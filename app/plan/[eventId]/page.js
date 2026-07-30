@@ -13,7 +13,7 @@ export default async function PlanPage({ params }) {
   }
 
   return (
-    <main className="relative min-h-screen bg-navy overflow-hidden">
+    <main className="relative min-h-screen bg-navy">
       {/* Background image layer — same treatment as landing page */}
       <div
         className="absolute inset-0 bg-cover opacity-20 blur-sm md:hidden bg-fixed"
