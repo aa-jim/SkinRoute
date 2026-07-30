@@ -1,4 +1,5 @@
 import { Inter, Rajdhani } from "next/font/google";
+import SupportButton from "@/components/ui/SupportButton";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,7 +16,7 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata = {
-  title: "Skin Route — MLBB Skin Planner",
+  title: "Skin Route",
   description:
     "Plan the cheapest way to get your Mobile Legends event skin. Enter your resources, pick your target, get a day-by-day schedule.",
 };
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
         className={`${inter.variable} ${rajdhani.variable} font-body bg-bg-page text-text-primary antialiased`}
       >
         {children}
+        <SupportButton />
       </body>
     </html>
   );

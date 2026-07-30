@@ -234,10 +234,26 @@ function DayCards({ rows, showCoa }) {
   );
 }
 
-export default function ScheduleTable({ plan, event }) {
+export default function ScheduleTable({ plan, event, startDay = 1 }) {
   const [expanded, setExpanded] = useState(false);
   const isCollector = plan.eventType === "collector";
-  const collectorRows = isCollector ? buildCollectorRows(plan, event) : null;
+  const showFromToday = startDay > 1;
+
+  function filterRows(rows) {
+    const filtered = rows.filter((r) => r.day >= startDay);
+    if (filtered.length === 0) return filtered;
+    let cumDraws = 0;
+    let cumDia = 0;
+    let cumCoa = 0;
+    return filtered.map((r) => {
+      cumDraws += r.draws;
+      cumDia += r.diaSpent ?? r.dia;
+      cumCoa += r.coaSpent ?? r.coa ?? 0;
+      return { ...r, cumulative: cumDraws, cumulativeDia: cumDia, cumulativeCoa: cumCoa };
+    });
+  }
+
+  const collectorRows = isCollector ? filterRows(buildCollectorRows(plan, event) ?? []) : null;
 
   // ---------------------------------------------------------------------
   // Collector layout — extra Draws/Dia/CoA columns + totals footer, matches
@@ -245,13 +261,21 @@ export default function ScheduleTable({ plan, event }) {
   // ---------------------------------------------------------------------
   if (collectorRows) {
     const visibleRows = expanded ? collectorRows : collectorRows.slice(0, 10);
-    const totals = plan.daySchedule.totals;
+    const displayTotals = visibleRows.reduce(
+      (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia, coa: a.coa + (r.coa ?? 0) }),
+      { draws: 0, dia: 0, coa: 0 }
+    );
 
     return (
       <div className="mb-6">
         <h3 className="text-sm font-heading font-bold text-text-primary uppercase tracking-wide mb-3">
           Day-by-Day Schedule
         </h3>
+        {showFromToday && (
+          <p className="text-xs text-accent-gold mb-3">
+            From Day {startDay} ({collectorRows.length > 0 ? collectorRows[0].date : ""})
+          </p>
+        )}
         <IconLegend isCollector />
         <DayCards rows={visibleRows} showCoa />
 
@@ -281,11 +305,11 @@ export default function ScheduleTable({ plan, event }) {
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-border-subtle bg-navy-light">
-                <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total</td>
-                <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{totals.draws}</td>
+                <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total from Day {startDay}</td>
+                <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{displayTotals.draws}</td>
                 <td></td>
-                <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{totals.dia.toLocaleString()}</td>
-                <td className="px-4 py-2.5 text-right text-accent-gold font-heading font-bold">{totals.coa.toLocaleString()}</td>
+                <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{displayTotals.dia.toLocaleString()}</td>
+                <td className="px-4 py-2.5 text-right text-accent-gold font-heading font-bold">{displayTotals.coa.toLocaleString()}</td>
               </tr>
             </tfoot>
           </table>
@@ -324,16 +348,24 @@ export default function ScheduleTable({ plan, event }) {
   // Themed Crest / Legend / Special layout — real simulation, same format
   // as Collector's table minus the CoA column (diamonds-only event type).
   // ---------------------------------------------------------------------
-  const themedRows = buildThemedCrestRows(plan, event);
+  const themedRows = filterRows(buildThemedCrestRows(plan, event) ?? []);
   const rows = themedRows ?? [];
   const visibleRows = expanded ? rows : rows.slice(0, 10);
-  const themedTotals = plan.daySchedule?.totals;
+  const displayTotals = visibleRows.reduce(
+    (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia }),
+    { draws: 0, dia: 0 }
+  );
 
   return (
     <div className="mb-6">
       <h3 className="text-sm font-heading font-bold text-text-primary uppercase tracking-wide mb-3">
         Day-by-Day Schedule
       </h3>
+      {showFromToday && (
+        <p className="text-xs text-accent-gold mb-3">
+          From Day {startDay} ({rows.length > 0 ? rows[0].date : ""})
+        </p>
+      )}
       <IconLegend isCollector={false} />
       <DayCards rows={visibleRows} showCoa={false} />
 
@@ -359,13 +391,13 @@ export default function ScheduleTable({ plan, event }) {
               </tr>
             ))}
           </tbody>
-          {themedTotals && (
+          {(displayTotals.draws > 0 || displayTotals.dia > 0) && (
             <tfoot>
               <tr className="border-t-2 border-border-subtle bg-navy-light">
-                <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total</td>
-                <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{themedTotals.draws}</td>
+                <td colSpan={2} className="px-4 py-2.5 text-text-primary font-heading font-bold">Total from Day {startDay}</td>
+                <td className="px-4 py-2.5 text-right text-text-primary font-heading font-bold">{displayTotals.draws}</td>
                 <td></td>
-                <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{themedTotals.dia.toLocaleString()}</td>
+                <td className="px-4 py-2.5 text-right text-accent-blue font-heading font-bold">{displayTotals.dia.toLocaleString()}</td>
               </tr>
             </tfoot>
           )}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Gem, Layers, Target, Wallet, AlertTriangle, Download } from "lucide-react";
+import { Gem, Layers, Target, Wallet, AlertTriangle, Download, Calendar, CalendarDays } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
-import { buildPlan } from "@/lib/planOrchestrator";
+import { buildPlan, todayEventDay } from "@/lib/planOrchestrator";
 import { exportPlanPdf } from "@/lib/exporter";
 import SummaryCard from "@/components/ui/SummaryCard";
 import ScheduleTable from "@/components/ui/ScheduleTable";
@@ -12,13 +12,17 @@ import PackRecommendation from "@/components/ui/PackRecommendation";
 export default function StepFour() {
   const { event, resources, target, ownedItems, goBack, setCurrentStep } = useWizard();
 
+  const [startFromToday, setStartFromToday] = useState(true);
+  const rawToday = event.start_date ? todayEventDay(event) : 1;
+  const activeStartDay = startFromToday ? Math.max(1, rawToday) : 1;
+
   const plan = useMemo(() => {
     try {
-      return { data: buildPlan(event, resources, target, ownedItems, "realistic"), error: null };
+      return { data: buildPlan(event, resources, target, ownedItems, "realistic", activeStartDay), error: null };
     } catch (err) {
       return { data: null, error: err.message };
     }
-  }, [event, resources, target, ownedItems]);
+  }, [event, resources, target, ownedItems, activeStartDay]);
 
   const [downloading, setDownloading] = useState(false);
   const handleDownload = async () => {
@@ -53,7 +57,37 @@ export default function StepFour() {
   const isCollector = p.eventType === "collector";
 
   return (
-    <div>
+    <div data-plan-section>
+      {/* Schedule view toggle — Start Today vs Start from Day 1 */}
+      {rawToday > 1 && (
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => setStartFromToday(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-heading font-bold transition-all ${
+              startFromToday
+                ? "bg-accent-gold/20 border border-accent-gold/50 text-accent-gold"
+                : "bg-navy-light border border-border-subtle text-text-muted hover:text-text-primary"
+            }`}
+          >
+            <CalendarDays size={14} />
+            Start Today (Day {rawToday})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStartFromToday(false)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-heading font-bold transition-all ${
+              !startFromToday
+                ? "bg-accent-gold/20 border border-accent-gold/50 text-accent-gold"
+                : "bg-navy-light border border-border-subtle text-text-muted hover:text-text-primary"
+            }`}
+          >
+            <Calendar size={14} />
+            Start from Day 1
+          </button>
+        </div>
+      )}
+
       {/* Draws needed overview (all 3 confidence levels) — hidden for bingo since the card below shows the same info */}
       {!isBingo && p.drawsNeededAll && (
         <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 text-sm">
@@ -90,27 +124,27 @@ export default function StepFour() {
       {isBingo ? (
         <div className="mb-8">
           <div className="rounded-xl border-2 border-[#7F77DD] bg-[#26004D]/30 px-5 py-4 mb-4">
-            <p className="text-xs font-heading font-bold text-[#C9B8FF] uppercase tracking-wide mb-2">
-              Bingo — first line completion
+            <p className="text-sm font-heading font-bold text-[#C9B8FF] uppercase tracking-wide mb-2">
+              {event.id === "aspirants_2026" ? "The Aspirants" : "Bingo — first line completion"}
             </p>
             <div className="grid grid-cols-3 gap-3 text-center">
               <div>
-                <p className="font-heading text-xl font-bold text-accent-green">
+                <p className="font-heading text-3xl font-bold text-accent-green">
                   {p.winCondition.draws.lucky[0]}–{p.winCondition.draws.lucky[1]}
                 </p>
-                <p className="text-[11px] text-text-muted">Lucky draws</p>
+                <p className="text-[12px] text-text-muted">Lucky draws</p>
               </div>
               <div>
-                <p className="font-heading text-xl font-bold text-accent-gold">
+                <p className="font-heading text-3xl font-bold text-accent-gold">
                   {p.winCondition.draws.realistic}
                 </p>
-                <p className="text-[11px] text-text-muted">Realistic draws</p>
+                <p className="text-[12px] text-text-muted">Realistic draws</p>
               </div>
               <div>
-                <p className="font-heading text-xl font-bold text-accent-coral">
+                <p className="font-heading text-3xl font-bold text-accent-coral">
                   {p.winCondition.draws.worst}
                 </p>
-                <p className="text-[11px] text-text-muted">Worst case draws</p>
+                <p className="text-[12px] text-text-muted">Worst case draws</p>
               </div>
             </div>
           </div>
@@ -175,7 +209,6 @@ export default function StepFour() {
             <SummaryCard
               label="Diamonds Needed"
               value={(p.totalDiamondsForPlan ?? 0).toLocaleString()}
-              sublabel={`${(p.netDiamondsNeeded?.netDiamondsNeeded ?? 0).toLocaleString()} extra needed`}
               icon={Gem}
               accent="blue"
             />
@@ -215,6 +248,7 @@ export default function StepFour() {
         <ScheduleTable
           plan={p}
           event={event}
+          startDay={activeStartDay}
         />
       )}
 
@@ -240,6 +274,13 @@ export default function StepFour() {
       <p className="text-xs text-text-muted text-center mt-6">
         Reminder: claim any free draw token shown in-game each day, even if it&apos;s not listed here.
       </p>
+
+      <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-accent-amber/10 border border-accent-amber/40 text-xs text-text-primary mt-4">
+      <AlertTriangle size={14} className="text-accent-amber shrink-0" />
+       <span className="text-center">
+        Algorithmic plans are estimates and may contain errors. Cross-check against in-game values.
+       </span>
+      </div>      
     </div>
   );
 }

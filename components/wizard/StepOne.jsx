@@ -18,14 +18,14 @@ const inputClass =
 export default function StepOne() {
   const { event, resources, updateResources, toggleFpClaimed, goNext } =
     useWizard();
-  const [showDayError, setShowDayError] = useState(false);
+  const [dayError, setDayError] = useState(null);
 
   const showCoa = event.type === "collector";
 
   const setPasses = (delta) => {
     const next = Math.max(0, Math.min(10, resources.weeklyPasses + delta));
     updateResources({ weeklyPasses: next });
-    if (next === 0) setShowDayError(false);
+    if (next === 0) setDayError(null);
   };
 
   return (
@@ -136,9 +136,9 @@ export default function StepOne() {
               value={resources.passDaysRemaining}
               onChange={(e) => {
                 updateResources({ passDaysRemaining: e.target.value });
-                if (e.target.value) setShowDayError(false);
+                if (e.target.value) setDayError(null);
               }}
-              className={`${inputClass} disabled:opacity-40 disabled:cursor-not-allowed ${showDayError ? "border-accent-coral" : ""}`}
+              className={`${inputClass} disabled:opacity-40 disabled:cursor-not-allowed ${dayError ? "border-accent-coral" : ""}`}
             />
           </div>
           {resources.weeklyPasses > 0 && (
@@ -147,10 +147,8 @@ export default function StepOne() {
               {resources.weeklyPasses * 7} total days
             </p>
           )}
-          {showDayError && (
-            <p className="text-xs text-accent-coral mt-1.5">
-              Enter the days remaining on your weekly passes to continue
-            </p>
+          {dayError && (
+            <p className="text-xs text-accent-coral mt-1.5">{dayError}</p>
           )}
         </div>
       </div>
@@ -199,9 +197,16 @@ export default function StepOne() {
         <button
           type="button"
           onClick={() => {
-            if (resources.weeklyPasses > 0 && !resources.passDaysRemaining) {
-              setShowDayError(true);
-              return;
+            if (resources.weeklyPasses > 0) {
+              if (!resources.passDaysRemaining) {
+                setDayError("Enter the days remaining on your weekly passes to continue");
+                return;
+              }
+              const maxDays = resources.weeklyPasses * 7;
+              if (Number(resources.passDaysRemaining) > maxDays) {
+                setDayError(`Days remaining can't exceed ${maxDays} for ${resources.weeklyPasses} ${resources.weeklyPasses > 1 ? "passes" : "pass"}`);
+                return;
+              }
             }
             const patch = {};
             if (resources.diamonds === "") patch.diamonds = "0";

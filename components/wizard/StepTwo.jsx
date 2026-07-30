@@ -32,7 +32,7 @@ export default function StepTwo() {
       </h2>
       <p className="text-sm text-text-muted mb-6">
         {isBingo
-          ? "First completed box wins any 1 unowned skin below"
+          ? `First completed ${event.id === "aspirants_2026" ? "box" : "bingo line"} wins any 1 unowned skin below`
           : "Choose the skin you want to get"}
       </p>
 
@@ -96,7 +96,7 @@ export default function StepTwo() {
                       </p>
                     ) : (
                       <p className="text-[10.5px] font-semibold text-accent-green">
-                        Line completion
+                        {event.id === "aspirants_2026" ? "Box completion" : "Line completion"}
                       </p>
                     )
                   ) : isDiscounted ? (

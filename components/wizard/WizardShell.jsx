@@ -17,7 +17,10 @@ const STEP_COMPONENTS = {
 
 export default function WizardShell() {
   const { event, currentStep } = useWizard();
-  const effectiveStep = event.type === "bingo" && currentStep === 3 ? 4 : currentStep;
+  const isBingo = event.type === "bingo";
+  const effectiveStep = isBingo && currentStep === 3 ? 4 : currentStep;
+  const displayStep = isBingo && currentStep > 3 ? currentStep - 1 : isBingo && currentStep === 3 ? 3 : currentStep;
+  const totalSteps = isBingo ? 3 : 4;
   const ActiveStep = STEP_COMPONENTS[effectiveStep];
 
   const endDateLabel = event.end_date
@@ -62,7 +65,7 @@ export default function WizardShell() {
         </div>
 
         <div className="px-5 sm:px-8 pb-6 text-center">
-          <span className="text-xs text-text-muted">Step {effectiveStep} of {event.type === "bingo" ? 3 : 4}</span>
+          <span className="text-xs text-text-muted">Step {displayStep} of {totalSteps}</span>
         </div>
       </div>
     </div>
