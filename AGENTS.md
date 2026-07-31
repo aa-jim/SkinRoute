@@ -9,6 +9,13 @@
 
 ## Recent Changes
 
+### Cloudflare deployment (primary host, free plan)
+- `@opennextjs/cloudflare` adapter + `wrangler.jsonc` + `open-next.config.ts` + `build:cf` script — site live at `https://skinroute.abdullahaljim2.workers.dev/`; Vercel (`skin-route.vercel.app`) kept as parallel fallback (both auto-deploy on push)
+- `next.config.mjs` — `images: { unoptimized: true }` (Cloudflare's optimizer is paid; assets served raw)
+- `public/_headers` — immutable caching for `/_next/static/*` (ignored by Vercel)
+- **Traps hit during setup** (see `docs/development.md` → Cloudflare section): wrangler needs Workers-style `main` + `assets` (Pages-style `pages_build_output_dir` alone fails with "Missing entry-point"); the `WORKER_SELF_REFERENCE` service binding must reference the exact project name `skinroute` (CI overrides config `name` but not the binding → `[10143]`)
+- Verified on Workers runtime: CSP nonce middleware works unmodified (edge-only APIs), all routes/banners/API parity with Vercel; worker ~1.3 MiB gzip (3 MiB free limit)
+
 ### Street Fighter banner case fix (`public/assets/events/street_fighter_2026/`)
 - `banner.JPEG` → `banner.jpeg` (via two-step `git mv` — Windows FS is case-insensitive so direct rename failed) — `events.json` referenced lowercase, Vercel/Linux is case-sensitive → `/_next/image` 400, banner hidden on every deployed profile
 - `docs/events.md` — asset section now warns: filenames must match `events.json` byte-for-byte (case-sensitive on Vercel); use `git mv` for case-only renames

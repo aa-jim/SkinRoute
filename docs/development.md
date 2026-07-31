@@ -99,6 +99,21 @@ const { buildPlan } = await import(pathToFileURL(base + "lib/planOrchestrator.js
 4. Deploy. HTTPS is automatic; HSTS is applied by Vercel.
 5. Before public launch: confirm the SupportButton donation numbers are correct in `components/ui/SupportButton.js`.
 
+## Deployment (Cloudflare Workers/Pages)
+
+Primary deployment is Cloudflare (`https://skinroute.abdullahaljim2.workers.dev/`, free plan) — unlimited bandwidth/requests vs Vercel's free-tier caps; Vercel is kept in parallel as a fallback. Stack: `@opennextjs/cloudflare` adapter runs the Next.js app on the Workers runtime (no Node server; Node.js APIs via `nodejs_compat`).
+
+- **Build**: `npm run build:cf` (`opennextjs-cloudflare build` → runs `next build`, then emits `.open-next/`). `next.config.mjs` sets `images: { unoptimized: true }` — Cloudflare's image optimizer requires the paid Cloudflare Images product; the event assets are small so they're served raw (also removes the `/_next/image` 400 class of bugs entirely).
+- **Deploy**: Cloudflare dashboard → Workers & Pages → Connect to Git → build command `npm run build:cf`. Cloudflare auto-deploys on push. Env var `NEXT_PUBLIC_WEB3FORMS_KEY` is inlined at build time (dashboard → project → Settings → variables).
+- **`wrangler.jsonc` (do not break)** — Cloudflare's CI runs `npx wrangler deploy` post-build, which needs the Workers-style config:
+  - `main: ".open-next/worker.js"` + `assets: { directory: ".open-next/assets", binding: "ASSETS" }` — omitting these fails with "Missing entry-point to Worker script or to assets directory".
+  - **`name` and `services[].service` must match the Cloudflare project name byte-for-byte** (`skinroute`). The `WORKER_SELF_REFERENCE` service binding references the deployed worker by name; a mismatch fails with `Service binding ... references Worker ... which was not found [10143]`. Cloudflare CI overrides a mismatched `name` to the real project name but **does not rewrite the service binding**.
+  - `compatibility_flags: ["nodejs_compat", "global_fetch_strictly_public"]`.
+- **Worker size**: free plan caps at 3 MiB **gzip**. Current: ~1.3 MiB gzip (wrangler prints `Total Upload: … / gzip: …`).
+- **Static caching**: `public/_headers` serves `Cache-Control: public,max-age=31536000,immutable` for `/_next/static/*` (fingerprinted files). Vercel ignores this file.
+- **CSP nonce middleware runs unmodified on Workers** — it uses only edge-safe APIs (`crypto.randomUUID`, no Buffer); verified: response CSP header nonce matches the inline-script nonces on the Workers runtime.
+- **Local Windows caveat**: OpenNext officially warns it's not fully supported on Windows; local builds succeed but final confidence comes from the Linux CI build on Cloudflare.
+
 ## Security posture
 
 - **No secrets in the repo**: `.env.local` is git-ignored and has never been committed; the Web3Forms key is intentionally public-safe.
