@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Skin Route
 
-## Getting Started
+Plan the cheapest path to your Mobile Legends: Bang Bang event skin. Enter your diamonds, passes and target — get a day-by-day draw schedule plus the cheapest BDT recharge plan, exportable as a PDF.
 
-First, run the development server:
+Built for MLBB players. Algorithmic estimates — always cross-check against in-game values.
+
+## Features
+
+- **3 event types**: Themed Crest, Collector (CoA + diamonds), Bingo / Aspirants
+- **Day-by-day schedule** — exactly what to draw and when, with premium-supply windows, milestone tokens and surprise tasks counted as real draws
+- **Cheapest recharge plan** — 3D-knapsack optimizer finds the minimum-BDT pack combo (diamond packs, weekly passes, first-purchase bonuses)
+- **Start Today vs Day 1** toggle for mid-event planners
+- **PDF export** of the full plan
+- **Bug reports** with auto-attached technical details (Web3Forms)
+- Dark MLBB-themed UI, mobile-friendly
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Bug reports need one env var (optional, key is public-safe):
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```
+# .env.local
+NEXT_PUBLIC_WEB3FORMS_KEY=your_web3forms_access_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Scripts: `npm run dev`, `npm run build`, `npm start`, `npm run lint`.
 
-## Learn More
+## Documentation
 
-To learn more about Next.js, take a look at the following resources:
+Everything lives in [`docs/`](docs/README.md):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Doc | Contents |
+|---|---|
+| [docs/features.md](docs/features.md) | All user-facing features (wizard, results, schedule table, PDF, bug reports) |
+| [docs/architecture.md](docs/architecture.md) | Inner workings of the planning engine |
+| [docs/events.md](docs/events.md) | **How to add the next MLBB event** — schema, checklist, validation |
+| [docs/development.md](docs/development.md) | Setup, test harness, deployment, security |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Stack
 
-## Deploy on Vercel
+Next.js 15 (App Router) · React 18 · Tailwind CSS 3.4 · jsPDF · lucide-react
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Hosted on Vercel: import the repo, add `NEXT_PUBLIC_WEB3FORMS_KEY` in project settings, deploy. HTTPS is automatic. See [docs/development.md](docs/development.md#deployment-vercel).
+
+## Disclaimer
+
+Plans are estimates based on published drop rates and may contain errors. Cross-check against in-game values before spending.

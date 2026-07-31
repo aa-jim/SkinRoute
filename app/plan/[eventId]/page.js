@@ -30,8 +30,8 @@ export default async function PlanPage({ params }) {
       <div className="absolute inset-0 bg-navy/15" />
 
       <div className="relative z-10">
-        <Navbar />
         <WizardProvider event={event}>
+          <Navbar />
           <WizardShell />
         </WizardProvider>
       </div>

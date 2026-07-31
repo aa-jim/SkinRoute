@@ -10,9 +10,8 @@ import ScheduleTable from "@/components/ui/ScheduleTable";
 import PackRecommendation from "@/components/ui/PackRecommendation";
 
 export default function StepFour() {
-  const { event, resources, target, ownedItems, goBack, setCurrentStep } = useWizard();
+  const { event, resources, target, ownedItems, goBack, setCurrentStep, startFromToday, setStartFromToday } = useWizard();
 
-  const [startFromToday, setStartFromToday] = useState(true);
   const rawToday = event.start_date ? todayEventDay(event) : 1;
   const activeStartDay = startFromToday ? Math.max(1, rawToday) : 1;
 

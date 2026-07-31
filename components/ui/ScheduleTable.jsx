@@ -4,11 +4,11 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, Gem, Key, Scroll, Sparkles, Wallet, Ticket, AlertTriangle, Coins, Clock } from "lucide-react";
 
 function dayToDate(startDate, day) {
-  const d = new Date(startDate);
-  d.setDate(d.getDate() + day - 1);
-  const month = d.getMonth() + 1;
-  const date = d.getDate();
-  return `${month}/${date}`;
+  // Anchored at 08:00 UTC (= 2PM BDT in-game day reset) so the calendar date
+  // is unambiguous in any timezone
+  const [year, month, date] = startDate.split("-").map(Number);
+  const d = new Date(Date.UTC(year, month - 1, date + day - 1, 8, 0, 0));
+  return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
 }
 
 /**
