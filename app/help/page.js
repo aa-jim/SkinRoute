@@ -2,6 +2,10 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import { Layers, Wallet, Download, Gem, Grid3x3, Sparkles } from "lucide-react";
 
+// Dynamic on purpose: the CSP nonce (middleware.js) only exists at request
+// time, so static prerenders can't carry it on their inline scripts.
+export const dynamic = "force-dynamic";
+
 const FEATURES = [
   { icon: Layers, title: "Day-by-day schedule", desc: "Exactly what to draw, and when, for every day of the event." },
   { icon: Wallet, title: "Recharge plan", desc: "The cheapest BDT pack combo to close your diamond/CoA gap." },

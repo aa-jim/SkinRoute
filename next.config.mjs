@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 
 // Production-only security headers (dev stays permissive so HMR/next dev work).
-// Tuned for Next 15 + Google Fonts (next/font) + Web3Forms bug reports.
+// The Content-Security-Policy header is NOT here — it's set in middleware.js
+// with a per-request nonce so Next's inline RSC scripts can hydrate.
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -13,20 +14,6 @@ const securityHeaders = [
   {
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
-  },
-  {
-    key: "Content-Security-Policy",
-    value: [
-      "default-src 'self'",
-      "script-src 'self'",
-      "style-src 'self' 'unsafe-inline'",
-      "font-src 'self' fonts.gstatic.com",
-      "img-src 'self' data: blob:",
-      "connect-src 'self' https://api.web3forms.com https://fonts.googleapis.com",
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self' https://api.web3forms.com",
-    ].join("; "),
   },
 ];
 

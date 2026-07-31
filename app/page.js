@@ -3,6 +3,12 @@ import EventCarousel from "@/components/ui/EventCarousel";
 import eventsData from "@/data/events.json";
 import { deriveStatus } from "@/lib/eventHelpers";
 
+// Dynamic on purpose: (1) the CSP nonce comes from a per-request header
+// (middleware.js) and only exists at request time, so static prerenders
+// can't carry it; (2) event statuses depend on "today" (deriveStatus) and
+// would go stale between deploys if the HTML were baked at build time.
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   const events = (eventsData.events ?? [])
     .filter((e) => e.status !== "hidden" && deriveStatus(e) !== "ended")

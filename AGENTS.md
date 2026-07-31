@@ -6,6 +6,15 @@
 
 ## Recent Changes
 
+### CSP nonce middleware (`middleware.js`) — production black screen fix
+- **Symptom**: deployed site (Vercel) showed black screen; landing page flashed for a split second on refresh. Console: `Executing inline script violates ... script-src 'self'` + `Uncaught Error: Connection closed`
+- **Cause**: `next.config.mjs` production CSP had `script-src 'self'` with no nonce/hash — Next.js renders its RSC bootstrap as inline scripts, so hydration never ran and the client error boundary blanked the page. Dev was unaffected (headers production-gated)
+- **Fix**: new `middleware.js` — per-request nonce (`crypto.randomUUID().replaceAll("-", "")`, edge-safe, no Buffer), CSP set on **request + response headers** (Next extracts the nonce from the request CSP header at render time — `getScriptNonceFromHeader`; the `x-nonce` header is NOT read by Next 15.5); production-only (dev passes through); matcher excludes `_next/static`, `_next/image`, `favicon.ico`, `assets/`
+- **Static pages can't carry nonces** — prerenders are baked at build time with no request, so `/` and `/help` now have `export const dynamic = "force-dynamic"` (bonus: event statuses no longer go stale between deploys); `/plan/[eventId]` was already dynamic; `/_not-found` stays static (non-interactive error page)
+- `next.config.mjs` — CSP removed from `securityHeaders` (two CSP headers = intersection; old one would still block); X-Frame-Options/nosniff/HSTS/Referrer-Policy/Permissions-Policy stay
+- Docs updated: `docs/development.md` security section
+- **Verify on Vercel after deploy**: home page stays visible, no CSP violations in console, CSP header present with `nonce-…`, rest of headers intact, wizard + PDF + report modal
+
 ### Step 4 plan loading: cache + stale-while-revalidate (`StepFour.jsx`)
 - Previously every toggle of "Start Today vs Day 1" (and every return to Step 4 after navigating steps — steps unmount) re-ran the effect with `setPlanLoading(true)` → full-screen "Calculating your plan..." flash each time
 - Now: module-level `planCache` Map keyed by `JSON.stringify([event.id, resources, target, ownedItems, activeStartDay])`; lazy `useState` initializers read it → already-computed day renders instantly, zero refetch; cache-miss toggles keep the previous plan visible ("Updating…" spinner next to the toggle) while refetching; refresh failure keeps the last plan + inline "Couldn't refresh" note (error screen only when no plan exists yet)
@@ -92,5 +101,6 @@
 - `components/ui/SupportButton.js` — buy-me-a-coffee (donation numbers)
 - `data/events.json` — event data (see `docs/events.md` to add a new event)
 - `data/packs.json` — pack/pass data
-- `next.config.mjs` — security headers (production-gated)
+- `next.config.mjs` — security headers (production-gated); CSP now lives in `middleware.js`
+- `middleware.js` — per-request CSP nonce (production; fixes inline-script blocking)
 - `docs/` — features/architecture/events/development docs
