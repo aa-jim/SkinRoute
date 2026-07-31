@@ -1,5 +1,8 @@
 # SkinRoute — Session Context
 
+## Git identity (Vercel deploy gate)
+- Commit author email **must** be a valid GitHub account email (`aa-jim <abdullahaljim2@gmail.com>`). Vercel blocks deployments whose commit author email doesn't match a GitHub account — history was rewritten (filter-branch) on 2026-07-31 to fix commits authored by `builder@skinroute.local`, which silently blocked all deploys.
+
 ## Documentation
 - All docs live in `docs/` (`README.md` index, `features.md`, `architecture.md`, `events.md` — adding a new event baseline, `development.md`)
 - When making user-facing or planner changes, update the relevant docs + this file
