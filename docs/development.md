@@ -20,7 +20,7 @@ Setup, scripts, testing, deployment, and security for the SkinRoute repo.
 ## Project structure
 
 ```
-app/                    routes: / (home), /plan/[eventId], /help; layout + globals.css
+app/                    routes: / (home), /plan/[eventId], /help; API: api/plan (POST); layout + globals.css
 components/
   wizard/               StepOne..StepFour, WizardShell, ProgressBar
   ui/                   EventCard, EventCarousel, SummaryCard, ScheduleTable,
@@ -97,12 +97,14 @@ const { buildPlan } = await import(pathToFileURL(base + "lib/planOrchestrator.js
 2. Vercel → Import Project → select the repo. Next.js is auto-detected; no build config needed.
 3. Project Settings → Environment Variables → add `NEXT_PUBLIC_WEB3FORMS_KEY` (the local `.env.local` is not committed).
 4. Deploy. HTTPS is automatic; HSTS is applied by Vercel.
-5. Before public launch: confirm the SupportButton donation numbers (still marked TODO in `components/ui/SupportButton.js`).
+5. Before public launch: confirm the SupportButton donation numbers are correct in `components/ui/SupportButton.js`.
 
 ## Security posture
 
 - **No secrets in the repo**: `.env.local` is git-ignored and has never been committed; the Web3Forms key is intentionally public-safe.
-- **Security headers** (`next.config.mjs`, production builds only): `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, HSTS, and a CSP tuned for Next 15 + Google Fonts + Web3Forms (`connect-src` allows `api.web3forms.com`; `style-src 'unsafe-inline'` required by `next/font`; `frame-ancestors 'none'`).
+- **Planning engine runs server-side** (`app/api/plan/route.js`): Step 4 POSTs the wizard inputs and `buildPlan` executes in the route handler, so the algorithm (simulators, EV math, optimizer) is no longer shipped to the browser — *except* via `lib/reportBug.js`, which still calls `buildPlan` client-side for the report's technical block.
+- **Public API surface**: `POST /api/plan` is unauthenticated with no rate limit (serverless invocations are a mild abuse/cost vector on Vercel; accepted for now). The route validates input — `confidence` must be one of `optimistic | realistic | worst` and `overrideStartDay` must be a number (both `400` otherwise); buildPlan runtime errors return `200 {data: null, error}` so the UI can render the error state. `events.json`/`packs.json` stay client-side since the UI needs them.
+- **Security headers** (`next.config.mjs`, production builds only): `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, HSTS, and a CSP tuned for Next 15 + Google Fonts + Web3Forms (`connect-src` allows `api.web3forms.com` and same-origin API routes; `style-src 'unsafe-inline'` required by `next/font`; `frame-ancestors 'none'`).
 - **Spam protection**: the bug-report POST includes the Web3Forms `botcheck` honeypot field; Web3Forms rejects bot submissions server-side.
 - **Dependency hygiene**: `xlsx` was removed (unused, known critical CVE). `package.json` `overrides` pin patched `sharp` (≥0.35, libvips CVEs) and `postcss` (≥8.5.18) for Next's nested copies; eslint was upgraded to 9. `npm audit` status: the 10 remaining advisories are all **dev-only lint tooling** (eslint 8/9 chain — fixed only in eslint 10, which `eslint-config-next` 15.5.21 doesn't peer-support yet) plus one low-severity `dompurify` via `jspdf` (no fix published). Nothing runtime-related remains. Run `npm audit` before release and on a schedule.
 - No user data is stored by this app itself; bug reports go to Web3Forms (30-day retention on free plan).

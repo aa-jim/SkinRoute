@@ -43,6 +43,7 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 
 ### Step 4 — Result
 
+- The plan is **fetched from the server** (`POST /api/plan` → `buildPlan` runs server-side). Results are **cached per inputs for the session**: the first visit shows a "Calculating your plan..." screen; toggling the start day to one already computed (or returning to Step 4 after adjusting inputs) renders instantly with no refetch; toggling to a new day keeps the previous plan visible with an "Updating…" indicator while it recalculates. A failed refresh keeps the last plan with an inline note; with no plan yet it falls back to the plan-error state with an "← Adjust plan" button.
 - **Start-day toggle** (only shown when today is past day 1): "Start Today (Day N)" vs "Start from Day 1". The plan is rebuilt from the chosen day; the schedule table and PDF only show from that day.
 - **Draws overview** (non-bingo): Optimistic / Realistic / Worst-case draws.
 - **Warnings** — coral rows with an alert icon when the plan is tight or the math had to bend somewhere.

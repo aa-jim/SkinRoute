@@ -6,6 +6,21 @@
 
 ## Recent Changes
 
+### Step 4 plan loading: cache + stale-while-revalidate (`StepFour.jsx`)
+- Previously every toggle of "Start Today vs Day 1" (and every return to Step 4 after navigating steps — steps unmount) re-ran the effect with `setPlanLoading(true)` → full-screen "Calculating your plan..." flash each time
+- Now: module-level `planCache` Map keyed by `JSON.stringify([event.id, resources, target, ownedItems, activeStartDay])`; lazy `useState` initializers read it → already-computed day renders instantly, zero refetch; cache-miss toggles keep the previous plan visible ("Updating…" spinner next to the toggle) while refetching; refresh failure keeps the last plan + inline "Couldn't refresh" note (error screen only when no plan exists yet)
+- `hasPlanRef` tracks "a plan has been shown" (set on successful fetch) so full-screen loading only ever shows before the first plan
+- `ScheduleTable` now gets `startDay={p.startDay ?? activeStartDay}` so the visible table matches the plan shown during a refresh
+
+### API plan route + async Step Four
+- `app/api/plan/route.js` — new server-side `POST /api/plan`: validates body (`confidence` whitelist `optimistic|realistic|worst`, numeric `overrideStartDay` — both 400 otherwise, unknown `eventId` 400), calls `buildPlan`, returns `{data, error}` (buildPlan runtime errors → 200 with error field, matching the client contract)
+- `StepFour.jsx` — switched from direct `buildPlan` call to `fetch("/api/plan")` in `useEffect` (with `cancelled` flag, deps `[event.id, resources, target, ownedItems, activeStartDay]`); new `planLoading` state + "Calculating your plan..." loading screen; plan error state unchanged
+- **Security effect**: planning engine (simulators/EV/optimizer) no longer ships in the client bundle via StepFour — but `lib/reportBug.js` still calls `buildPlan` client-side for the report technical block, so the engine is only partially hidden. CSP already allowed it (`connect-src 'self'`), no `next.config.mjs` change
+- **Stray `+` fix**: `StepFour.jsx:67-68` had pasted diff markers (`+` chars rendering as JSX text) — removed
+- `SupportButton.js:101` — mobile offset `bottom-8` → `bottom-12` (cosmetic)
+- Docs updated: `docs/architecture.md` (invocation note + module map row), `docs/features.md` (Step 4 loading state), `docs/development.md` (security posture + project structure + stale SupportButton TODO line removed)
+- `lib/test_write.txt` deleted (stray "hello" debug artifact; deletion still uncommitted)
+
 ### Collector (`planOrchestrator.js`)
 - **Starlight for expired window**: `starlightExtra` now triggers when `startDay > windowEnd`, using `Math.max(0, 300 - startingDia)` — no longer gated by `hasPasses`
 - **Dump all packs on day 1 when totalSpan ≤ 2**: Sequential two-step injection (Starlight first, then remaining shortfall) both on `startDay`, no final-day split
@@ -61,7 +76,7 @@
 - `ScheduleTable.jsx` + `exporter.js` — `dayToDate` now UTC-anchored (Date.UTC + getUTC*) so date labels match in-game days in any timezone
 
 ## Next Steps (planned)
-- Final QA before launch: confirm SupportButton donation numbers (TODO in code), one test bug report with the new 6-field format, verify deploy env var on Vercel
+- Final QA before launch: one test bug report with the new 6-field format, verify deploy env var on Vercel (`NEXT_PUBLIC_WEB3FORMS_KEY` — the "Import .env" flow), confirm SupportButton donation numbers in production
 
 ## Relevant Files
 - `lib/planOrchestrator.js` — collector/bingo/themed crest planners
@@ -73,7 +88,8 @@
 - `components/layout/Navbar.jsx` — hamburger + report bug
 - `lib/reportBug.js` — report builder (description/technical/6 summary fields)
 - `components/ui/ReportModal.jsx` — report modal (Web3Forms POST, botcheck honeypot)
-- `components/ui/SupportButton.js` — buy-me-a-coffee (donation numbers TODO)
+- `app/api/plan/route.js` — server-side POST /api/plan (buildPlan, confidence whitelist)
+- `components/ui/SupportButton.js` — buy-me-a-coffee (donation numbers)
 - `data/events.json` — event data (see `docs/events.md` to add a new event)
 - `data/packs.json` — pack/pass data
 - `next.config.mjs` — security headers (production-gated)

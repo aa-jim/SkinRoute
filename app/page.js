@@ -62,7 +62,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-8 border-t border-white/10 py-6 text-center">
           <p className="text-xs sm:text-sm text-white/50 max-w-2xl mx-auto px-6">
-            Built for MLBB Players, by MLBB Player. Data Verified against official rules.
+            Built for MLBB Players, by An MLBB Player. Data Verified against official rules.
           </p>
         </footer>
       </div>

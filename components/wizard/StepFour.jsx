@@ -1,27 +1,79 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Gem, Layers, Target, Wallet, AlertTriangle, Download, Calendar, CalendarDays } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Gem, Layers, Target, Wallet, AlertTriangle, Download, Calendar, CalendarDays, RefreshCw } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
-import { buildPlan, todayEventDay } from "@/lib/planOrchestrator";
+import { todayEventDay } from "@/lib/planOrchestrator";
 import { exportPlanPdf } from "@/lib/exporter";
 import SummaryCard from "@/components/ui/SummaryCard";
 import ScheduleTable from "@/components/ui/ScheduleTable";
 import PackRecommendation from "@/components/ui/PackRecommendation";
+
+const planCache = new Map();
 
 export default function StepFour() {
   const { event, resources, target, ownedItems, goBack, setCurrentStep, startFromToday, setStartFromToday } = useWizard();
 
   const rawToday = event.start_date ? todayEventDay(event) : 1;
   const activeStartDay = startFromToday ? Math.max(1, rawToday) : 1;
+  const cacheKey = JSON.stringify([event.id, resources, target, ownedItems, activeStartDay]);
 
-  const plan = useMemo(() => {
-    try {
-      return { data: buildPlan(event, resources, target, ownedItems, "realistic", activeStartDay), error: null };
-    } catch (err) {
-      return { data: null, error: err.message };
+  const [plan, setPlan] = useState(() => planCache.get(cacheKey) ?? { data: null, error: null });
+  const [planLoading, setPlanLoading] = useState(() => !planCache.has(cacheKey));
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshFailed, setRefreshFailed] = useState(false);
+  const hasPlanRef = useRef(plan.data !== null);
+
+  useEffect(() => {
+    const cached = planCache.get(cacheKey);
+    if (cached) {
+      setPlan(cached);
+      setPlanLoading(false);
+      return;
     }
-  }, [event, resources, target, ownedItems, activeStartDay]);
+
+    let cancelled = false;
+    setRefreshing(hasPlanRef.current);
+    setPlanLoading(!hasPlanRef.current);
+    setRefreshFailed(false);
+
+    fetch("/api/plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventId: event.id,
+        resources,
+        target,
+        ownedItems,
+        confidence: "realistic",
+        overrideStartDay: activeStartDay,
+      }),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        if (cancelled) return;
+        planCache.set(cacheKey, result);
+        if (result.data) hasPlanRef.current = true;
+        setPlan(result);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (hasPlanRef.current) {
+          setRefreshFailed(true);
+        } else {
+          setPlan({ data: null, error: err.message || "Failed to reach plan service" });
+        }
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setPlanLoading(false);
+        setRefreshing(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cacheKey, event.id, resources, target, ownedItems, activeStartDay]);
 
   const [downloading, setDownloading] = useState(false);
   const handleDownload = async () => {
@@ -33,6 +85,14 @@ export default function StepFour() {
       setDownloading(false);
     }
   };
+
+  if (planLoading) {
+    return (
+      <div className="py-16 text-center">
+        <p className="text-sm text-text-muted">Calculating your plan...</p>
+      </div>
+    );
+  }
 
   if (plan.error) {
     return (
@@ -84,7 +144,19 @@ export default function StepFour() {
             <Calendar size={14} />
             Start from Day 1
           </button>
+          {refreshing && (
+            <span className="flex items-center gap-1.5 text-xs text-text-muted">
+              <RefreshCw size={12} className="animate-spin" />
+              Updating…
+            </span>
+          )}
         </div>
+      )}
+
+      {refreshFailed && (
+        <p className="text-center text-xs text-accent-coral mb-4">
+          Couldn&apos;t refresh the plan — showing the last one.
+        </p>
       )}
 
       {/* Draws needed overview (all 3 confidence levels) — hidden for bingo since the card below shows the same info */}
@@ -247,7 +319,7 @@ export default function StepFour() {
         <ScheduleTable
           plan={p}
           event={event}
-          startDay={activeStartDay}
+          startDay={p.startDay ?? activeStartDay}
         />
       )}
 

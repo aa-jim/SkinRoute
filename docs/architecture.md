@@ -2,6 +2,8 @@
 
 The whole planner is driven by one entry point: **`buildPlan()`** in `lib/planOrchestrator.js`. Everything in `lib/` feeds it or formats its output.
 
+**Invocation** — `buildPlan` runs **server-side** in the App Router route handler `app/api/plan/route.js` (`POST /api/plan`); the wizard's Step 4 fetches it with `fetch` and renders a loading state while it computes. The bug-report builder (`lib/reportBug.js`) is the exception — it still imports and calls `buildPlan` directly in the browser bundle, so the engine is only *partially* hidden from the client.
+
 ## Pipeline overview
 
 ```
@@ -74,6 +76,7 @@ Fields present on most plans (per-type differences noted):
 
 | Module | Role |
 |---|---|
+| `app/api/plan/route.js` | **Server-side entry point** — `POST /api/plan`: validates body (`eventId`, `confidence` whitelist, numeric `overrideStartDay`), calls `buildPlan`, returns `{data, error}`. Step 4 fetches this |
 | `lib/planOrchestrator.js` | Entry point, per-type branches, pass search, pack injection, notes, warnings |
 | `lib/calculator.js` | Expected-value math + milestone subtraction; bingo win condition |
 | `lib/optimizer.js` | **3D knapsack** (exact port of a verified C++ solution) — min-BDT combo for a diamond container |
@@ -84,7 +87,7 @@ Fields present on most plans (per-type differences noted):
 | `lib/coaSufficiency.js` | CoA-only sufficiency check — **NOT called by buildPlan** (dead code; only referenced from superseded scheduler functions) |
 | `lib/eventHelpers.js` | `eventDayNow`, `daysLeft`, `deriveStatus`, `urgencyStyle`, type labels/badges. **08:00 UTC (2 PM BDT) is the shared day-reset constant** |
 | `lib/exporter.js` | jsPDF export (standard vs bingo PDF) |
-| `lib/reportBug.js` | Bug-report builder; calls `buildPlan` itself |
+| `lib/reportBug.js` | Bug-report builder; calls `buildPlan` itself (still client-side — the only browser bundle that ships the engine) |
 | `lib/wizardContext.js` | Wizard state (resources, target, ownedItems, startFromToday) |
 
 ## Key mechanics

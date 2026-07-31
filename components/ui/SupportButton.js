@@ -98,7 +98,7 @@ export default function SupportButton() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Support this project"
-        className={`fixed bottom-8 sm:bottom-4 right-4 z-40 flex items-center rounded-full bg-accent-gold text-navy font-heading font-bold shadow-lg shadow-black/30 hover:opacity-90 transition-all duration-300 ${
+        className={`fixed bottom-12 sm:bottom-4 right-4 z-40 flex items-center rounded-full bg-accent-gold text-navy font-heading font-bold shadow-lg shadow-black/30 hover:opacity-90 transition-all duration-300 ${
           expanded ? "gap-1.5 sm:gap-2 px-3 py-2.5 sm:px-4" : "gap-0 p-2.5 sm:gap-2 sm:px-4 sm:py-2.5"
         }`}
       >
