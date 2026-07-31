@@ -6,6 +6,10 @@
 
 ## Recent Changes
 
+### Street Fighter banner case fix (`public/assets/events/street_fighter_2026/`)
+- `banner.JPEG` → `banner.jpeg` (via two-step `git mv` — Windows FS is case-insensitive so direct rename failed) — `events.json` referenced lowercase, Vercel/Linux is case-sensitive → `/_next/image` 400, banner hidden on every deployed profile
+- `docs/events.md` — asset section now warns: filenames must match `events.json` byte-for-byte (case-sensitive on Vercel); use `git mv` for case-only renames
+
 ### CSP nonce middleware (`middleware.js`) — production black screen fix
 - **Symptom**: deployed site (Vercel) showed black screen; landing page flashed for a split second on refresh. Console: `Executing inline script violates ... script-src 'self'` + `Uncaught Error: Connection closed`
 - **Cause**: `next.config.mjs` production CSP had `script-src 'self'` with no nonce/hash — Next.js renders its RSC bootstrap as inline scripts, so hydration never ran and the client error boundary blanked the page. Dev was unaffected (headers production-gated)

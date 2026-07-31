@@ -169,6 +169,7 @@ Shared across all events; only change when Moonton changes BDT prices or the pas
 - Banner: `public/assets/events/{event_id}/banner.jpg|jpeg|png`
 - Target skins: `public/assets/events/{event_id}/target/{skin_id}.png` (or reuse `public/assets/skins/...` paths)
 - Reference live example: `public/assets/events/jujutsu_kaisen_2026/`
+- ⚠️ **Case-sensitive on Vercel (Linux)**: the filename must match the `events.json` path **byte-for-byte** (e.g. `banner.jpeg` ≠ `banner.JPEG`). Windows dev is case-insensitive so mismatches only surface after deploy as a 400/404 on the `/_next/image` request — use `git mv` for case-only renames so git tracks them.
 
 ## 4. New-event checklist
 
