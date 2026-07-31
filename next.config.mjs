@@ -20,6 +20,9 @@ const securityHeaders = [
 const nextConfig =
   process.env.NODE_ENV === "production"
     ? {
+        // Cloudflare Pages has no built-in /_next/image optimizer (Cloudflare
+        // Images is paid) — serve the small event assets raw instead of a 400.
+        images: { unoptimized: true },
         async headers() {
           return [{ source: "/(.*)", headers: securityHeaders }];
         },
