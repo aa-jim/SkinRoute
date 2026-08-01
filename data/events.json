@@ -387,6 +387,7 @@
       "id": "exorcists_2026",
       "name": "Exorcists",
       "type": "themed_crest",
+      "card_label": "Exorcists",
       "start_date": "2026-08-28",
       "end_date": null,
       "duration_days": 31,
