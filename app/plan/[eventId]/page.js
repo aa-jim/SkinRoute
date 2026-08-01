@@ -1,12 +1,12 @@
 import Navbar from "@/components/layout/Navbar";
-import eventsData from "@/data/events.json";
+import { getEvent } from "@/lib/eventRepo";
 import { notFound } from "next/navigation";
 import { WizardProvider } from "@/lib/wizardContext";
 import WizardShell from "@/components/wizard/WizardShell";
 
 export default async function PlanPage({ params }) {
   const { eventId } = await params;
-  const event = eventsData.events.find((e) => e.id === eventId);
+  const event = getEvent(eventId);
 
   if (!event) {
     notFound();

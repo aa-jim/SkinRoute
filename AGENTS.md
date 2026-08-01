@@ -9,6 +9,11 @@
 
 ## Recent Changes
 
+### Collector event: recurring monthly dates (auto-rollover)
+- `data/events.json` — collector (`exquisite_collection`) now `"recurring": { "pattern": "monthly" }`, no static dates; `lib/eventHelpers.js` `resolveEventDates()` computes the window from the current in-game month at the 2PM BDT (08:00 UTC) boundary; `lib/eventRepo.js` (`getEvents`/`getEvent`) re-resolves **per call** so long-lived Workers isolates never serve a stale month; 3 import sites swapped (`app/page.js`, `app/api/plan/route.js`, `app/plan/[eventId]/page.js`)
+- Explicit `start_date`/`end_date` in JSON always override the pattern (escape hatch for deviant months); StepFour planCache key now includes the resolved `start_date` (no cross-month cached plans)
+- Monthly manual work is now **content only**: `shop_items` targets + `prize_pool` (quantities/rules constant) — see `docs/events.md` §1b
+
 ### Cloudflare deployment (primary host, free plan)
 - `@opennextjs/cloudflare` adapter + `wrangler.jsonc` + `open-next.config.ts` + `build:cf` script — site live at `https://skinroute.abdullahaljim2.workers.dev/`; Vercel (`skin-route.vercel.app`) kept as parallel fallback (both auto-deploy on push)
 - `next.config.mjs` — `images: { unoptimized: true }` (Cloudflare's optimizer is paid; assets served raw)
