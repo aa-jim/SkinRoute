@@ -6,7 +6,7 @@ import StepOne from "@/components/wizard/StepOne";
 import StepTwo from "@/components/wizard/StepTwo";
 import StepThree from "@/components/wizard/StepThree";
 import StepFour from "@/components/wizard/StepFour";
-import { EVENT_TYPE_LABELS, EVENT_TYPE_BADGE } from "@/lib/eventHelpers";
+
 
 const STEP_COMPONENTS = {
   1: StepOne,
@@ -36,11 +36,6 @@ export default function WizardShell() {
         {/* Header bar */}
         <div className="flex items-center justify-between px-5 sm:px-8 py-4 sm:py-5 bg-navy border-b border-border-subtle">
           <div className="flex items-center gap-3 min-w-0">
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${EVENT_TYPE_BADGE[event.type]}`}
-            >
-              {EVENT_TYPE_LABELS[event.type] ?? event.type}
-            </span>
             <h1 className="font-heading text-lg sm:text-2xl font-bold text-text-primary uppercase tracking-wide truncate">
               {event.name}
             </h1>
