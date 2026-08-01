@@ -9,6 +9,14 @@
 
 ## Recent Changes
 
+### Event card progress bar: linear time progress (all events)
+- `lib/eventHelpers.js` — `urgencyStyle(days)` (stepped 20/40/70/92% fills keyed to days-left buckets, so any event ≤14 days from ending looked ~halfway full and identical to a just-started one) replaced by:
+  - `eventProgress(event)` — true linear fill: elapsed / total window (08:00 UTC anchors, closes 2PM BDT day after `end_date`), clamped 0–100, `null` when dates missing (coming-soon cards keep the gray 100% look)
+  - `progressColor(pct)` — smooth green→red `hsl` sweep keyed to elapsed time (inline style, no Tailwind dynamic classes)
+  - `urgencyLabel(days)` — countdown text only ("N days left" / "Coming soon")
+- `components/ui/EventCard.jsx` — bar width = `progress ?? 100`, `backgroundColor = progressColor(progress)`, label from `urgencyLabel`
+- Docs updated: `docs/features.md` (card status strip), `docs/architecture.md` (module map row)
+
 ### Collector event: recurring monthly dates (auto-rollover)
 - `data/events.json` — collector (`exquisite_collection`) now `"recurring": { "pattern": "monthly" }`, no static dates; `lib/eventHelpers.js` `resolveEventDates()` computes the window from the current in-game month at the 2PM BDT (08:00 UTC) boundary; `lib/eventRepo.js` (`getEvents`/`getEvent`) re-resolves **per call** so long-lived Workers isolates never serve a stale month; 3 import sites swapped (`app/page.js`, `app/api/plan/route.js`, `app/plan/[eventId]/page.js`)
 - Explicit `start_date`/`end_date` in JSON always override the pattern (escape hatch for deviant months); StepFour planCache key now includes the resolved `start_date` (no cross-month cached plans)

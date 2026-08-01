@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { EVENT_TYPE_LABELS, EVENT_TYPE_BADGE, daysLeft, urgencyStyle, deriveStatus } from "@/lib/eventHelpers";
+import { EVENT_TYPE_LABELS, EVENT_TYPE_BADGE, daysLeft, eventProgress, progressColor, urgencyLabel, deriveStatus } from "@/lib/eventHelpers";
 
 export default function EventCard({ event }) {
   const [imageFailed, setImageFailed] = useState(false);
   const isComingSoon = deriveStatus(event) === "coming_soon";
+  const progress = eventProgress(event);
   const days = daysLeft(event.end_date);
-  const urgency = urgencyStyle(days);
 
   const dateLabel = isComingSoon
     ? "Coming Soon"
@@ -61,11 +61,11 @@ export default function EventCard({ event }) {
         <p className="text-sm text-white/85 mb-3">{dateLabel}</p>
         <div className="h-1.5 w-full rounded-full bg-black/50 overflow-hidden mb-2">
           <div
-            className={`h-full rounded-full ${urgency.color}`}
-            style={{ width: `${urgency.fillPct}%` }}
+            className="h-full rounded-full"
+            style={{ width: `${progress ?? 100}%`, backgroundColor: progressColor(progress) }}
           />
         </div>
-        <p className="text-sm font-medium text-white/90">{urgency.label}</p>
+        <p className="text-sm font-medium text-white/90">{urgencyLabel(days)}</p>
       </div>
     </div>
   );
