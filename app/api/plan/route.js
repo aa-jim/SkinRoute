@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildPlan } from "@/lib/planOrchestrator";
-import eventsData from "@/data/events.json";
+import { getEvent } from "@/lib/eventRepo";
 
 const CONFIDENCE_LEVELS = ["optimistic", "realistic", "worst"];
 
@@ -22,7 +22,7 @@ export async function POST(request) {
     return NextResponse.json({ error: "overrideStartDay must be a number" }, { status: 400 });
   }
 
-  const event = eventsData.events.find((e) => e.id === eventId);
+  const event = getEvent(eventId);
   if (!event) {
     return NextResponse.json({ error: "Unknown eventId" }, { status: 400 });
   }

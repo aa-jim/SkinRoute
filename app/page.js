@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import EventCarousel from "@/components/ui/EventCarousel";
-import eventsData from "@/data/events.json";
+import { getEvents } from "@/lib/eventRepo";
 import { deriveStatus } from "@/lib/eventHelpers";
 
 // Dynamic on purpose: (1) the CSP nonce comes from a per-request header
@@ -10,7 +10,7 @@ import { deriveStatus } from "@/lib/eventHelpers";
 export const dynamic = "force-dynamic";
 
 export default function Home() {
-  const events = (eventsData.events ?? [])
+  const events = getEvents()
     .filter((e) => e.status !== "hidden" && deriveStatus(e) !== "ended")
     .sort((a, b) => {
       const aStatus = deriveStatus(a);

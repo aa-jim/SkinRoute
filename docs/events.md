@@ -16,8 +16,9 @@ Every MLBB event is data-driven. Adding the next event = adding one JSON object 
 | `name` | string | ✅ | Display name (nav, wizard header, PDF). |
 | `card_label` | string | optional | Short badge label (e.g. "Aspirants"). Falls back to `name`. |
 | `type` | string | ✅ | `"collector"`, `"themed_crest"`, `"bingo"` (also accepted: `"legend"`, `"special"` → treated as themed crest). **Drives everything.** |
-| `start_date` / `end_date` | string | ✅ | `YYYY-MM-DD`. Day resets at 2 PM BDT (08:00 UTC); an event ending on `end_date` is live until 2 PM BDT the next day. |
-| `duration_days` | number | ✅ | Event length in days. Must equal the calendar span. |
+| `start_date` / `end_date` | string | see note | `YYYY-MM-DD`. Day resets at 2 PM BDT (08:00 UTC); an event ending on `end_date` is live until 2 PM BDT the next day. **Not needed for recurring events** (see below). |
+| `recurring` | object | optional | `{ "pattern": "monthly" }` — the event's window is **computed at request time** from the current in-game month (2 PM BDT boundary), so it rolls over automatically with zero edits. Explicit `start_date`/`end_date` in the JSON always override the pattern. |
+| `duration_days` | number | ✅ | Event length in days. Must equal the calendar span. For recurring events this is resolved automatically (28–31); the JSON value is only a fallback. |
 | `status` | string | ✅ | Only `"hidden"` and `"ended"` matter to code (kill-switches). `"active"` / `"coming soon"` are informational. |
 | `banner_gradient` | string | ✅ | Tailwind gradient classes for the card tint (e.g. `"from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]"`). |
 | `text_panel_color` | string | ✅ | Hex color for the card text panel tint. |
@@ -152,6 +153,20 @@ Task types (all with `tokens`): `login`, `recharge_any`, `recharge_50`, `recharg
   ]
 }
 ```
+
+## 1b. Recurring (monthly) events — the collector cycle
+
+The collector ("Exquisite Collection") runs every calendar month (1st → last day) and must **never carry static dates**. Use:
+
+```json
+"recurring": { "pattern": "monthly" }
+```
+
+with **no** `start_date`/`end_date`. `lib/eventHelpers.js` → `resolveEventDates()` computes the window at request time from the current in-game month (2 PM BDT / 08:00 UTC boundary — the site flips the moment the game does), and `lib/eventRepo.js` re-resolves on every call so long-lived Workers isolates never serve a stale month. `deriveStatus`, `daysLeft`, `eventDayNow` (wizard's "Start Today"), PDF/table date labels, and `/api/plan` all pick up the resolved dates automatically.
+
+- **Monthly edits still needed**: only the rotating content — `shop_items` (target skins + `outfit1_variant`s) and `prize_pool` (skin group ids, dup values). Quantities/rules (`milestones`, `premium_supply` phases, draw costs, `surprise_tasks`) stay constant and must not be touched.
+- **Escape hatch**: if a month ever deviates from the 1st→last-day pattern, add explicit `start_date`/`end_date` temporarily — they override the recurring pattern (remove them after the month ends).
+- StepFour's plan cache keys include the resolved `start_date`, so a cached plan never crosses a month boundary.
 
 ## 2. `packs.json` — packs & passes
 

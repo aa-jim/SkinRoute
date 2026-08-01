@@ -16,7 +16,9 @@ export default function StepFour() {
 
   const rawToday = event.start_date ? todayEventDay(event) : 1;
   const activeStartDay = startFromToday ? Math.max(1, rawToday) : 1;
-  const cacheKey = JSON.stringify([event.id, resources, target, ownedItems, activeStartDay]);
+  // event.start_date in the key: a recurring (monthly collector) event resolves
+  // to a new window each month, so a cached plan must never cross a month boundary.
+  const cacheKey = JSON.stringify([event.id, event.start_date, resources, target, ownedItems, activeStartDay]);
 
   const [plan, setPlan] = useState(() => planCache.get(cacheKey) ?? { data: null, error: null });
   const [planLoading, setPlanLoading] = useState(() => !planCache.has(cacheKey));

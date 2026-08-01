@@ -4,13 +4,12 @@
       "id": "exquisite_collection",
       "name": "Exquisite Collection",
       "type": "collector",
-      "start_date": "2026-07-01",
-      "end_date": "2026-07-31",
-      "duration_days": 31,
+      "recurring": { "pattern": "monthly" },
+      "duration_days": 30,
       "status": "active",
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
       "text_panel_color": "#412814",
-      "image": "/assets/events/exquisite_collection/banner.jpg",
+      "image": "/assets/events/exquisite_collection/banner.webp",
       "draw_cost_1x": 50,
       "draw_cost_10x": 500,
       "discount_draw_cost": {
@@ -39,92 +38,92 @@
       ],
       "shop_items": [
         {
-          "id": "helcurt_kaiju_of_the_deep",
-          "name": "Kaiju of the Deep",
-          "hero": "Helcurt",
+          "id": "balmond_vulcan_lionheart",
+          "name": "Vulcan Lionheart",
+          "hero": "Balmond",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 720,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/helcurt_kaiju_of_the_deep.jpg"
+          "image": "/assets/skins/collector/balmond_vulcan_lionheart.jpg"
         },
         {
-          "id": "lesley_falcon_mistress",
-          "name": "Falcon Mistress",
-          "hero": "Lesley",
+          "id": "cecilion_crimson_wings",
+          "name": "Crimson Wings",
+          "hero": "Cecilion",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/lesley_falcon_mistress.jpg"
+          "image": "/assets/skins/collector/cecilion_crimson_wings.jpg"
         },
         {
-          "id": "aldous_realm_watcher",
-          "name": "Realm Watcher",
-          "hero": "Aldous",
+          "id": "natan_tidal_lord",
+          "name": "Tidal Lord",
+          "hero": "Natan",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/aldous_realm_watcher.jpg"
+          "image": "/assets/skins/collector/natan_tidal_lord.jpg"
         },
         {
-          "id": "aurora_veil_of_the_celestials",
-          "name": "Veil of the Celestials",
-          "hero": "Aurora",
+          "id": "valentina_celestial_judicator",
+          "name": "Celestial Judicator",
+          "hero": "Valentina",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/aurora_veil_of_the_celestials.jpg"
+          "image": "/assets/skins/collector/valentina_celestial_judicator.jpg"
         },
         {
-          "id": "esmeralda_light_envoy",
-          "name": "Light Envoy",
-          "hero": "Esmeralda",
+          "id": "silvanna_queen_frost",
+          "name": "Queen Frost",
+          "hero": "Silvanna",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/esmeralda_light_envoy.jpg"
+          "image": "/assets/skins/collector/silvanna_queen_frost.jpg"
         },
         {
-          "id": "franco_valhalla_ruler",
-          "name": "Valhalla Ruler",
-          "hero": "Franco",
+          "id": "saber_onimaru",
+          "name": "Onimaru",
+          "hero": "Saber",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/franco_valhalla_ruler.jpg"
+          "image": "/assets/skins/luckybox/saber_onimaru.jpg"
         },
         {
-          "id": "fanny_skylark",
-          "name": "Skylark",
-          "hero": "Fanny",
+          "id": "lancelot_royal_matador",
+          "name": "Royal Matador",
+          "hero": "Lancelot",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/fanny_skylark.jpg"
+          "image": "/assets/skins/luckybox/lancelot_royal_matador.jpg"
         },
         {
-          "id": "martis_god_of_war",
-          "name": "God of War",
-          "hero": "Martis",
+          "id": "odette_mermaid_princess",
+          "name": "Mermaid Princess",
+          "hero": "Odette",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/martis_god_of_war.jpg"
+          "image": "/assets/skins/luckybox/odette_mermaid_princess.jpg"
         }
       ],
       "prize_pool": [
@@ -135,9 +134,9 @@
           "drop_rate": 0.0008,
           "dup_value": 240,
           "skin_ids": [
-            "helcurt_kaiju_of_the_deep", "lesley_falcon_mistress", "aldous_realm_watcher",
-            "aurora_veil_of_the_celestials", "esmeralda_light_envoy",
-            "franco_valhalla_ruler", "fanny_skylark", "martis_god_of_war"
+            "balmond_vulcan_lionheart", "lesley_falcon_mistress", "aldous_realm_watcher",
+            "valentina_celestial_judicator", "silvanna_queen_frost",
+            "saber_onimaru", "lancelot_royal_matador", "odette_mermaid_princess"
           ]
         },
         { "id": "special_skin", "name": "Special Skin", "type": "special", "count": 3, "drop_rate": 0.009, "crest_value": 45, "is_skin": true },
