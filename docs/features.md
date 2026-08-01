@@ -9,7 +9,7 @@ Everything a user can do in SkinRoute, page by page. Event-type differences (col
 - Sorting: `coming_soon` events always come after `active` ones; within a status, by `start_date` ascending.
 - **Event card**: banner image (falls back to hidden image if it fails to load), name, type badge, gradient + tinted text panel from the event's `banner_gradient` / `text_panel_color`, and a status strip:
   - `coming_soon` → dimmed card, not clickable, "Coming soon"
-  - `active` → clickable, links to `/plan/{eventId}`, shows "N days left" with an urgency color bar (≤3 days orange, ≤7 lime, ≤14 green, else green), and "Ends on {Month Day}".
+  - `active` → clickable, links to `/plan/{eventId}`, shows "N days left" with a **linear time-progress bar** (fill = elapsed / total window, e.g. day 15 of 30 → 50%), color sweeps green→red as the event nears its end (smooth `hsl` ramp), and "Ends on {Month Day}".
 - Mobile dot indicators under the carousel (one per event, scrolls the card into view).
 - Day statuses are computed with the 2 PM BDT reset boundary (08:00 UTC) — an event shown as ending on day X stays live until 2 PM BDT of day X+1.
 

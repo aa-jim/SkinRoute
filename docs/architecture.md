@@ -85,7 +85,7 @@ Fields present on most plans (per-type differences noted):
 | `lib/idealSchedule.themedCrest.js` | Themed-crest/legend/special simulator (CommonJS) |
 | `lib/idealSchedule.aspirants.js` | Aspirants (bingo) simulator (ESM) |
 | `lib/coaSufficiency.js` | CoA-only sufficiency check — **NOT called by buildPlan** (dead code; only referenced from superseded scheduler functions) |
-| `lib/eventHelpers.js` | `eventDayNow`, `daysLeft`, `deriveStatus`, `urgencyStyle`, type labels/badges. **08:00 UTC (2 PM BDT) is the shared day-reset constant** |
+| `lib/eventHelpers.js` | `eventDayNow`, `daysLeft`, `deriveStatus`, `eventProgress`, `progressColor`, `urgencyLabel`, type labels/badges. **08:00 UTC (2 PM BDT) is the shared day-reset constant** |
 | `lib/exporter.js` | jsPDF export (standard vs bingo PDF) |
 | `lib/reportBug.js` | Bug-report builder; calls `buildPlan` itself (still client-side — the only browser bundle that ships the engine) |
 | `lib/wizardContext.js` | Wizard state (resources, target, ownedItems, startFromToday) |
