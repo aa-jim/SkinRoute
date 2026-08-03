@@ -17,6 +17,20 @@ const securityHeaders = [
   },
 ];
 
+// Dynamic pages are force-dynamic (CSP nonce + "today"-dependent statuses),
+// so every visit re-renders on the Worker. Edge-cache the HTML instead:
+// repeat visitors (crawlers, re-shares, back-navigations) get a 60s-fresh,
+// 5-min stale-while-revalidate copy from the CDN, which keeps the free
+// Workers plan under its 100k requests/day cap during viral traffic days.
+// The CSP nonce stays consistent inside the cached response, and these pages
+// have no POST forms, so caching is safe.
+const htmlCacheHeaders = [
+  {
+    key: "Cache-Control",
+    value: "public, s-maxage=60, stale-while-revalidate=300",
+  },
+];
+
 const nextConfig =
   process.env.NODE_ENV === "production"
     ? {
@@ -24,7 +38,12 @@ const nextConfig =
         // Images is paid) — serve the small event assets raw instead of a 400.
         images: { unoptimized: true },
         async headers() {
-          return [{ source: "/(.*)", headers: securityHeaders }];
+          return [
+            { source: "/(.*)", headers: securityHeaders },
+            { source: "/", headers: htmlCacheHeaders },
+            { source: "/help", headers: htmlCacheHeaders },
+            { source: "/plan/:path*", headers: htmlCacheHeaders },
+          ];
         },
       }
     : {};
