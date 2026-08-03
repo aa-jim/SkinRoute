@@ -10,6 +10,7 @@ SkinRoute plans the cheapest path to a Mobile Legends: Bang Bang (MLBB) event sk
 | [architecture.md](architecture.md) | How the planning engine works: `buildPlan` pipeline (server-side via `POST /api/plan`), simulators, pack optimizer, plan object shape, key mechanics |
 | [events.md](events.md) | **Baseline for adding a new event**: `events.json` / `packs.json` schema, what each field does, asset layout, step-by-step checklist |
 | [development.md](development.md) | Developer setup, scripts, environment variables, test harness, deployment (Vercel), security posture |
+| [global-regions.md](global-regions.md) | **Planned** — multi-currency pack pricing + Step 0 region picker; blocked on price data from owner |
 
 ## Quick facts
 

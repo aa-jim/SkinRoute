@@ -54,8 +54,10 @@ export default function StepFour() {
       .then((res) => res.json())
       .then((result) => {
         if (cancelled) return;
-        planCache.set(cacheKey, result);
-        if (result.data) hasPlanRef.current = true;
+        if (result.data) {
+          planCache.set(cacheKey, result);
+          hasPlanRef.current = true;
+        }
         setPlan(result);
       })
       .catch((err) => {
