@@ -45,16 +45,25 @@ export default function ReportModal({ open, onClose, context }) {
           ...report.fields,
         }),
       });
-      const data = await res.json();
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!res.ok || !contentType.includes("application/json")) {
+        throw new Error("The form service returned an error page. Please try again.");
+      }
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("The form service returned an unreadable response. Please try again.");
+      }
       if (data?.success) {
         setStatus(STATUS.success);
       } else {
         setStatus(STATUS.error);
         setErrorMsg(data?.message ?? "The form service rejected the submission.");
       }
-    } catch {
+    } catch (err) {
       setStatus(STATUS.error);
-      setErrorMsg("Network error \u2014 could not reach the form service.");
+      setErrorMsg(err?.message ?? "Network error \u2014 could not reach the form service.");
     }
   };
 

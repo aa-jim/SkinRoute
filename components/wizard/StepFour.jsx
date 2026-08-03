@@ -24,6 +24,7 @@ export default function StepFour() {
   const [planLoading, setPlanLoading] = useState(() => !planCache.has(cacheKey));
   const [refreshing, setRefreshing] = useState(false);
   const [refreshFailed, setRefreshFailed] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const hasPlanRef = useRef(plan.data !== null);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function StepFour() {
 
     fetch("/api/plan", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({
         eventId: event.id,
         resources,
@@ -51,7 +52,15 @@ export default function StepFour() {
         overrideStartDay: activeStartDay,
       }),
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const contentType = res.headers.get("content-type") ?? "";
+        if (!res.ok || !contentType.includes("application/json")) {
+          throw new Error(
+            `The plan service came back with an unexpected response (${res.status}). Please try again in a moment.`
+          );
+        }
+        return res.json();
+      })
       .then((result) => {
         if (cancelled) return;
         if (result.data) {
@@ -65,7 +74,13 @@ export default function StepFour() {
         if (hasPlanRef.current) {
           setRefreshFailed(true);
         } else {
-          setPlan({ data: null, error: err.message || "Failed to reach plan service" });
+          setPlan({
+            data: null,
+            error:
+              err instanceof SyntaxError
+                ? "The plan service returned an unreadable response. Please try again."
+                : err?.message || "Failed to reach plan service",
+          });
         }
       })
       .finally(() => {
@@ -77,7 +92,7 @@ export default function StepFour() {
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, event.id, resources, target, ownedItems, activeStartDay]);
+  }, [cacheKey, event.id, resources, target, ownedItems, activeStartDay, retryKey]);
 
   const [downloading, setDownloading] = useState(false);
   const handleDownload = async () => {
@@ -104,13 +119,23 @@ export default function StepFour() {
         <AlertTriangle className="mx-auto mb-3 text-accent-coral" size={28} />
         <p className="text-text-primary font-medium mb-1">Can&apos;t calculate a plan yet</p>
         <p className="text-sm text-text-muted mb-6">{plan.error}</p>
-        <button
-          type="button"
-          onClick={() => setCurrentStep(2)}
-          className="px-5 py-2.5 rounded-lg bg-accent-blue text-white font-heading font-bold hover:opacity-90 transition-opacity"
-        >
-          ← Adjust plan
-        </button>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setRetryKey((k) => k + 1)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent-gold text-navy font-heading font-bold hover:opacity-90 transition-opacity"
+          >
+            <RefreshCw size={15} />
+            Try again
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentStep(2)}
+            className="px-5 py-2.5 rounded-lg bg-accent-blue text-white font-heading font-bold hover:opacity-90 transition-opacity"
+          >
+            ← Adjust plan
+          </button>
+        </div>
       </div>
     );
   }
@@ -283,7 +308,7 @@ export default function StepFour() {
           ) : (
             <SummaryCard
               label="Diamonds Needed"
-              value={(p.totalDiamondsForPlan ?? 0).toLocaleString()}
+              value={(p.daySchedule?.totals?.dia ?? 0).toLocaleString()}
               icon={Gem}
               accent="blue"
             />
