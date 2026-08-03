@@ -19,9 +19,41 @@ const CSP_DIRECTIVES = [
   "form-action 'self' https://api.web3forms.com",
 ].join("; ");
 
+// Known AI-training / SEO-scraper crawlers get a 403 BEFORE any render work.
+// Matches against the lowercased UA — the list stays short so the substring
+// scan costs nothing on normal human traffic. (Googlebot/Bing/Facebook are
+// intentionally NOT here — we want indexing and link-preview crawlers.)
+const BLOCKED_BOT_UA = [
+  "bytespider",
+  "claudebot",
+  "claude-web",
+  "gptbot",
+  "chatgpt-user",
+  "ccbot",
+  "amazonbot",
+  "perplexitybot",
+  "meta-externalagent",
+  "google-extended",
+  "petalbot",
+  "omgili",
+  "cohere-ai",
+  "anthropic-ai",
+  "dataforseobot",
+  "semrushbot",
+  "ahrefsbot",
+  "diffbot",
+  "seekrbot",
+  "magpie-crawler",
+];
+
 export function middleware(request) {
   if (process.env.NODE_ENV !== "production") {
     return NextResponse.next();
+  }
+
+  const ua = (request.headers.get("user-agent") ?? "").toLowerCase();
+  if (ua && BLOCKED_BOT_UA.some((bot) => ua.includes(bot))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const nonce = crypto.randomUUID().replaceAll("-", "");

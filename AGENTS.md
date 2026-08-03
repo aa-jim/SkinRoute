@@ -9,6 +9,34 @@
 
 ## Recent Changes
 
+### Site-down message: branded error pages (`error.js` + `global-error.js`)
+- `app/error.js` — client error boundary for `/`, `/help`, `/plan/*`: page render/SSR failures now show a branded "flood of players" message with a **Try again** button (`reset()`) and a link to the Vercel mirror (`skin-route.vercel.app`) instead of Next's default error page. Dev-only echo of `error.message`.
+- `app/global-error.js` — root-layout boundary for the blank-screen worst case; supplies its own `<html>/<body>` (layout font CSS vars not guaranteed, so no `font-heading`/`font-body` there), same copy/actions.
+- **Scope limit**: on `*.workers.dev` free, a *fully* over-quota Worker (edge 429/1027/1102 before any code runs) still shows Cloudflare's default error page — not custom in the app; full-down custom pages need a custom domain later. `/api/plan` keeps its own client-side error states (unchanged).
+- Docs: `docs/features.md` (error page), updated deployment docs reference this too.
+
+### Viral-day hardening: bots + capacity (free Workers plan)
+- **Symptom**: FB group post (71k members, 130+ shares) → 138k requests/24h vs ~385 the prior day; brief outages + 664 worker errors during peaks. Diagnosis: mostly **legit viral traffic**, not an attack — free Workers caps at 100k requests/day, so the day blew the budget (throttle/error windows). Old `skinroute.abdullahaljim2.workers.dev` URL in docs was WRONG (NXDOMAIN, caused a false "site down" scare) — real hostname is `skinroute.events-mlbb.workers.dev` (account subdomain `events-mlbb`)
+- `next.config.mjs` — HTML CDN cache on `/`, `/help`, `/plan/*`: `Cache-Control: public, s-maxage=60, stale-while-revalidate=300` (repeat visitors get an edge copy; cached response carries its own baked CSP nonce — safe, no POST forms on those pages)
+- `app/api/plan/route.js` — in-worker per-IP rate limit (sliding window 30 req/60s, keyed by `cf-connecting-ip` → 429 + Retry-After; size-capped Map). Edge rate limiting isn't viable on free (10k req/month budget); buildPlan is the only compute-heavy unauthenticated route
+- `public/robots.txt` — disallow AI crawlers (GPTBot, ClaudeBot, CCBot, Amazonbot, Bytespider, PerplexityBot, meta-externalagent, Google-Extended, SEO bots, …); search engines + FB preview crawler allowed
+- `middleware.js` — `BLOCKED_BOT_UA` list returns 403 before render (same UA families as robots.txt; cheap substring scan, short list)
+- `public/_headers` — `/assets/*` now `Cache-Control: public,max-age=604800` (non-hashed assets; 7 days so banner swaps propagate) alongside the immutable `/_next/static` rule
+- Dashboard to-do (free): Bot Fight Mode + Browser Integrity Check ON, usage alert before the 100k/day cap
+- Docs updated: `docs/development.md` (correct URL, free-plan 100k/day cap note, new "Traffic management" section, API rate limit)
+
+
+### JJK Step 4 "reading 'notes'" fix: empty-window crash + sticky error cache
+- **Symptom**: planning a skin showed "Can't calculate a plan yet — Cannot read properties of undefined (reading 'notes')" with **no `/api/plan` network request** (Network tab empty)
+- **Root cause 1 (crash)**: all three simulators did unguarded `finalRow.notes.push(...)` where `finalRow = sim.rows[sim.rows.length - 1]`; when `startDay > duration_days` (event window already over — stale/broken `start_date` in a long-running dev server's compiled JSON) the day loop never runs → empty rows → `finalRow` undefined → the exact error above
+- **Root cause 2 (sticky)**: `StepFour.jsx` module-level `planCache` cached **error responses** too (`planCache.set(cacheKey, result)` unconditionally), so a transient server error re-rendered forever with no refetch — looked target-specific (Gojo) purely because that cache key was poisoned first
+- **Fix**:
+  - `lib/idealSchedule.themedCrest.js` / `lib/idealSchedule.collector.js` / `lib/idealSchedule.aspirants.js` — every `finalRow.notes/draws/diaSpent` mutation block now guarded with `finalRow &&` (empty rows → empty schedule + zero shortfall, no crash; all math identical when rows exist)
+  - `lib/planOrchestrator.js` — `buildPlan` throws a clear error (`Event window has already ended — no planable days left`) when `startDay > duration_days`; note-injection spots (`day1Row`, `lastRow`, themed-crest `row`) guarded (`if (row)`) — bingo branch already had `if (!row) continue`
+  - `components/wizard/StepFour.jsx` — `planCache.set` only when `result.data` exists, so failed responses never stick across visits
+- **User-side remedy**: restart the dev server (it predates the `events.json` edit — stale compiled JSON) + hard-refresh the browser to clear the in-memory cached error
+- Verified: all 4 JJK skins → identical plans (121 draws, 30/29 rows) to pre-fix; 300-iteration fuzz 0 fails; edge case returns the clear error; `next lint` clean
+
 ### Event card progress bar: linear time progress (all events)
 - `lib/eventHelpers.js` — `urgencyStyle(days)` (stepped 20/40/70/92% fills keyed to days-left buckets, so any event ≤14 days from ending looked ~halfway full and identical to a just-started one) replaced by:
   - `eventProgress(event)` — true linear fill: elapsed / total window (08:00 UTC anchors, closes 2PM BDT day after `end_date`), clamped 0–100, `null` when dates missing (coming-soon cards keep the gray 100% look)
@@ -23,7 +51,7 @@
 - Monthly manual work is now **content only**: `shop_items` targets + `prize_pool` (quantities/rules constant) — see `docs/events.md` §1b
 
 ### Cloudflare deployment (primary host, free plan)
-- `@opennextjs/cloudflare` adapter + `wrangler.jsonc` + `open-next.config.ts` + `build:cf` script — site live at `https://skinroute.abdullahaljim2.workers.dev/`; Vercel (`skin-route.vercel.app`) kept as parallel fallback (both auto-deploy on push)
+- `@opennextjs/cloudflare` adapter + `wrangler.jsonc` + `open-next.config.ts` + `build:cf` script — site live at `https://skinroute.events-mlbb.workers.dev/`; Vercel (`skin-route.vercel.app`) kept as parallel fallback (both auto-deploy on push)
 - `next.config.mjs` — `images: { unoptimized: true }` (Cloudflare's optimizer is paid; assets served raw)
 - `public/_headers` — immutable caching for `/_next/static/*` (ignored by Vercel)
 - **Traps hit during setup** (see `docs/development.md` → Cloudflare section): wrangler needs Workers-style `main` + `assets` (Pages-style `pages_build_output_dir` alone fails with "Missing entry-point"); the `WORKER_SELF_REFERENCE` service binding must reference the exact project name `skinroute` (CI overrides config `name` but not the binding → `[10143]`)

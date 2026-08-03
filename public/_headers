@@ -1,2 +1,7 @@
 /_next/static/*
   Cache-Control: public,max-age=31536000,immutable
+
+# Event assets are NOT content-hashed, so 7 days (not immutable) lets a banner
+# swap propagate within the month while still soaking up crawler re-fetches.
+/assets/*
+  Cache-Control: public,max-age=604800

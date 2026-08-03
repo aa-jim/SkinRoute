@@ -2,6 +2,10 @@
 
 Everything a user can do in SkinRoute, page by page. Event-type differences (collector / themed crest / bingo) are called out where they matter.
 
+## Global
+
+- **Error pages** (`app/error.js` + `app/global-error.js`): if a page fails to render (e.g. the host is straining under a traffic spike), visitors see a branded "Looks like we're getting a flood of players right now" screen with a **Try again** button and a link to the Vercel mirror (`skin-route.vercel.app`) instead of Next.js's default error page. Note: on a totally over-quota workers.dev free host, Cloudflare's own error page still shows first (not customizable without a custom domain).
+
 ## Home page (`/`)
 
 - Hero + event carousel built from `data/events.json`.
