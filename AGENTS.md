@@ -9,6 +9,18 @@
 
 ## Recent Changes
 
+### Step 1 pass explainer + pass/diamond consistency warning
+- Bug reporter had "25 dia + 5 weekly passes (35 days remaining)" — impossible-looking because owning 5 passes already paid 5×80 = 400 instant dia into their wallet. The wizard never explained pass payouts, so users mis-enter Diamonds vs owned passes.
+- `components/wizard/StepOne.jsx` — when `weeklyPasses > 0`: pass explainer under the stepper (each pass = 80 dia instantly + 20 dia/day for 7 days, queued sequentially, max 10; days remaining = total across all passes, per in-game Passes screen) + non-blocking `accent-coral` warning when a Diamonds value is entered below `passes × 80`: "N passes already gave you N×80 dia (80 × N) instantly — include them in your Diamonds."
+- Non-blocking by design: both readings are valid (user spent those 400 dia, or is planning a future purchase — the plan then adds 80/pass on the purchase day itself).
+- Docs updated: `docs/features.md` (Step 1).
+
+### Collector first-post-window day fix + summary "Diamonds Needed" semantics
+- **Bug (user report, Aug 3)**: collector plan showed "No draw (insufficient balance)" on the day right after the premium-supply window closed even with plenty of dia/CoA (repro: 336 dia + 1065 CoA → D8 had 301 dia/1125 CoA left). Cause: `simulateCollectorFixedShape` set `transitionedToday = true` in the `day > windowEnd` branch, so the post-window draw block was skipped that day and an empty note list defaulted to the misleading "insufficient balance" line. The day also lost its draw (Starlight shifted a day later). Fix: drop `transitionedToday` there — the first post-window day now runs the normal CoA `1x daily` draw (+ Starlight as soon as affordable).
+- **Summary card** ("Diamonds Needed", themed crest): was `totalDiamondsForPlan` = starting dia + recharge dia, which overstates when the user already holds a large balance (test: 1000 dia input, start Day 1 → card 2,834 vs schedule total 1,775; pass overshoot made recharge huge). Now shows `daySchedule.totals.dia` = the **total dia the plan actually spends** — always equals the schedule's "Total from Day X" footer. Applies in `StepFour.jsx` and PDF `exporter.js` (collector already used totals.dia; bingo keeps `totalDiamondsForPlan`).
+- **API robustness**: StepFour's `/api/plan` fetch now checks `res.ok` + `Content-Type: application/json` before `res.json()` and maps parse failures to friendly copy — a Cloudflare/edge HTML error page can no longer surface as raw `Unexpected token '<' ... is not valid JSON`. Error screen gains a "Try again" button (`retryKey` re-runs the effect). `ReportModal` gets the same content-type guard around the Web3Forms response.
+- Docs updated: `docs/features.md` (Step 4 error/retry + summary-card semantics).
+
 ### Site-down message: branded error pages (`error.js` + `global-error.js`)
 - `app/error.js` — client error boundary for `/`, `/help`, `/plan/*`: page render/SSR failures now show a branded "flood of players" message with a **Try again** button (`reset()`) and a link to the Vercel mirror (`skin-route.vercel.app`) instead of Next's default error page. Dev-only echo of `error.message`.
 - `app/global-error.js` — root-layout boundary for the blank-screen worst case; supplies its own `<html>/<body>` (layout font CSS vars not guaranteed, so no `font-heading`/`font-body` there), same copy/actions.

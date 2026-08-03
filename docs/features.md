@@ -29,6 +29,8 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 - **Crystal of Aurora (CoA)** — collector events only.
 - **Weekly Passes** — stepper, 0–10 ("Max 10").
 - **Days remaining** — how many total days are left on your owned passes; must be ≤ `passes × 7`. Checked against the in-game Passes screen.
+- Pass explainer (when passes > 0): each pass gives 80 dia instantly on purchase + 20 dia/day for 7 days, queued sequentially (max 10); days remaining = total days left across all passes (in-game Passes screen).
+- **Pass/diamond consistency warning** (non-blocking, when passes > 0 and `diamonds < passes × 80`): "N passes already gave you N×80 dia instantly — include them in your Diamonds." Reminds users that owning passes means the instant dia is already in their wallet.
 - **First-purchase bonuses** — chips for the four 2× diamond packs: "50 + 50", "150 + 150", "250 + 250", "500 + 500". Tap the ones already claimed; claimed chips turn gold.
 - Validation: days remaining is required when passes > 0, and can't exceed `passes × 7`.
 
@@ -47,12 +49,12 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 
 ### Step 4 — Result
 
-- The plan is **fetched from the server** (`POST /api/plan` → `buildPlan` runs server-side). Results are **cached per inputs for the session**: the first visit shows a "Calculating your plan..." screen; toggling the start day to one already computed (or returning to Step 4 after adjusting inputs) renders instantly with no refetch; toggling to a new day keeps the previous plan visible with an "Updating…" indicator while it recalculates. A failed refresh keeps the last plan with an inline note; with no plan yet it falls back to the plan-error state with an "← Adjust plan" button.
+- The plan is **fetched from the server** (`POST /api/plan` → `buildPlan` runs server-side). Results are **cached per inputs for the session**: the first visit shows a "Calculating your plan..." screen; toggling the start day to one already computed (or returning to Step 4 after adjusting inputs) renders instantly with no refetch; toggling to a new day keeps the previous plan visible with an "Updating…" indicator while it recalculates. A failed refresh keeps the last plan with an inline note; with no plan yet it falls back to the plan-error state with "Try again" + "← Adjust plan" buttons. The fetch checks `res.ok` + `Content-Type: application/json` so a platform error page (e.g. Cloudflare over-quota HTML) shows a friendly "unexpected response — try again" message instead of a raw JSON parse error.
 - **Start-day toggle** (only shown when today is past day 1): "Start Today (Day N)" vs "Start from Day 1". The plan is rebuilt from the chosen day; the schedule table and PDF only show from that day.
 - **Draws overview** (non-bingo): Optimistic / Realistic / Worst-case draws.
 - **Warnings** — coral rows with an alert icon when the plan is tight or the math had to bend somewhere.
 - **Bingo summary panel**: lucky draw range, realistic, worst-case, plus BDT / diamonds for each scenario, and a "Guaranteed: {skin} on first 10x draw if unowned" note when applicable. Header says "The Aspirants" for aspirants, "Bingo — first line completion" otherwise.
-- **Summary cards**: Total BDT (৳), Diamonds Needed (collector also gets a compact CoA Needed card), Total Draws, Target Skin (+ outfit 1 variant line).
+- **Summary cards**: Total BDT (৳), Diamonds Needed, Total Draws, Target Skin (+ outfit 1 variant line). "Diamonds Needed" shows the **total diamonds the plan actually spends** (sum of the day-by-day Dia column — matches the schedule's "Total from Day X" footer), not the "recharge" total — so a plan that starts with a large diamond balance doesn't overstate the requirement. Collector also gets a compact CoA Needed card.
 - **Recommended Recharge** (`PackRecommendation`):
   - Impossible state when no pack combo fits the window: "No pack combination reaches the target within the event window with current inputs."
   - Table: Pack | Type | Qty | Diamonds | BDT, with a total row. Pack names: `fp_*` → "First Purchase Bonus {n} dias", `r_*` → "{n} dias", weekly passes get a pass icon.

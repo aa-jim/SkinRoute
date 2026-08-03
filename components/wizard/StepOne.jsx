@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Gem, Ticket, Check, Clock } from "lucide-react";
+import { Gem, Ticket, Check, Clock, Info, AlertTriangle } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
 
 const FP_OPTIONS = [
@@ -21,6 +21,13 @@ export default function StepOne() {
   const [dayError, setDayError] = useState(null);
 
   const showCoa = event.type === "collector";
+
+  const diamondsNum = Number(resources.diamonds);
+  const showPassDiaWarning =
+    resources.weeklyPasses > 0 &&
+    resources.diamonds !== "" &&
+    !Number.isNaN(diamondsNum) &&
+    diamondsNum < resources.weeklyPasses * 80;
 
   const setPasses = (delta) => {
     const next = Math.max(0, Math.min(10, resources.weeklyPasses + delta));
@@ -142,10 +149,25 @@ export default function StepOne() {
             />
           </div>
           {resources.weeklyPasses > 0 && (
-            <p className="text-xs text-text-muted mt-1.5">
-              Check in-game: Passes → {resources.weeklyPasses} pass{resources.weeklyPasses > 1 ? "es" : ""},{" "}
-              {resources.weeklyPasses * 7} total days
-            </p>
+            <div className="mt-3 space-y-1.5">
+              <p className="text-xs text-text-muted flex items-start gap-1.5">
+                <Info size={14} className="text-accent-gold shrink-0 mt-0.5" />
+                <span>
+                  Check in-game: Passes → {resources.weeklyPasses} pass{resources.weeklyPasses > 1 ? "es" : ""},{" "}
+                  {resources.weeklyPasses * 7} total days. Days remaining = total days left across all passes.
+                </span>
+              </p>
+              {showPassDiaWarning && (
+                <p className="text-xs text-accent-coral flex items-start gap-1.5">
+                  <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                  <span>
+                    {resources.weeklyPasses} pass{resources.weeklyPasses > 1 ? "es" : ""} already gave you{" "}
+                    {resources.weeklyPasses * 80} dia (80 × {resources.weeklyPasses}) instantly, include them
+                    in your Diamonds.
+                  </span>
+                </p>
+              )}
+            </div>
           )}
           {dayError && (
             <p className="text-xs text-accent-coral mt-1.5">{dayError}</p>
