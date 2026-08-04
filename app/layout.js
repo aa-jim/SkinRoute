@@ -1,5 +1,6 @@
 import { Inter, Rajdhani } from "next/font/google";
 import SupportButton from "@/components/ui/SupportButton";
+import FirstVisitNotice from "@/components/ui/FirstVisitNotice";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
       >
         {children}
         <SupportButton />
+        <FirstVisitNotice />
       </body>
     </html>
   );

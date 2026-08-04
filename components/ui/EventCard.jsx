@@ -3,26 +3,51 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { EVENT_TYPE_LABELS, EVENT_TYPE_BADGE, daysLeft, eventProgress, progressColor, urgencyLabel, deriveStatus } from "@/lib/eventHelpers";
+import {
+  EVENT_TYPE_LABELS,
+  EVENT_TYPE_BADGE,
+  daysLeft,
+  eventProgress,
+  progressColor,
+  urgencyLabel,
+  deriveStatus,
+  isEarlyPlanable,
+  daysUntilStart,
+  timeLeftLabel,
+} from "@/lib/eventHelpers";
 
 export default function EventCard({ event }) {
   const [imageFailed, setImageFailed] = useState(false);
   const isComingSoon = deriveStatus(event) === "coming_soon";
+  const early = isEarlyPlanable(event);
+  const locked = isComingSoon && !early;
   const progress = eventProgress(event);
   const days = daysLeft(event.end_date);
+  const tilStart = daysUntilStart(event);
+  const liveLeft = timeLeftLabel(event.end_date);
 
   const dateLabel = isComingSoon
-    ? "Coming Soon"
+    ? early
+      ? `Coming ${new Date(event.start_date + "T06:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" })}`
+      : "Coming Soon"
     : `Ends on ${new Date(event.end_date + "T06:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" })}`;
+
+  const countdownLabel = isComingSoon
+    ? early
+      ? tilStart === 0
+        ? "Starting today"
+        : `Starts in ${tilStart} day${tilStart === 1 ? "" : "s"}`
+      : "Coming soon"
+    : liveLeft ?? urgencyLabel(days);
 
   const showImage = event.image && !imageFailed;
 
   const CardInner = (
     <div
-      className={`relative w-[260px] sm:w-[280px] h-[340px] shrink-0 rounded-2xl overflow-hidden border-2 border-white/40 bg-gradient-to-br ${event.banner_gradient} ${
-        isComingSoon
-          ? "opacity-60 grayscale-[30%] cursor-not-allowed"
-          : "cursor-pointer hover:border-white/50 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-2"
+      className={`relative w-[260px] sm:w-[280px] h-[340px] shrink-0 rounded-2xl overflow-hidden border-2 bg-gradient-to-br ${event.banner_gradient} ${
+        locked
+          ? "opacity-60 grayscale-[30%] cursor-not-allowed border-white/40"
+          : "cursor-pointer border-white/40 hover:border-white/50 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-2"
       } transition-all duration-300 ease-out`}
     >
       {showImage && (
@@ -54,6 +79,11 @@ export default function EventCard({ event }) {
       >
         {EVENT_TYPE_LABELS[event.type] ?? event.type}
       </span>
+      {early && (
+        <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold bg-accent-gold text-navy border-2 border-[#8A6A1A]">
+          Plan early
+        </span>
+      )}
       <div className="absolute bottom-0 left-0 right-0 p-5">
         <h3 className="font-heading text-2xl font-bold text-white uppercase tracking-wide leading-tight mb-1">
           {event.name}
@@ -65,12 +95,12 @@ export default function EventCard({ event }) {
             style={{ width: `${progress ?? 100}%`, backgroundColor: progressColor(progress) }}
           />
         </div>
-        <p className="text-sm font-medium text-white/90">{urgencyLabel(days)}</p>
+        <p className="text-sm font-medium text-white/90">{countdownLabel}</p>
       </div>
     </div>
   );
 
-  if (isComingSoon) return CardInner;
+  if (locked) return CardInner;
 
   return <Link href={`/plan/${event.id}`}>{CardInner}</Link>;
 }

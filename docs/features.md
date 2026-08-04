@@ -4,6 +4,7 @@ Everything a user can do in SkinRoute, page by page. Event-type differences (col
 
 ## Global
 
+- **First-visit notice** (`components/ui/FirstVisitNotice.jsx`, mounted in `app/layout.js`): on the very first visit (per browser, `localStorage` key `skinroute.notice.v1`) a modal clarifies the site does **not** sell skins/diamonds/accounts, will never ask for credentials or payment, and warns about phishing copies — only `skinroute.events-mlbb.workers.dev` and `skin-route.vercel.app` are official. "Got it" (or X) dismisses it permanently for that browser; refresh/navigation never re-shows it.
 - **Error pages** (`app/error.js` + `app/global-error.js`): if a page fails to render (e.g. the host is straining under a traffic spike), visitors see a branded "Looks like we're getting a flood of players right now" screen with a **Try again** button and a link to the Vercel mirror (`skin-route.vercel.app`) instead of Next.js's default error page. Note: on a totally over-quota workers.dev free host, Cloudflare's own error page still shows first (not customizable without a custom domain).
 
 ## Home page (`/`)
@@ -12,8 +13,9 @@ Everything a user can do in SkinRoute, page by page. Event-type differences (col
 - Events with `status: "hidden"` are filtered out, and anything whose date range has ended is excluded.
 - Sorting: `coming_soon` events always come after `active` ones; within a status, by `start_date` ascending.
 - **Event card**: banner image (falls back to hidden image if it fails to load), name, type badge, gradient + tinted text panel from the event's `banner_gradient` / `text_panel_color`, and a status strip:
-  - `coming_soon` → dimmed card, not clickable, "Coming soon"
-  - `active` → clickable, links to `/plan/{eventId}`, shows "N days left" with a **linear time-progress bar** (fill = elapsed / total window, e.g. day 15 of 30 → 50%), color sweeps green→red as the event nears its end (smooth `hsl` ramp), and "Ends on {Month Day}".
+  - `coming_soon` **inside the 7-day early-plan window** (≤ 7 days before `start_date`, `isEarlyPlanable`) → clickable, links to `/plan/{eventId}` with a badge-styled "Plan early" pill, "Coming {Month Day}" and "Starts in N days" (or "Starting today" on launch day). The wizard works from Day 1 until the event actually goes live.
+  - `coming_soon` **more than 7 days out** → dimmed card, not clickable, "Coming soon".
+  - `active` → clickable, links to `/plan/{eventId}`, shows a **live in-game-style countdown** ("3d 5h left", hours-only below a day — matches MLBB's own event timer, computed at the 2PM BDT close anchor) with a **linear time-progress bar** (fill = elapsed / total window, e.g. day 15 of 30 → 50%), color sweeps green→red as the event nears its end (smooth `hsl` ramp), and "Ends on {Month Day}".
 - Mobile dot indicators under the carousel (one per event, scrolls the card into view).
 - Day statuses are computed with the 2 PM BDT reset boundary (08:00 UTC) — an event shown as ending on day X stays live until 2 PM BDT of day X+1.
 
@@ -49,8 +51,9 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 
 ### Step 4 — Result
 
+- **Pre-start notice**: when the event hasn't started yet (early-plan window), a gold line above the results explains the plan starts from Day 1 and updates automatically once the event is live.
 - The plan is **fetched from the server** (`POST /api/plan` → `buildPlan` runs server-side). Results are **cached per inputs for the session**: the first visit shows a "Calculating your plan..." screen; toggling the start day to one already computed (or returning to Step 4 after adjusting inputs) renders instantly with no refetch; toggling to a new day keeps the previous plan visible with an "Updating…" indicator while it recalculates. A failed refresh keeps the last plan with an inline note; with no plan yet it falls back to the plan-error state with "Try again" + "← Adjust plan" buttons. The fetch checks `res.ok` + `Content-Type: application/json` so a platform error page (e.g. Cloudflare over-quota HTML) shows a friendly "unexpected response — try again" message instead of a raw JSON parse error.
-- **Start-day toggle** (only shown when today is past day 1): "Start Today (Day N)" vs "Start from Day 1". The plan is rebuilt from the chosen day; the schedule table and PDF only show from that day.
+- **Start-day toggle** (only shown when today is past day 1): a labeled "PLAN START" control with "Start Today (Day N)" vs "Start from Day 1" — the active option is solid gold, the inactive one dimmed. The plan is rebuilt from the chosen day; the schedule table and PDF only show from that day.
 - **Draws overview** (non-bingo): Optimistic / Realistic / Worst-case draws.
 - **Warnings** — coral rows with an alert icon when the plan is tight or the math had to bend somewhere.
 - **Bingo summary panel**: lucky draw range, realistic, worst-case, plus BDT / diamonds for each scenario, and a "Guaranteed: {skin} on first 10x draw if unowned" note when applicable. Header says "The Aspirants" for aspirants, "Bingo — first line completion" otherwise.
@@ -69,7 +72,7 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 - **Mobile** — stacked day cards: date, draws chip, action lines, spent-today / total-spent mini columns.
 - **Date labels** are anchored at 08:00 UTC (= 2 PM BDT in-game reset) so they match in-game days.
 - **Action lines** come from the plan's per-day notes, each rendered with an icon: weekly-pass purchases (ticket), Starlight claims (key/sparkles), recharges and pack purchases (wallet), token claims (scroll/key), "Don't claim" (clock), completed recharge/spend tasks (coins), insufficient balance (alert), CoA draws (CoA star), regular draws (gem).
-- **Tags**: rows are tinted by kind — final push (green), premium-supply / Starlight days (purple), balance gaps (coral). A legend explains icons per event type.
+- **Tags**: rows are tinted by kind — final push (green), premium-supply / Starlight days (purple), balance gaps (coral). A legend explains icons per event type. On themed-crest/bingo/aspirants, the exact day each premium-supply phase opens (e.g. Day 8, 15) gets a "Premium supply phase N start" line at the top of its action cell (sparkles icon) and the purple supply tint.
 
 ## Bug reports
 

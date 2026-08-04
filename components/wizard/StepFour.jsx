@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Gem, Layers, Target, Wallet, AlertTriangle, Download, Calendar, CalendarDays, RefreshCw } from "lucide-react";
+import { Gem, Layers, Target, Wallet, AlertTriangle, Download, Calendar, CalendarDays, RefreshCw, Scroll } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
 import { todayEventDay } from "@/lib/planOrchestrator";
+import { daysUntilStart } from "@/lib/eventHelpers";
 import { exportPlanPdf } from "@/lib/exporter";
 import SummaryCard from "@/components/ui/SummaryCard";
 import ScheduleTable from "@/components/ui/ScheduleTable";
@@ -148,43 +149,55 @@ export default function StepFour() {
     <div data-plan-section>
       {/* Schedule view toggle — Start Today vs Start from Day 1 */}
       {rawToday > 1 && (
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <button
-            type="button"
-            onClick={() => setStartFromToday(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-heading font-bold transition-all ${
-              startFromToday
-                ? "bg-accent-gold/20 border border-accent-gold/50 text-accent-gold"
-                : "bg-navy-light border border-border-subtle text-text-muted hover:text-text-primary"
-            }`}
-          >
-            <CalendarDays size={14} />
-            Start Today (Day {rawToday})
-          </button>
-          <button
-            type="button"
-            onClick={() => setStartFromToday(false)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-heading font-bold transition-all ${
-              !startFromToday
-                ? "bg-accent-gold/20 border border-accent-gold/50 text-accent-gold"
-                : "bg-navy-light border border-border-subtle text-text-muted hover:text-text-primary"
-            }`}
-          >
-            <Calendar size={14} />
-            Start from Day 1
-          </button>
-          {refreshing && (
-            <span className="flex items-center gap-1.5 text-xs text-text-muted">
-              <RefreshCw size={12} className="animate-spin" />
-              Updating…
-            </span>
-          )}
+        <div className="flex flex-col items-center gap-2 mb-6">
+          <span className="text-[11px] font-heading font-bold uppercase tracking-wider text-text-muted">
+            Plan start
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setStartFromToday(true)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-heading font-bold transition-all shadow ${
+                startFromToday
+                  ? "bg-accent-gold text-navy border border-accent-gold shadow-accent-gold/20"
+                  : "bg-navy-light border border-white/20 text-text-muted hover:bg-navy hover:text-white"
+              }`}
+            >
+              <CalendarDays size={14} />
+              Start Today (Day {rawToday})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStartFromToday(false)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-heading font-bold transition-all shadow ${
+                !startFromToday
+                  ? "bg-accent-gold text-navy border border-accent-gold shadow-accent-gold/20"
+                  : "bg-navy-light border border-white/20 text-text-muted hover:bg-navy hover:text-white"
+              }`}
+            >
+              <Calendar size={14} />
+              Start from Day 1
+            </button>
+            {refreshing && (
+              <span className="flex items-center gap-1.5 text-xs text-text-muted">
+                <RefreshCw size={12} className="animate-spin" />
+                Updating…
+              </span>
+            )}
+          </div>
         </div>
       )}
 
       {refreshFailed && (
         <p className="text-center text-xs text-accent-coral mb-4">
           Couldn&apos;t refresh the plan — showing the last one.
+        </p>
+      )}
+
+      {daysUntilStart(event) > 0 && (
+        <p className="text-center text-xs text-accent-gold mb-4">
+          This event hasn&apos;t started yet. The plan below starts from Day 1 and
+          updates automatically once the event is live.
         </p>
       )}
 
@@ -371,9 +384,13 @@ export default function StepFour() {
         </button>
       </div>
 
-      <p className="text-xs text-text-muted text-center mt-6">
-        Reminder: claim any free draw token shown in-game each day, even if it&apos;s not listed here.
-      </p>
+      <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-accent-amber/10 border border-accent-amber/40 text-xs text-text-primary mt-6">
+        <Scroll size={14} className="text-accent-amber shrink-0" />
+        <span className="text-center">
+          <strong className="text-accent-amber">Reminder:</strong> claim any free draw
+          token shown in-game each day, even if it&apos;s not listed here.
+        </span>
+      </div>
 
       <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-accent-amber/10 border border-accent-amber/40 text-xs text-text-primary mt-4">
       <AlertTriangle size={14} className="text-accent-amber shrink-0" />

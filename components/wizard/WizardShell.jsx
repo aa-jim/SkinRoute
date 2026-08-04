@@ -6,6 +6,7 @@ import StepOne from "@/components/wizard/StepOne";
 import StepTwo from "@/components/wizard/StepTwo";
 import StepThree from "@/components/wizard/StepThree";
 import StepFour from "@/components/wizard/StepFour";
+import { deriveStatus } from "@/lib/eventHelpers";
 
 
 const STEP_COMPONENTS = {
@@ -23,7 +24,15 @@ export default function WizardShell() {
   const totalSteps = isBingo ? 3 : 4;
   const ActiveStep = STEP_COMPONENTS[effectiveStep];
 
-  const endDateLabel = event.end_date
+  const isPreStart = deriveStatus(event) === "coming_soon";
+  const startDateLabel =
+    isPreStart && event.start_date
+      ? new Date(event.start_date + "T06:00:00").toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        })
+      : null;
+  const endDateLabel = !isPreStart && event.end_date
     ? new Date(event.end_date + "T06:00:00").toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -40,6 +49,11 @@ export default function WizardShell() {
               {event.name}
             </h1>
           </div>
+          {startDateLabel && (
+            <span className="text-sm text-accent-gold shrink-0 hidden sm:block">
+              Starts {startDateLabel}
+            </span>
+          )}
           {endDateLabel && (
             <span className="text-sm text-text-muted shrink-0 hidden sm:block">
               Ends {endDateLabel}

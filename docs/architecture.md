@@ -85,7 +85,9 @@ Fields present on most plans (per-type differences noted):
 | `lib/idealSchedule.themedCrest.js` | Themed-crest/legend/special simulator (CommonJS) |
 | `lib/idealSchedule.aspirants.js` | Aspirants (bingo) simulator (ESM) |
 | `lib/coaSufficiency.js` | CoA-only sufficiency check — **NOT called by buildPlan** (dead code; only referenced from superseded scheduler functions) |
-| `lib/eventHelpers.js` | `eventDayNow`, `daysLeft`, `deriveStatus`, `eventProgress`, `progressColor`, `urgencyLabel`, type labels/badges. **08:00 UTC (2 PM BDT) is the shared day-reset constant** |
+| `lib/eventHelpers.js` | `eventDayNow`, `daysLeft`, `deriveStatus`, `eventProgress`, `progressColor`, `urgencyLabel`, early-plan helpers (`EARLY_PLAN_DAYS`, `eventStartDate`, `daysUntilStart`, `isEarlyPlanable`), live countdown (`timeLeft`, `timeLeftLabel`), type labels/badges. **08:00 UTC (2 PM BDT) is the shared day-reset constant** |
+| `components/ui/FirstVisitNotice.jsx` | One-time "not a skin store / phishing warning" modal (localStorage `skinroute.notice.v1`), mounted in `app/layout.js` |
+| `components/ui/EventCard.jsx` | Home-page card: early-plan unlock (7-day pre-start window), live `Nd Mh left` countdown for active events |
 | `lib/exporter.js` | jsPDF export (standard vs bingo PDF) |
 | `lib/reportBug.js` | Bug-report builder; calls `buildPlan` itself (still client-side — the only browser bundle that ships the engine) |
 | `lib/wizardContext.js` | Wizard state (resources, target, ownedItems, startFromToday) |
@@ -107,7 +109,7 @@ Fields present on most plans (per-type differences noted):
 Each simulates from `startDay` to `duration_days`, one row per day, and **claims tokens/keys as real free draws** (`row.draws += n`) — so tokens reduce milestone progress and final-push cost:
 
 - **Collector**: diamond phase (daily 1x, opportunistic first-time 10x bulk, Starlight bought when `dia ≥ 300` and affordable, spend-task keys, login key) → CoA phase (CoA-priority draws) → milestone claims → final push (CoA 10x → CoA singles → diamond 10x + singles). Tracks `minDiaBalance` → `day1RechargeNeeded`, and `unaffordableDiaShortfall`.
-- **Themed crest**: daily 1x; per-phase recharge/spend task tracking with "don't claim until last day" notes; claim all window tokens on phase close; surprise-window recharge accumulation; milestone claims; final push (10x with `tenx_diamond_only_pct_off` discount, then singles).
+- **Themed crest**: daily 1x; per-phase recharge/spend task tracking with "don't claim until last day" notes; **spend-task clears on a window's last day buy a discounted 10x (tenx_diamond_only_pct_off ≈ 10%)** instead of full singles when the plan still needs bulk draws (falls back to singles for small demand; never on the event's final day); claim all window tokens on phase close; surprise-window recharge accumulation; milestone claims; final push (10x with `tenx_diamond_only_pct_off` discount, then singles).
 - **Aspirants**: pre-phase days idle; in-phase daily 1x with spend-task keys per threshold; phase-start recharge claims; phase-close single top-up; after the last phase, accumulation mode (first-time 10x discount then daily 1x); final push priced at the discounted `daily_1x` per remaining draw.
 
 ### Surprise tasks → free draws
