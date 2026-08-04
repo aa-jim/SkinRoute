@@ -168,6 +168,14 @@ with **no** `start_date`/`end_date`. `lib/eventHelpers.js` → `resolveEventDate
 - **Escape hatch**: if a month ever deviates from the 1st→last-day pattern, add explicit `start_date`/`end_date` temporarily — they override the recurring pattern (remove them after the month ends).
 - StepFour's plan cache keys include the resolved `start_date`, so a cached plan never crosses a month boundary.
 
+## 1c. Coming-soon events — early-planning window
+
+Events unlock for planning **7 calendar days before their `start_date`** (`EARLY_PLAN_DAYS` in `lib/eventHelpers.js`):
+
+- The home-page card switches from the dimmed "Coming soon" look to a clickable gold-ringed card ("Plan early" pill, "Coming {Month Day}" + "Starts in N days"). Before the window, the card stays locked; direct `/plan/{id}` URLs always work (plans simply start from Day 1 until the event is live).
+- ⚠️ **The event must carry full draw data to be planable** — `draw_cost_*`, `discount_draw_cost`, `milestones` (array), `premium_supply` (array), `shop_items`, `prize_pool`. A placeholder-only entry (e.g. banner fields only) unlocks visually but the wizard can't build a plan for it. Add the full data when you add the coming-soon entry, not after it starts.
+- Recurring events (collector) resolve `start_date` per request, so they automatically become planable inside their own pre-start window too.
+
 ## 2. `packs.json` — packs & passes
 
 Shared across all events; only change when Moonton changes BDT prices or the pass itself.

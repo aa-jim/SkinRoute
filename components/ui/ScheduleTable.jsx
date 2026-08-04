@@ -24,11 +24,25 @@ function buildThemedCrestRows(plan, event) {
   const duration = event.duration_days;
   let cumulative = 0;
   let cumulativeDia = 0;
+
+  // Premium-supply phase start days (themed crest / bingo / aspirants — the
+  // collector branch returns earlier, so it never reaches here). Marks the
+  // exact day each phase opens so the action cell says "phase N start".
+  const supplyStartByDay = {};
+  if (Array.isArray(event.premium_supply)) {
+    for (const p of event.premium_supply) {
+      if (p && typeof p.start_day === "number") {
+        supplyStartByDay[p.start_day] = `Premium supply phase ${p.phase} start`;
+      }
+    }
+  }
+
   return daySchedule.rows.map((r) => {
     const isFinal = r.day === duration;
+    const supplyStart = supplyStartByDay[r.day];
     let tag = null;
     if (isFinal) tag = "final";
-    else if (r.notes.some((n) => n.includes("Premium Supply") || n.includes("All tasks completed") || n.includes("Buy"))) tag = "supply";
+    else if (supplyStart || r.notes.some((n) => n.includes("Premium Supply") || n.includes("All tasks completed") || n.includes("Buy"))) tag = "supply";
     else if (r.notes.some((n) => n.includes("insufficient balance") || n.includes("Short"))) tag = "gap";
 
     cumulative += r.draws;
@@ -41,7 +55,7 @@ function buildThemedCrestRows(plan, event) {
       cumulative,
       dia: r.diaSpent,
       cumulativeDia,
-      actionLines: r.notes,
+      actionLines: supplyStart ? [supplyStart, ...r.notes] : r.notes,
       tag,
     };
   });
@@ -97,6 +111,7 @@ function actionIcon(line) {
   if (line.includes("Buy") && line.includes("weekly pass")) return <Ticket size={14} className="text-accent-coral shrink-0 mt-0.5" />;
   if (line.startsWith("Claim") && line.includes("(Starlight)")) return <Key size={14} className="text-accent-gold shrink-0 mt-0.5" />;
   if (line.includes("Starlight")) return <Sparkles size={14} className="text-[#AFA9EC] shrink-0 mt-0.5" />;
+  if (line.includes("Premium supply phase")) return <Sparkles size={14} className="text-[#AFA9EC] shrink-0 mt-0.5" />;
   if (line.includes("Recharge") || (line.includes("Buy") && line.includes("dias pack"))) return <Wallet size={14} className="text-accent-green shrink-0 mt-0.5" />;
   if (line.startsWith("Claim") && line.includes("token")) return <Scroll size={14} className="text-accent-gold shrink-0 mt-0.5" />;
   if (line.startsWith("Claim")) return <Key size={14} className="text-accent-gold shrink-0 mt-0.5" />;

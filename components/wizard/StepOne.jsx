@@ -25,7 +25,6 @@ export default function StepOne() {
   const diamondsNum = Number(resources.diamonds);
   const showPassDiaWarning =
     resources.weeklyPasses > 0 &&
-    resources.diamonds !== "" &&
     !Number.isNaN(diamondsNum) &&
     diamondsNum < resources.weeklyPasses * 80;
 
@@ -163,7 +162,7 @@ export default function StepOne() {
                   <span>
                     {resources.weeklyPasses} pass{resources.weeklyPasses > 1 ? "es" : ""} already gave you{" "}
                     {resources.weeklyPasses * 80} dia (80 × {resources.weeklyPasses}) instantly, include them
-                    in your Diamonds.
+                    in your Diamonds if you haven&apos;t spent them already.
                   </span>
                 </p>
               )}
