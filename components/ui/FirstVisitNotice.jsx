@@ -71,7 +71,7 @@ export default function FirstVisitNotice() {
             <ShieldAlert size={16} className="text-accent-coral shrink-0 mt-0.5" />
             <span>
               Phishing copies of sites like this can exist. The only official addresses
-              are<strong>skinroute.events-mlbb.workers.dev</strong> and{" "}
+              are<strong> skinroute.events-mlbb.workers.dev</strong> and{" "}
               <strong>skin-route.vercel.app</strong>. Check the address bar carefully.
             </span>
           </p>
