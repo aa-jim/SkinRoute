@@ -94,6 +94,6 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 
 | Type | Inputs | Flow |
 |---|---|---|
-| Themed Crest (also `legend` / `special`) | Diamonds, passes | Draw for crests → exchange crests for the target in the event shop. Premium supply phases (2 windows) + milestone bonuses + optional surprise tasks add free tokens. |
+| Themed Crest (also `legend` / `special`) | Diamonds, passes | Draw for crests → exchange crests for the target in the event shop. Premium supply phases (2 windows) + milestone bonuses + optional surprise tasks add free tokens. Surprise tiers credit purchases inside the first `active_days` (passes count as `recharge_task_value` on purchase day) — the schedule claims their free draws automatically. |
 | Collector | Diamonds **and** CoA | First phase: spend diamonds (daily 1x + first-10x discount, Starlight when affordable, spend-task keys). Then CoA phase: draws paid from CoA first. Milestone tokens + final push. |
 | Bingo / Aspirants | Diamonds, passes | Win condition from a fixed draw distribution (lucky 30–40 / realistic 50 / worst 60); the plan simulates the worst case and stops at the target. Aspirants = box completion, others = line completion. |

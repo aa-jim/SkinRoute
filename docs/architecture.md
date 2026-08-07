@@ -109,13 +109,15 @@ Fields present on most plans (per-type differences noted):
 Each simulates from `startDay` to `duration_days`, one row per day, and **claims tokens/keys as real free draws** (`row.draws += n`) — so tokens reduce milestone progress and final-push cost:
 
 - **Collector**: diamond phase (daily 1x, opportunistic first-time 10x bulk, Starlight bought when `dia ≥ 300` and affordable, spend-task keys, login key) → CoA phase (CoA-priority draws) → milestone claims → final push (CoA 10x → CoA singles → diamond 10x + singles). Tracks `minDiaBalance` → `day1RechargeNeeded`, and `unaffordableDiaShortfall`.
-- **Themed crest**: daily 1x; per-phase recharge/spend task tracking with "don't claim until last day" notes; **spend-task clears on a window's last day buy a discounted 10x (tenx_diamond_only_pct_off ≈ 10%)** instead of full singles when the plan still needs bulk draws (falls back to singles for small demand; never on the event's final day); claim all window tokens on phase close; surprise-window recharge accumulation; milestone claims; final push (10x with `tenx_diamond_only_pct_off` discount, then singles).
+- **Themed crest**: daily 1x; per-phase recharge/spend task tracking with "don't claim until last day" notes; **spend-task clears on a window's last day buy a discounted 10x (tenx_diamond_only_pct_off ≈ 10%)** instead of full singles when the plan still needs bulk draws (falls back to singles for small demand; never on the event's final day); claim all window tokens on phase close; surprise-window recharge accumulation (including `recharge_task_value` from passes the plan buys); milestone claims; final push (10x with `tenx_diamond_only_pct_off` discount, then singles).
 - **Aspirants**: pre-phase days idle; in-phase daily 1x with spend-task keys per threshold; phase-start recharge claims; phase-close single top-up; after the last phase, accumulation mode (first-time 10x discount then daily 1x); final push priced at the discounted `daily_1x` per remaining draw.
 
 ### Surprise tasks → free draws
 
 - Data: `has_surprise_tasks: true` + `surprise_tasks: { active_days, tasks: [{threshold_dia, tokens}] }`.
 - The simulator adds cumulative recharge (packs + `weekly_pass.recharge_task_value` on purchase day) within `active_days` and claims each crossed tier's tokens as free draws. Zero-token tiers (e.g. 750) are skipped.
+- The orchestrator credits **extra pass purchases** (the pass search's `extraPasses`) with `recharge_task_value` on `firstPassBuyDay`, so a day-1 pass unlocks the surprise tiers it legitimately earns (and counts toward a supply window's recharge tasks when bought on its start day).
+- `surpriseLadder` is computed from the sim's **window** cumulative recharge (`sim.surpriseCumRecharge`), not whole-event recharge — `tiersCrossed` only reports tiers the schedule actually claims.
 - The orchestrator **never recommends extra recharge purely for the ladder**: it only tops up to the 750-dia point when that tier is already being crossed incidentally (after accounting for pass recharge value and premium-supply minimums).
 
 ### Pack optimization (optimizer.js)
