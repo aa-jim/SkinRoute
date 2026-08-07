@@ -514,12 +514,12 @@
           "skin_ids": ["yin_yuji", "julian_megumi", "melissa_nobara", "xavier_gojo"]
         },
         { "id": "recall_effect", "name": "Jujutsu Kaisen Recall Effect", "type": "recall_effect", "count": 1, "drop_rate": 0.003, "crest_value": 90, "is_skin": false },
-        { "id": "elim_effect", "name": "Jujutsu Kaisen Elimination Effect", "type": "elimination_effect", "count": 1, "drop_rate": 0.006, "crest_value": 45, "is_skin": false },
+        { "id": "elim_effect", "name": "Jujutsu Kaisen Elimination Effect", "type": "elimination_effect", "count": 1, "drop_rate": 0.004, "crest_value": 45, "is_skin": false },
         { "id": "spawn_effect", "name": "Jujutsu Kaisen Spawn Effect", "type": "spawn_effect", "count": 1, "drop_rate": 0.006, "crest_value": 45, "is_skin": false },
         { "id": "kill_notification", "name": "Jujutsu Kaisen Kill Notification", "type": "kill_notification", "count": 1, "drop_rate": 0.004, "crest_value": 68, "is_skin": false },
         { "id": "avatar_border", "name": "Jujutsu Kaisen Border", "type": "avatar_border", "count": 1, "drop_rate": 0.007, "crest_value": 30, "is_skin": false },
-        { "id": "battle_emote", "name": "Jujutsu Kaisen Battle Emote", "type": "emote", "count": 3, "drop_rate": 0.071, "crest_value": 9, "is_skin": false },
-        { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.9022, "crest_values": [20, 15, 12, 10, 8, 5] }
+        { "id": "battle_emote", "name": "Jujutsu Kaisen Battle Emote", "type": "emote", "count": 3, "drop_rate": 0.0705, "crest_value": 9, "is_skin": false },
+        { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.9047, "crest_values": [20, 15, 12, 10, 8, 5] }
       ]
     },
 
