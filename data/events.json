@@ -445,7 +445,8 @@
             { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
             { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
             { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
+            { "type": "spend_20",     "tokens": 1, "threshold_dia": 20 },
+            { "type": "spend_100",    "tokens": 3, "threshold_dia": 100 },
             { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
           ]
         },
@@ -457,7 +458,8 @@
             { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
             { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
             { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
+            { "type": "spend_20",     "tokens": 1, "threshold_dia": 20 },
+            { "type": "spend_100",    "tokens": 3, "threshold_dia": 100 },
             { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
           ]
         }
