@@ -31,29 +31,29 @@ export default function FirstVisitNotice() {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/75">
-      <div className="relative w-full max-w-md rounded-2xl border-2 border-accent-gold/60 bg-navy shadow-2xl shadow-black/50 p-6">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-ink/70">
+      <div className="relative w-full max-w-md rounded-xl border-2 border-ink bg-paper-raised shadow-hard-lg p-6">
         <button
           type="button"
           onClick={dismiss}
           aria-label="Close notice"
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-white/10 transition-colors"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg text-ink-soft hover:text-ink hover:bg-paper-dim transition-colors"
         >
           <X size={18} />
         </button>
 
         <div className="flex items-center gap-2.5 mb-4">
-          <span className="w-9 h-9 rounded-lg bg-accent-gold/15 flex items-center justify-center shrink-0">
-            <ShieldCheck size={20} className="text-accent-gold" />
+          <span className="w-9 h-9 rounded-lg bg-gold/15 flex items-center justify-center shrink-0">
+            <ShieldCheck size={20} className="text-gold-dark" />
           </span>
-          <h2 className="font-heading text-lg sm:text-xl font-bold text-text-primary">
+          <h2 className="font-heading text-lg sm:text-xl font-bold text-ink">
             This site does NOT sell skins
           </h2>
         </div>
 
-        <div className="space-y-3 text-sm text-text-primary">
+        <div className="space-y-3 text-sm text-ink">
           <p className="flex items-start gap-2">
-            <CheckCircle2 size={16} className="text-accent-green shrink-0 mt-0.5" />
+            <CheckCircle2 size={16} className="text-fern shrink-0 mt-0.5" />
             <span>
               SkinRoute is a <strong>free guide</strong>. It only calculates draw
               plans and recharge estimates. It does not sell skins, diamonds, or
@@ -61,14 +61,14 @@ export default function FirstVisitNotice() {
             </span>
           </p>
           <p className="flex items-start gap-2">
-            <ShieldAlert size={16} className="text-accent-coral shrink-0 mt-0.5" />
+            <ShieldAlert size={16} className="text-brick shrink-0 mt-0.5" />
             <span>
               SkinRoute will <strong>never ask for your password, account login,
               or payment details</strong>. Do not enter them on any page that does.
             </span>
           </p>
           <p className="flex items-start gap-2">
-            <ShieldAlert size={16} className="text-accent-coral shrink-0 mt-0.5" />
+            <ShieldAlert size={16} className="text-brick shrink-0 mt-0.5" />
             <span>
               Phishing copies of sites like this can exist. The only official addresses
               are<strong> skinroute.events-mlbb.workers.dev</strong> and{" "}
@@ -80,7 +80,7 @@ export default function FirstVisitNotice() {
         <button
           type="button"
           onClick={dismiss}
-          className="mt-6 w-full px-6 py-2.5 rounded-lg bg-accent-gold text-navy font-heading font-bold hover:opacity-90 transition-opacity"
+          className="mt-6 w-full px-6 py-2.5 rounded-lg bg-brick text-[#FFFBF2] font-heading font-bold hover:opacity-90 transition-opacity"
         >
           Got it
         </button>

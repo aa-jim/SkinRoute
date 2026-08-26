@@ -16,47 +16,50 @@ const EVENT_TYPES = [
   {
     icon: Gem,
     name: "Themed Crest",
-    color: "text-accent-green",
+    color: "text-fern",
     desc: "Draw to earn crests, then exchange crests for the target skin in the event shop. Includes premium supply windows and milestone bonuses.",
   },
   {
     icon: Sparkles,
     name: "Collector",
-    color: "text-accent-gold",
+    color: "text-gold-dark",
     desc: "Draws cost Crystal of Aurora (CoA) and diamonds. Includes Starlight membership, spend-task keys, and first-10-draw pity.",
   },
   {
     icon: Grid3x3,
     name: "Bingo",
-    color: "text-[#AFA9EC]",
+    color: "text-plum",
     desc: "Complete a line (or hit 3 boxes) to win a random unowned skin from the pool. Some variants guarantee a specific skin on your first 10x draw.",
   },
 ];
 
 export default function HelpPage() {
   return (
-    <main className="min-h-screen bg-navy">
+    <main className="min-h-screen">
       <Navbar />
       <div className="max-w-[800px] mx-auto px-6 py-12 sm:py-16">
-        <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white text-center mb-3">
+        <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-brick text-center mb-4">
+          Field guide
+        </p>
+        <h1 className="font-heading text-3xl sm:text-4xl font-semibold text-ink text-center mb-3 tracking-tight">
           How Skin Route Works
         </h1>
-        <p className="text-text-muted text-center max-w-lg mx-auto mb-12">
+        <p className="text-ink-soft text-center max-w-lg mx-auto mb-12 text-sm sm:text-base leading-relaxed">
           Enter your resources, pick an event and target skin, and get the cheapest
           possible path to it day by day.
         </p>
 
         {/* What you get */}
         <section className="mb-14">
-          <h2 className="text-sm font-heading font-bold text-accent-gold uppercase tracking-wide mb-4">
+          <h2 className="font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft mb-4">
             What you get
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {FEATURES.map((f) => (
-              <div key={f.title} className="rounded-xl border border-border-subtle bg-navy-light px-5 py-4">
-                <f.icon size={20} className="text-accent-gold mb-2" />
-                <p className="font-heading font-bold text-text-primary text-sm mb-1">{f.title}</p>
-                <p className="text-xs text-text-muted">{f.desc}</p>
+              <div key={f.title} className="rounded-xl border-2 border-ink bg-paper-raised shadow-hard-sm px-5 py-4">
+                <f.icon size={20} className="text-brick mb-2" />
+                <p className="font-heading font-semibold text-ink text-sm mb-1">{f.title}</p>
+                <p className="text-xs text-ink-soft leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -64,16 +67,16 @@ export default function HelpPage() {
 
         {/* Event types */}
         <section className="mb-14">
-          <h2 className="text-sm font-heading font-bold text-accent-gold uppercase tracking-wide mb-4">
+          <h2 className="font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft mb-4">
             Supported event types
           </h2>
           <div className="flex flex-col gap-3">
             {EVENT_TYPES.map((e) => (
-              <div key={e.name} className="rounded-xl border border-border-subtle bg-navy-light px-5 py-4 flex gap-4">
+              <div key={e.name} className="rounded-xl border border-line-strong bg-paper-raised px-5 py-4 flex gap-4">
                 <e.icon size={22} className={`shrink-0 mt-0.5 ${e.color}`} />
                 <div>
-                  <p className={`font-heading font-bold text-sm mb-1 ${e.color}`}>{e.name}</p>
-                  <p className="text-xs text-text-muted leading-relaxed">{e.desc}</p>
+                  <p className={`font-heading font-semibold text-base mb-1 ${e.color}`}>{e.name}</p>
+                  <p className="text-xs text-ink-soft leading-relaxed">{e.desc}</p>
                 </div>
               </div>
             ))}
@@ -83,9 +86,9 @@ export default function HelpPage() {
         <div className="text-center">
           <Link
             href="/"
-            className="inline-block px-6 py-2.5 rounded-lg bg-accent-blue text-white font-heading font-bold hover:opacity-90 transition-opacity"
+            className="inline-block px-6 py-2.5 rounded-md border-2 border-ink text-ink font-heading font-semibold hover:bg-ink hover:text-paper-raised transition-colors"
           >
-            ← Back to Home
+            &larr; Back to Home
           </Link>
         </div>
       </div>

@@ -1,4 +1,4 @@
-﻿/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -13,7 +13,7 @@ const FP_OPTIONS = [
 ];
 
 const inputClass =
-  "w-full bg-navy border border-border-subtle rounded-lg px-4 py-2.5 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-gold transition-colors";
+  "w-full bg-white/70 border border-line-strong rounded-md px-4 py-2.5 text-ink placeholder:text-ink-faint focus:outline-none focus:border-brick focus:ring-1 focus:ring-brick transition-colors";
 
 export default function StepOne() {
   const { event, resources, updateResources, toggleFpClaimed, goNext } =
@@ -37,14 +37,14 @@ export default function StepOne() {
   return (
     <div>
       <div className="flex items-center gap-3 mb-1">
-        <span className="w-9 h-9 rounded-lg bg-navy flex items-center justify-center shrink-0">
-          <Gem size={18} className="text-accent-gold" />
+        <span className="w-9 h-9 rounded-md bg-ink flex items-center justify-center shrink-0">
+          <Gem size={18} className="text-[#CFA74E]" />
         </span>
-        <h2 className="font-heading text-xl sm:text-2xl font-bold text-accent-gold">
+        <h2 className="font-heading text-xl sm:text-2xl font-semibold text-ink">
           Your current resources
         </h2>
       </div>
-      <p className="text-sm text-text-muted mb-6 ml-12">
+      <p className="text-sm text-ink-soft mb-6 ml-12">
         Enter what you already have
       </p>
 
@@ -52,7 +52,7 @@ export default function StepOne() {
         className={`grid grid-cols-1 ${showCoa ? "sm:grid-cols-2" : ""} gap-5 mb-6`}
       >
         <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-ink mb-2">
             Diamonds
             <img src="/assets/icons/diamond.webp" alt="" className="w-4 h-4 object-contain" />
           </label>
@@ -76,7 +76,7 @@ export default function StepOne() {
 
         {showCoa && (
           <div>
-            <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
+            <label className="flex items-center gap-1.5 text-sm font-medium text-ink mb-2">
               Crystal of Aurora (CoA)
               <img src="/assets/icons/coa.webp" alt="" className="w-4 h-4 object-contain" />
             </label>
@@ -102,34 +102,34 @@ export default function StepOne() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-7">
         <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
-            Weekly Passes <Ticket size={14} className="text-accent-coral" />
+          <label className="flex items-center gap-1.5 text-sm font-medium text-ink mb-2">
+            Weekly Passes <Ticket size={14} className="text-brick" />
           </label>
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setPasses(-1)}
-              className="w-9 h-9 rounded-lg bg-accent-gold text-navy font-bold flex items-center justify-center hover:opacity-90 transition-opacity"
+              className="w-9 h-9 rounded-md bg-ink text-paper-raised font-bold flex items-center justify-center hover:bg-brick transition-colors"
             >
               −
             </button>
-            <span className="w-12 text-center bg-navy border border-border-subtle rounded-lg py-2 text-text-primary font-heading font-bold">
+            <span className="w-12 text-center bg-white/60 border border-line-strong rounded-md py-2 text-ink font-mono font-semibold">
               {resources.weeklyPasses}
             </span>
             <button
               type="button"
               onClick={() => setPasses(1)}
-              className="w-9 h-9 rounded-lg bg-accent-gold text-navy font-bold flex items-center justify-center hover:opacity-90 transition-opacity"
+              className="w-9 h-9 rounded-md bg-ink text-paper-raised font-bold flex items-center justify-center hover:bg-brick transition-colors"
             >
               +
             </button>
-            <span className="text-xs text-text-muted">Max 10</span>
+            <span className="text-xs text-ink-soft">Max 10</span>
           </div>
         </div>
 
         <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
-            Days remaining <Clock size={14} className="text-accent-coral" />
+          <label className="flex items-center gap-1.5 text-sm font-medium text-ink mb-2">
+            Days remaining <Clock size={14} className="text-brick" />
           </label>
           <div className="relative max-w-[240px]">
             <input
@@ -144,20 +144,20 @@ export default function StepOne() {
                 updateResources({ passDaysRemaining: e.target.value });
                 if (e.target.value) setDayError(null);
               }}
-              className={`${inputClass} disabled:opacity-40 disabled:cursor-not-allowed ${dayError ? "border-accent-coral" : ""}`}
+              className={`${inputClass} disabled:opacity-40 disabled:cursor-not-allowed ${dayError ? "border-brick" : ""}`}
             />
           </div>
           {resources.weeklyPasses > 0 && (
             <div className="mt-3 space-y-1.5">
-              <p className="text-xs text-text-muted flex items-start gap-1.5">
-                <Info size={14} className="text-accent-gold shrink-0 mt-0.5" />
+              <p className="text-xs text-ink-soft flex items-start gap-1.5">
+                <Info size={14} className="text-gold-dark shrink-0 mt-0.5" />
                 <span>
                   Check in-game: Passes → {resources.weeklyPasses} pass{resources.weeklyPasses > 1 ? "es" : ""},{" "}
                   {resources.weeklyPasses * 7} total days. Days remaining = total days left across all passes.
                 </span>
               </p>
               {showPassDiaWarning && (
-                <p className="text-xs text-accent-coral flex items-start gap-1.5">
+                <p className="text-xs text-brick flex items-start gap-1.5">
                   <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                   <span>
                     {resources.weeklyPasses} pass{resources.weeklyPasses > 1 ? "es" : ""} already gave you{" "}
@@ -169,16 +169,16 @@ export default function StepOne() {
             </div>
           )}
           {dayError && (
-            <p className="text-xs text-accent-coral mt-1.5">{dayError}</p>
+            <p className="text-xs text-brick mt-1.5">{dayError}</p>
           )}
         </div>
       </div>
 
       <div className="mb-8">
-        <label className="block text-sm font-medium text-text-primary mb-1">
+        <label className="block text-sm font-medium text-ink mb-1">
           First-purchase bonuses
         </label>
-        <p className="text-xs text-text-muted mb-3">
+        <p className="text-xs text-ink-soft mb-3">
           Tap the ones you&apos;ve already claimed
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -191,13 +191,13 @@ export default function StepOne() {
                 onClick={() => toggleFpClaimed(fp.id)}
                 className={`relative px-3 py-3 rounded-lg text-sm font-heading font-bold transition-colors ${
                   claimed
-                    ? "bg-accent-gold text-navy"
-                    : "bg-navy border border-accent-gold text-accent-gold hover:bg-navy-light"
+                    ? "bg-ink text-paper-raised border-2 border-ink"
+                    : "bg-transparent border-2 border-dashed border-ink/50 text-ink hover:border-ink"
                 }`}
               >
                 {claimed && (
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-navy border border-accent-gold flex items-center justify-center">
-                    <Check size={12} className="text-accent-gold" />
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-brick border-2 border-paper-raised flex items-center justify-center">
+                    <Check size={12} className="text-paper-raised" />
                   </span>
                 )}
                 <span className="flex items-center justify-center gap-1.5">
@@ -235,7 +235,7 @@ export default function StepOne() {
             if (Object.keys(patch).length > 0) updateResources(patch);
             goNext();
           }}
-          className="px-6 py-2.5 rounded-lg bg-accent-blue text-white font-heading font-bold hover:opacity-90 transition-opacity"
+          className="px-6 py-2.5 rounded-md bg-brick text-[#FFFBF2] font-heading font-semibold shadow-hard-sm hover:bg-brick-dark transition-colors"
         >
           Next Step →
         </button>
