@@ -31,21 +31,24 @@ const htmlCacheHeaders = [
   },
 ];
 
-const nextConfig =
-  process.env.NODE_ENV === "production"
-    ? {
-        // Cloudflare Pages has no built-in /_next/image optimizer (Cloudflare
-        // Images is paid) — serve the small event assets raw instead of a 400.
-        images: { unoptimized: true },
-        async headers() {
-          return [
-            { source: "/(.*)", headers: securityHeaders },
-            { source: "/", headers: htmlCacheHeaders },
-            { source: "/help", headers: htmlCacheHeaders },
-            { source: "/plan/:path*", headers: htmlCacheHeaders },
-          ];
-        },
-      }
-    : {};
+// `images: { unoptimized: true }` is applied in BOTH dev and production so
+// the dev server matches the live site: Cloudflare Pages has no built-in
+// /_next/image optimizer (Cloudflare Images is paid), so we serve the small
+// event assets raw. Without this, dev runs the optimizer and re-encodes
+// assets through /_next/image — which makes card art look blurry in dev
+// while it's sharp on the deployed site.
+const nextConfig = {
+  images: { unoptimized: true },
+  ...(process.env.NODE_ENV === "production" && {
+    async headers() {
+      return [
+        { source: "/(.*)", headers: securityHeaders },
+        { source: "/", headers: htmlCacheHeaders },
+        { source: "/help", headers: htmlCacheHeaders },
+        { source: "/plan/:path*", headers: htmlCacheHeaders },
+      ];
+    },
+  }),
+};
 
 export default nextConfig;

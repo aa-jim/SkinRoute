@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+﻿/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -192,7 +192,7 @@ export default function StepOne() {
                 className={`relative px-3 py-3 rounded-lg text-sm font-heading font-bold transition-colors ${
                   claimed
                     ? "bg-ink text-paper-raised border-2 border-ink"
-                    : "bg-transparent border-2 border-dashed border-ink/50 text-ink hover:border-ink"
+                    : "bg-transparent border-2 border-solid border-ink/50 text-ink hover:border-ink"
                 }`}
               >
                 {claimed && (
