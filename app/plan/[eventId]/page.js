@@ -1,4 +1,5 @@
 import Navbar from "@/components/layout/Navbar";
+import PageDecor from "@/components/layout/PageDecor";
 import { getEvent } from "@/lib/eventRepo";
 import { notFound } from "next/navigation";
 import { WizardProvider } from "@/lib/wizardContext";
@@ -15,6 +16,7 @@ export default async function PlanPage({ params }) {
   // Background comes from the body: warm paper with a faint grain.
   return (
     <main className="relative min-h-screen">
+      <PageDecor fixed />
       <div className="relative z-10">
         <WizardProvider event={event}>
           <Navbar />

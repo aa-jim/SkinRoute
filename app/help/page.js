@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
+import PageDecor from "@/components/layout/PageDecor";
 import { Layers, Wallet, Download, Gem, Grid3x3, Sparkles } from "lucide-react";
 
 // Dynamic on purpose: the CSP nonce (middleware.js) only exists at request
@@ -35,7 +36,8 @@ const EVENT_TYPES = [
 
 export default function HelpPage() {
   return (
-    <main className="min-h-screen">
+    <main className="relative min-h-screen">
+      <PageDecor fixed />
       <Navbar />
       <div className="max-w-[800px] mx-auto px-6 py-12 sm:py-16">
         <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-brick text-center mb-4">
@@ -51,7 +53,7 @@ export default function HelpPage() {
 
         {/* What you get */}
         <section className="mb-14">
-          <h2 className="font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft mb-4">
+          <h2 className="inline-block bg-paper/85 rounded-md px-2 py-0.5 font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft mb-4">
             What you get
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -67,7 +69,7 @@ export default function HelpPage() {
 
         {/* Event types */}
         <section className="mb-14">
-          <h2 className="font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft mb-4">
+          <h2 className="inline-block bg-paper/85 rounded-md px-2 py-0.5 font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft mb-4">
             Supported event types
           </h2>
           <div className="flex flex-col gap-3">
