@@ -98,3 +98,14 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 | Themed Crest (also `legend` / `special`) | Diamonds, passes | Draw for crests → exchange crests for the target in the event shop. Premium supply phases (2 windows) + milestone bonuses + optional surprise tasks add free tokens. Surprise tiers credit purchases inside the first `active_days` (passes count as `recharge_task_value` on purchase day) — the schedule claims their free draws automatically. |
 | Collector | Diamonds **and** CoA | First phase: spend diamonds (daily 1x + first-10x discount, Starlight when affordable, spend-task keys). Then CoA phase: draws paid from CoA first. Milestone tokens + final push. |
 | Bingo / Aspirants | Diamonds, passes | Win condition from a fixed draw distribution (lucky 30–40 / realistic 50 / worst 60); the plan simulates the worst case and stops at the target. Aspirants = box completion, others = line completion. |
+
+## Visual design system — "Game-Plan Ledger" (Aug 2026 refresh)
+
+The UI was redesigned from the old dark-navy/neon theme to a warm **paper-and-ink editorial** look:
+
+- **Palette (Tailwind tokens)**: `paper` (#F2EDDF page / #FBF8EE raised / #E9E2CE dim), `ink` (#27231B text / soft #59513F / faint #6E654F), `line` (#DAD1BB hairline / strong #BEB294 borders); accents are muted print tones — `brick` #9E3E24 (actions/danger), `fern` #4E6B38 (success/owned), `gold` #A17A22 (diamonds/costs), `sea` #395671 (info/dia values), `plum` #6E5590 (bingo/supply windows).
+- **Typography**: Fraunces (editorial serif) for headings via `font-heading`; Inter body; IBM Plex Mono (`font-mono`) for dates, numbers, table headers and micro-labels — the ledger feel. All three are **self-hosted** (`app/fonts/`, OFL licenses included) and loaded via `next/font/local` so builds never depend on reaching Google Fonts.
+- **Texture & depth**: faint SVG paper-grain on the body background; hard offset shadows (`shadow-hard*`, no blur/glow) with 2px ink frames on cards/tables; dashed route-lines in the step ProgressBar.
+- **Key surfaces**: wizard card = raised paper with an inverted ink header band; schedule/pack tables = paper-raised with mono uppercase heads and left-border row tags (supply=plum, final=fern, gap=brick); event cards = poster-style trading cards (ink frame + hard shadow, game art stays the only saturated element); footer = solid ink band.
+- **Event carousel**: phones get a stacked-deck effect — neighbors peek from behind the active card via pure-CSS `max-md:` transforms (no JS media queries, so no first-paint jump) + scroll-snap dots; desktop renders a plain spaced row (`md:gap-8`).
+- The blurred full-page background images were removed from `/` and `/plan/*`; per-event `banner_gradient`/`text_panel_color` still tint the card art panels. PDF export styling is unchanged (functional output).

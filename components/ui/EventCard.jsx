@@ -42,13 +42,15 @@ export default function EventCard({ event }) {
 
   const showImage = event.image && !imageFailed;
 
+  // Poster-style trading card on the paper page: thick ink frame + hard offset
+  // shadow; the game art stays the only saturated element on screen.
   const CardInner = (
     <div
-      className={`relative w-[260px] sm:w-[280px] h-[340px] shrink-0 rounded-2xl overflow-hidden border-2 bg-gradient-to-br ${event.banner_gradient} ${
+      className={`relative w-[260px] sm:w-[280px] h-[340px] shrink-0 rounded-xl overflow-hidden border-2 border-ink bg-gradient-to-br ${event.banner_gradient} ${
         locked
-          ? "opacity-60 grayscale-[30%] cursor-not-allowed border-white/40"
-          : "cursor-pointer border-white/40 hover:border-white/50 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-2"
-      } transition-all duration-300 ease-out`}
+          ? "opacity-60 grayscale-[35%] cursor-not-allowed shadow-hard-sm"
+          : "cursor-pointer shadow-hard hover:-translate-y-1.5 hover:shadow-hard-lg"
+      } transition-all duration-200 ease-out`}
     >
       {showImage && (
         <Image
@@ -75,20 +77,24 @@ export default function EventCard({ event }) {
         }}
       />
       <span
-        className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold ${EVENT_TYPE_BADGE[event.type]}`}
+        className={`absolute top-0 left-0 pr-6 pl-4 py-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider ${EVENT_TYPE_BADGE[event.type]}`}
+        style={{ clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}
       >
         {EVENT_TYPE_LABELS[event.type] ?? event.type}
       </span>
       {early && (
-        <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold bg-accent-gold text-navy border-2 border-[#8A6A1A]">
+        <span
+          className="absolute top-0 right-0 pl-6 pr-4 py-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider bg-brick text-[#FFFBF2]"
+          style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 12px 100%)" }}
+        >
           Plan early
         </span>
       )}
       <div className="absolute bottom-0 left-0 right-0 p-5">
-        <h3 className="font-heading text-2xl font-bold text-white uppercase tracking-wide leading-tight mb-1">
+        <h3 className="font-heading text-2xl font-semibold text-white uppercase tracking-wide leading-tight mb-1">
           {event.name}
         </h3>
-        <p className="text-sm text-white/85 mb-3">{dateLabel}</p>
+        <p className="font-mono text-xs text-white/85 mb-3">{dateLabel}</p>
         <div className="h-1.5 w-full rounded-full bg-black/50 overflow-hidden mb-2">
           <div
             className="h-full rounded-full"

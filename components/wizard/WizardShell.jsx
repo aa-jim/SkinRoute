@@ -40,22 +40,20 @@ export default function WizardShell() {
     : null;
 
   return (
-    <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-10 sm:py-16">
-      <div className="rounded-2xl border border-border-subtle bg-navy-light overflow-hidden shadow-xl shadow-black/30">
-        {/* Header bar */}
-        <div className="flex items-center justify-between px-5 sm:px-8 py-4 sm:py-5 bg-navy border-b border-border-subtle">
-          <div className="flex items-center gap-3 min-w-0">
-            <h1 className="font-heading text-lg sm:text-2xl font-bold text-text-primary uppercase tracking-wide truncate">
-              {event.name}
-            </h1>
-          </div>
+    <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-8 sm:py-14">
+      {/* The worksheet: raised paper card with an inverted ink header band */}
+      <div className="rounded-xl border-2 border-ink bg-paper-raised shadow-hard-lg overflow-hidden">
+        <div className="flex items-center justify-between px-5 sm:px-8 py-4 sm:py-5 bg-ink">
+          <h1 className="font-heading text-lg sm:text-2xl font-semibold text-paper-raised truncate">
+            {event.name}
+          </h1>
           {startDateLabel && (
-            <span className="text-sm text-accent-gold shrink-0 hidden sm:block">
+            <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-[#CFA74E] shrink-0 hidden sm:block">
               Starts {startDateLabel}
             </span>
           )}
           {endDateLabel && (
-            <span className="text-sm text-text-muted shrink-0 hidden sm:block">
+            <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-paper/60 shrink-0 hidden sm:block">
               Ends {endDateLabel}
             </span>
           )}
@@ -67,14 +65,16 @@ export default function WizardShell() {
           {ActiveStep ? (
             <ActiveStep />
           ) : (
-            <p className="text-text-muted text-center py-12">
+            <p className="text-ink-soft text-center py-12">
               Step {currentStep} isn&apos;t built yet.
             </p>
           )}
         </div>
 
-        <div className="px-5 sm:px-8 pb-6 text-center">
-          <span className="text-xs text-text-muted">Step {displayStep} of {totalSteps}</span>
+        <div className="px-5 sm:px-8 pb-5 text-center">
+          <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-faint">
+            Step {displayStep} of {totalSteps}
+          </span>
         </div>
       </div>
     </div>
