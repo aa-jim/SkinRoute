@@ -144,6 +144,29 @@ export default function StepFour() {
   const p = plan.data;
   const isBingo = p.eventType === "bingo";
   const isCollector = p.eventType === "collector";
+  // Per-tier plan BDT read off the day-by-day schedule (bingo only). Stale
+  // cached plans lack it, so always guard with `bdtCost`.
+  const bdtCost = p.winCondition?.bdtCost;
+
+  // Money / diamond line helpers — single value when a range collapses to one
+  // (e.g. the lucky tier reaching 30 and 40 with the same purchase).
+  const fmtMoney = (v) => `৳${Number(v).toLocaleString()}`;
+  const fmtBdtLine = (v) => {
+    const arr = Array.isArray(v) ? v : [v, v];
+    return arr[0] === arr[1]
+      ? `${fmtMoney(arr[0])} per plan`
+      : `${fmtMoney(arr[0])}–${fmtMoney(arr[1])} per plan`;
+  };
+  const fmtDiaRange = (v) =>
+    v[0] === v[1] ? v[0].toLocaleString() : `${v[0].toLocaleString()}–${v[1].toLocaleString()}`;
+  // BDT subline styled like the old "Total BDT" card — gold + wallet icon, so
+  // the per-tier money reads as the primary takeaway alongside the diamonds.
+  const bdtSubLabel = (text) => (
+    <span className="flex items-center gap-1.5 text-gold-dark font-heading font-semibold">
+      <Wallet size={13} className="shrink-0" />
+      {text}
+    </span>
+  );
 
   return (
     <div data-plan-section>
@@ -261,28 +284,25 @@ export default function StepFour() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <SummaryCard
-              label="Total BDT"
-              value={`৳${(p.recharge?.totalBdt ?? 0).toLocaleString()}`}
-              icon={Wallet}
-              accent="gold"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <SummaryCard
               label="Diamonds (lucky)"
-              value={`${p.winCondition.diamondCost.lucky[0].toLocaleString()}–${p.winCondition.diamondCost.lucky[1].toLocaleString()}`}
+              value={fmtDiaRange(p.winCondition.diamondCost.lucky)}
+              sublabel={bdtCost ? bdtSubLabel(fmtBdtLine(bdtCost.lucky)) : undefined}
               icon={Gem}
               accent="green"
             />
             <SummaryCard
               label="Diamonds (realistic)"
               value={p.winCondition.diamondCost.realistic.toLocaleString()}
+              sublabel={bdtCost ? bdtSubLabel(fmtBdtLine(bdtCost.realistic)) : undefined}
               icon={Gem}
               accent="gold"
             />
             <SummaryCard
               label="Diamonds (worst)"
               value={p.winCondition.diamondCost.worst.toLocaleString()}
+              sublabel={bdtCost ? bdtSubLabel(fmtBdtLine(bdtCost.worst)) : undefined}
               icon={Gem}
               accent="coral"
             />

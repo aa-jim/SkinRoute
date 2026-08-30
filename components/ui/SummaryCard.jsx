@@ -15,7 +15,7 @@ export default function SummaryCard({ label, value, sublabel, icon: Icon, accent
         {Icon && <Icon size={compact ? 12 : 14} />}
         {label}
       </div>
-      <p className={`font-heading ${compact ? "text-lg sm:text-2xl" : "text-xl sm:text-3xl"} font-semibold leading-tight break-words ${accentClass}`}>{value}</p>
+      <p className={`font-heading ${compact ? "text-lg sm:text-2xl" : "text-xl sm:text-2xl"} font-semibold leading-tight break-words ${accentClass}`}>{value}</p>
       {sublabel && <p className="text-xs text-ink-soft">{sublabel}</p>}
     </div>
   );

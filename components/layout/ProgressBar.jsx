@@ -9,7 +9,11 @@ const STEPS = [
 // circles for each stop. Labels only from sm: up (mobile shows circles only).
 export default function ProgressBar({ currentStep, eventType }) {
   const visibleSteps = eventType === "bingo"
-    ? STEPS.filter((s) => s.n !== 3).map((s, i) => ({ ...s, displayN: i + 1 }))
+    ? STEPS.filter((s) => s.n !== 3).map((s, i) => ({
+        ...s,
+        displayN: i + 1,
+        label: s.n === 2 ? "Event Skins" : s.label,
+      }))
     : STEPS.map((s) => ({ ...s, displayN: s.n }));
 
   return (

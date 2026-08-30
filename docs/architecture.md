@@ -71,7 +71,7 @@ Fields present on most plans (per-type differences noted):
   totalDiamondsForPlan, netDiamondsNeeded?, surpriseLadder?,
   warnings: [{ type: "recharge_needed", message }],
   // bingo extra:
-  winCondition: { draws: { lucky: [30,40], realistic: 50, worst: 60 }, pity, diamondCost },
+  winCondition: { draws: { lucky: [30,40], realistic: 50, worst: 60 }, pity, diamondCost, bdtCost },
   dailySchedule                                   // informational skeleton
 }
 ```
@@ -135,6 +135,7 @@ Each simulates from `startDay` to `duration_days`, one row per day, and **claims
 - Fixed distribution (`BINGO_DRAWS_PER_LINE`, not probability-derived): lucky 30–40 / realistic 50 / worst 60.
 - `freeTokens` = milestone tokens + all supply-window task tokens.
 - The plan simulates the **worst case** (60 draws), then caps excess draws (refunding average dia) and stops with a "Stopped at N draws" note.
+- `winCondition.bdtCost` (bingo) = per-tier **BDT** read off the final day-by-day schedule: a prefix sum of the actual pack + pass purchases (`packsByDay` + pass purchase dates) over the days up to the day each draw tier is reached. It is a strict prefix of the single full-event recharge plan — `worst` always equals `recharge.totalBdt`, and a tier covered by owned diamonds alone is 0. Shown as a second line in the Step 4 diamond cards and a "Plan Cost (BDT)" column in the PDF.
 - Aspirants' per-confidence diamond costs are recomputed by re-running the sim at each target.
 
 ### Start Today vs Day 1

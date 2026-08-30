@@ -239,9 +239,18 @@ function DayCards({ rows, showCoa }) {
               <span className="font-mono text-[11px] text-sea-dark bg-sea/10 px-2 py-0.5 rounded-sm">
                 {row.draws} draw{row.draws === 1 ? "" : "s"}
               </span>
-              <span className="font-mono text-[11px] font-semibold text-brick-dark bg-brick/10 px-2 py-0.5 rounded-sm">
-                total {row.cumulative}
-              </span>
+              {row.drawTier ? (
+                <span
+                  title={`${row.cumulative} total draws (≥ ${row.drawTier} tier reached)`}
+                  className="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full border border-gold/60 bg-gold/15 font-mono text-[11px] font-bold text-gold-dark"
+                >
+                  {row.cumulative}
+                </span>
+              ) : (
+                <span className="font-mono text-[11px] font-semibold text-brick-dark bg-brick/10 px-2 py-0.5 rounded-sm">
+                  total {row.cumulative}
+                </span>
+              )}
             </div>
           </div>
           <ActionCell lines={row.actionLines} />
@@ -267,6 +276,8 @@ function DayCards({ rows, showCoa }) {
 
 export default function ScheduleTable({ plan, event, startDay = 1 }) {
   const [expanded, setExpanded] = useState(false);
+  // Bingo staged reveal: expose the schedule tier-by-tier (30 -> 40 -> 50 -> 60).
+  const [bingoStage, setBingoStage] = useState(0);
   const isCollector = plan.eventType === "collector";
   const showFromToday = startDay > 1;
 
@@ -276,11 +287,22 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
     let cumDraws = 0;
     let cumDia = 0;
     let cumCoa = 0;
+    // Bingo only: mark the highest win-condition tier (30/40/50/60) the running
+    // total has reached, so the Cumulative cell can be highlighted at milestones.
+    const isBingo = plan.eventType === "bingo";
+    const tierDraws = isBingo && plan.winCondition?.draws
+      ? [plan.winCondition.draws.lucky[0], plan.winCondition.draws.lucky[1], plan.winCondition.draws.realistic, plan.winCondition.draws.worst].filter((t) => typeof t === "number")
+      : [];
     return filtered.map((r) => {
       cumDraws += r.draws;
       cumDia += r.diaSpent ?? r.dia;
       cumCoa += r.coaSpent ?? r.coa ?? 0;
-      return { ...r, cumulative: cumDraws, cumulativeDia: cumDia, cumulativeCoa: cumCoa };
+      let drawTier = null;
+      for (const t of tierDraws) {
+        // mark only the FIRST day the running total crosses each tier
+        if (drawTier == null && cumDraws >= t && cumDraws - r.draws < t) drawTier = t;
+      }
+      return { ...r, cumulative: cumDraws, cumulativeDia: cumDia, cumulativeCoa: cumCoa, drawTier };
     });
   }
 
@@ -328,7 +350,18 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
                   <td className={`px-4 py-2.5 font-mono font-bold ${row.tag ? DATE_TAG_STYLES[row.tag] : "text-ink-soft"}`}>{row.date}</td>
                   <td className="px-4 py-2.5 text-ink"><ActionCell lines={row.actionLines} /></td>
                   <td className="px-4 py-2.5 text-right text-ink">{row.draws}</td>
-                  <td className="px-4 py-2.5 text-right text-brick font-semibold">{row.cumulative}</td>
+                  <td className="px-4 py-2.5 text-right">
+                    {row.drawTier ? (
+                      <span
+                        title={`${row.cumulative} total draws (≥ ${row.drawTier} tier reached)`}
+                        className="inline-flex items-center justify-center min-w-8 h-8 px-1.5 rounded-full border border-gold/60 bg-gold/15 font-mono text-xs font-bold text-gold-dark"
+                      >
+                        {row.cumulative}
+                      </span>
+                    ) : (
+                      <span className="text-brick font-semibold">{row.cumulative}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-2.5 text-right text-sea">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
                   <td className="px-4 py-2.5 text-right text-gold-dark">{row.coa > 0 ? row.coa.toLocaleString() : "—"}</td>
                 </tr>
@@ -381,11 +414,37 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
   // ---------------------------------------------------------------------
   const themedRows = filterRows(buildThemedCrestRows(plan, event) ?? []);
   const rows = themedRows ?? [];
-  const visibleRows = expanded ? rows : rows.slice(0, 10);
-  const displayTotals = visibleRows.reduce(
-    (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia }),
-    { draws: 0, dia: 0 }
-  );
+  const isBingo = plan.eventType === "bingo";
+  // BINGO: tiered reveal. stage 0 -> up to & incl. 30-draw day, 1 -> 40, 2 -> 50, 3 -> 60 (all).
+  let visibleRows;
+  let displayTotals;
+  if (isBingo) {
+    const tiers = plan.winCondition?.draws
+      ? [plan.winCondition.draws.lucky[0], plan.winCondition.draws.lucky[1], plan.winCondition.draws.realistic, plan.winCondition.draws.worst].filter((t) => typeof t === "number")
+      : [];
+    const stageTiers = [tiers[0], tiers[1], tiers[2], tiers[3]].filter(Boolean);
+    const targetTier = stageTiers[Math.min(bingoStage, stageTiers.length - 1)];
+    if (expanded || !targetTier) {
+      visibleRows = rows;
+    } else {
+      // show through the first row whose cumulative >= the target tier
+      let cut = rows.length;
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].cumulative >= targetTier) { cut = i + 1; break; }
+      }
+      visibleRows = rows.slice(0, cut);
+    }
+    displayTotals = visibleRows.reduce(
+      (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia }),
+      { draws: 0, dia: 0 }
+    );
+  } else {
+    visibleRows = expanded ? rows : rows.slice(0, 10);
+    displayTotals = visibleRows.reduce(
+      (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia }),
+      { draws: 0, dia: 0 }
+    );
+  }
 
   return (
     <div className="mb-6">
@@ -417,7 +476,18 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
                 <td className={`px-4 py-2.5 font-mono font-bold ${row.tag ? DATE_TAG_STYLES[row.tag] : "text-ink-soft"}`}>{row.date}</td>
                 <td className="px-4 py-2.5 text-ink"><ActionCell lines={row.actionLines} /></td>
                 <td className="px-4 py-2.5 text-right text-ink">{row.draws}</td>
-                <td className="px-4 py-2.5 text-right text-brick font-semibold">{row.cumulative}</td>
+                <td className="px-4 py-2.5 text-right">
+                  {row.drawTier ? (
+                    <span
+                      title={`${row.cumulative} total draws (≥ ${row.drawTier} tier reached)`}
+                      className="inline-flex items-center justify-center min-w-8 h-8 px-1.5 rounded-full border border-gold/60 bg-gold/15 font-mono text-xs font-bold text-gold-dark"
+                    >
+                      {row.cumulative}
+                    </span>
+                  ) : (
+                    <span className="text-brick font-semibold">{row.cumulative}</span>
+                  )}
+                </td>
                 <td className="px-4 py-2.5 text-right text-sea">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
               </tr>
             ))}
@@ -435,7 +505,44 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
         </table>
       </div>
 
-      {rows.length > 10 && (
+      {/* Bingo staged reveal — tier-by-tier text. Non-bingo keeps the expand-all. */}
+      {isBingo ? (
+        bingoStage < 3 || expanded ? (
+          <div className="w-full mt-2 flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium text-brick">
+            {bingoStage < 2 ? (
+              <>
+                <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">Didn&apos;t hit the bingo?</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (expanded) setExpanded(false);
+                    else if (bingoStage < 3) setBingoStage((s) => s + 1);
+                    else setExpanded(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]"
+                >
+                  Continue <ChevronDown size={14} />
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">sigh…this time for sure</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (expanded) setExpanded(false);
+                    else if (bingoStage < 3) setBingoStage((s) => s + 1);
+                    else setExpanded(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]"
+                >
+                  Continue <ChevronDown size={14} />
+                </button>
+              </>
+            )}
+          </div>
+        ) : null
+      ) : rows.length > 10 ? (
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
@@ -447,7 +554,7 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
             <>Show all {rows.length} days <ChevronDown size={14} /></>
           )}
         </button>
-      )}
+      ) : null}
 
       {/* Legend — hidden on mobile since DayCards already show the colored tags */}
       <div className="hidden sm:flex flex-wrap gap-4 mt-3 text-[11px] text-ink-soft">

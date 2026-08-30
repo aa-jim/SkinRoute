@@ -28,7 +28,7 @@ export default function StepTwo() {
   return (
     <div>
       <h2 className="font-heading text-xl sm:text-2xl font-semibold text-ink mb-1">
-        {isBingo ? "Event skins" : "Select target skin"}
+        {isBingo ? "Event Skins" : "Select target skin"}
       </h2>
       <p className="text-sm text-ink-soft mb-6">
         {isBingo

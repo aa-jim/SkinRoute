@@ -14,14 +14,15 @@ Everything a user can do in SkinRoute, page by page. Event-type differences (col
 - Sorting: `coming_soon` events always come after `active` ones; within a status, by `start_date` ascending.
 - **Event card**: banner image (falls back to hidden image if it fails to load), name, type badge, gradient + tinted text panel from the event's `banner_gradient` / `text_panel_color`, and a status strip:
   - `coming_soon` **inside the 7-day early-plan window** (≤ 7 days before `start_date`, `isEarlyPlanable`) → clickable, links to `/plan/{eventId}` with a badge-styled "Plan early" pill, "Coming {Month Day}" and "Starts in N days" (or "Starting today" on launch day). The wizard works from Day 1 until the event actually goes live.
-  - `coming_soon` **more than 7 days out** → dimmed card, not clickable, "Coming soon".
+  - `coming_soon` **with `status: "early"`** (manual data override in `events.json`) → the same clickable "Plan early" card **immediately**, regardless of the 7-day window — even with no `start_date` yet (labels then read "Coming soon"). `"ended"` still wins.
+  - `coming_soon` **more than 7 days out** (and not `status: "early"`) → dimmed card, not clickable, "Coming soon".
   - `active` → clickable, links to `/plan/{eventId}`, shows a **live in-game-style countdown** ("3d 5h left", hours-only below a day — matches MLBB's own event timer, computed at the 2PM BDT close anchor) with a **linear time-progress bar** (fill = elapsed / total window, e.g. day 15 of 30 → 50%), color sweeps green→red as the event nears its end (smooth `hsl` ramp), and "Ends on {Month Day}".
 - Mobile dot indicators under the carousel (one per event, scrolls the card into view).
 - Day statuses are computed with the 2 PM BDT reset boundary (08:00 UTC) — an event shown as ending on day X stays live until 2 PM BDT of day X+1.
 
 ## Plan wizard (`/plan/{eventId}`)
 
-Wizard steps: non-bingo events have **4 steps** (Resources → Target → Prize Pool → Result); bingo events have **3** (Target step is view-only, Prize Pool is skipped, and the step bar renumbers).
+Wizard steps: non-bingo events have **4 steps** (Resources → Target → Prize Pool → Result); bingo events have **3** (the Target step is relabeled **Event Skins** and is view-only, Prize Pool is skipped, and the step bar renumbers).
 
 Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `target`, `ownedItems`, `startFromToday`.
 
@@ -40,7 +41,7 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 
 - **Non-bingo**: card per `shop_items` entry — image, name, hero, crest price. Discounted skins show the old price struck through (`base_crest_cost`) and the real price in gold (`crest_cost`). Corner ribbon shows the tier (`tier.toUpperCase()` or `event.card_label`).
 - **Painted Skin (Outfit 1) toggle** — appears when the selected skin has an `outfit1_variant`: "Also get Painted Skin variant?" with a cost breakdown (skin / Painted Skin / Total). Extra `crest_cost` is added to the target.
-- **Bingo**: cards are view-only (no selection). The pity skin (`event.bingo.guaranteed_pity_skin_id`) is labeled "Guaranteed in 10x"; others show "Line completion" (regular bingo) or "Box completion" (aspirants — first completed box wins). Aspirants-specific wording keys off `event.id === "aspirants_2026"`.
+- **Bingo**: cards are view-only (no selection). The pity skin (`event.bingo.guaranteed_pity_skin_id`) is labeled "Guaranteed in 10x"; others show "Line completion" (regular bingo) or "Box completion" (aspirants — first completed box wins). Aspirants-specific wording keys off `event.id === "aspirants_2026"`. The step heading + stepper label read **"Event Skins"** (not "Target"), since there's nothing to select.
 - "Next" is disabled until a target is selected (bingo always enabled).
 
 ### Step 3 — Prize pool owned (skipped for bingo)
@@ -57,6 +58,7 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 - **Draws overview** (non-bingo): Optimistic / Realistic / Worst-case draws.
 - **Warnings** — coral rows with an alert icon when the plan is tight or the math had to bend somewhere.
 - **Bingo summary panel**: lucky draw range, realistic, worst-case, plus BDT / diamonds for each scenario, and a "Guaranteed: {skin} on first 10x draw if unowned" note when applicable. Header says "The Aspirants" for aspirants, "Bingo — first line completion" otherwise.
+  - Each diamond card also shows the **BDT the plan actually spends for that tier** on a second line (e.g. "৳940–৳1,540 per plan") — read straight from the day-by-day schedule (sum of the packs/passes purchased on the days up to when that many draws is reached), never a per-box dia→money conversion. There is **no separate "Total BDT" box** — the worst tier's line holds the full-event money (computed once in the recharge plan); a tier covered by owned diamonds alone shows ৳0. The BDT line is styled like the old total box (gold + wallet icon), and a range that collapses to one value shows a single figure instead of "৳X–৳X".
 - **Summary cards**: Total BDT (৳), Diamonds Needed, Total Draws, Target Skin (+ outfit 1 variant line). "Diamonds Needed" shows the **total diamonds the plan actually spends** (sum of the day-by-day Dia column — matches the schedule's "Total from Day X" footer), not the "recharge" total — so a plan that starts with a large diamond balance doesn't overstate the requirement. Collector also gets a compact CoA Needed card.
 - **Recommended Recharge** (`PackRecommendation`):
   - Impossible state when no pack combo fits the window: "No pack combination reaches the target within the event window with current inputs."
@@ -74,6 +76,8 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
 - **Date labels** are anchored at 08:00 UTC (= 2 PM BDT in-game reset) so they match in-game days.
 - **Action lines** come from the plan's per-day notes, each rendered with an icon: weekly-pass purchases (ticket), Starlight claims (key/sparkles), recharges and pack purchases (wallet), token claims (scroll/key), "Don't claim" (clock), completed recharge/spend tasks (coins), insufficient balance (alert), CoA draws (CoA star), regular draws (gem).
 - **Tags**: rows are tinted by kind — final push (green), premium-supply / Starlight days (purple), balance gaps (coral). A legend explains icons per event type. On themed-crest/bingo/aspirants, the exact day each premium-supply phase opens (e.g. Day 8, 15) gets a "Premium supply phase N start" line at the top of its action cell (sparkles icon) and the purple supply tint.
+- **Bingo milestone highlight**: only on the exact day the running draw total *first reaches* a win-condition tier (30 → 40 → 50 → 60), the Cumulative number gets a **gold circle background** (desktop table + mobile day-card chip). Subsequent days return to the plain brick number — one clean visual beat at the moment the target is hit.
+- **Bingo staged Continue reveal**: the schedule initially shows up to the 30-draw day with a "Didn't hit the bingo? — Continue" footer button (gold button). Tapping Continue progressively extends the view through each tier (40, then 50, where the message becomes "sigh…this time for sure — Continue"); after the final tier the full 60-draw schedule is shown with no footer. Non-bingo events keep the plain "Show all N days" / "Show less" expander.
 
 ## Bug reports
 

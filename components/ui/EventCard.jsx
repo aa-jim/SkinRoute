@@ -26,17 +26,23 @@ export default function EventCard({ event }) {
   const tilStart = daysUntilStart(event);
   const liveLeft = timeLeftLabel(event.end_date);
 
+  // A manual status:"early" override may unlock a card with no start_date yet —
+  // guard the labels so they never render "Invalid Date" or "Starts in null days".
   const dateLabel = isComingSoon
     ? early
-      ? `Coming ${new Date(event.start_date + "T06:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" })}`
+      ? event.start_date
+        ? `Coming ${new Date(event.start_date + "T06:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" })}`
+        : "Coming Soon"
       : "Coming Soon"
     : `Ends on ${new Date(event.end_date + "T06:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric" })}`;
 
   const countdownLabel = isComingSoon
     ? early
-      ? tilStart === 0
-        ? "Starting today"
-        : `Starts in ${tilStart} day${tilStart === 1 ? "" : "s"}`
+      ? tilStart === null
+        ? "Coming soon"
+        : tilStart === 0
+          ? "Starting today"
+          : `Starts in ${tilStart} day${tilStart === 1 ? "" : "s"}`
       : "Coming soon"
     : liveLeft ?? urgencyLabel(days);
 
