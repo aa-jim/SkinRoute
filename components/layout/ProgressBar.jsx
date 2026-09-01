@@ -5,30 +5,35 @@ const STEPS = [
   { n: 4, label: "Result" },
 ];
 
+// Route-style stepper: dashed connectors between stops (done = fern), stamp
+// circles for each stop. Labels only from sm: up (mobile shows circles only).
 export default function ProgressBar({ currentStep, eventType }) {
   const visibleSteps = eventType === "bingo"
-    ? STEPS.filter((s) => s.n !== 3).map((s, i) => ({ ...s, displayN: i + 1 }))
+    ? STEPS.filter((s) => s.n !== 3).map((s, i) => ({
+        ...s,
+        displayN: i + 1,
+        label: s.n === 2 ? "Event Skins" : s.label,
+      }))
     : STEPS.map((s) => ({ ...s, displayN: s.n }));
 
   return (
-    <div className="flex items-center justify-center gap-2 sm:gap-3 py-6 px-4 flex-wrap">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 py-6 px-4 flex-wrap">
       {visibleSteps.map((step, i) => {
         const isActive = step.n === currentStep;
         const isDone = step.n < currentStep;
 
         return (
-          <div key={step.n} className="flex items-center gap-2 sm:gap-3">
+          <div key={step.n} className="flex items-center gap-1.5 sm:gap-2">
             <div className="flex items-center gap-2">
               <span
-                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs sm:text-sm font-heading font-bold shrink-0 ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-mono text-xs sm:text-sm font-semibold shrink-0 border-2 ${
                   isDone
-                    ? "bg-accent-green text-navy"
+                    ? "bg-fern border-fern text-paper-raised"
                     : isActive
-                      ? "bg-accent-gold text-navy"
-                      : "bg-navy text-text-muted border border-border-subtle"
+                      ? "bg-brick border-brick text-paper-raised shadow-hard-sm"
+                      : "bg-paper-raised border-line-strong text-ink-faint"
                 }`}
               >
-                {/* Conditionally show a checkmark icon if done, otherwise show the step number */}
                 {isDone ? (
                   <svg
                     className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3.5]"
@@ -47,15 +52,23 @@ export default function ProgressBar({ currentStep, eventType }) {
                 )}
               </span>
               <span
-                className={`text-sm sm:text-base font-medium hidden xs:inline ${
-                  isActive ? "text-text-primary" : "text-text-muted"
+                className={`hidden sm:inline text-[11px] uppercase tracking-[0.14em] font-medium ${
+                  isActive
+                    ? "text-ink"
+                    : isDone
+                      ? "text-ink-soft"
+                      : "text-ink-faint"
                 }`}
               >
                 {step.label}
               </span>
             </div>
             {i < visibleSteps.length - 1 && (
-              <span className="w-6 sm:w-10 h-px bg-border-subtle shrink-0" />
+              <span
+                className={`w-5 sm:w-10 border-t-2 border-dashed shrink-0 ${
+                  step.n < currentStep ? "border-fern" : "border-line-strong"
+                }`}
+              />
             )}
           </div>
         );

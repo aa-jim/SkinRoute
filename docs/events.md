@@ -19,7 +19,7 @@ Every MLBB event is data-driven. Adding the next event = adding one JSON object 
 | `start_date` / `end_date` | string | see note | `YYYY-MM-DD`. Day resets at 2 PM BDT (08:00 UTC); an event ending on `end_date` is live until 2 PM BDT the next day. **Not needed for recurring events** (see below). |
 | `recurring` | object | optional | `{ "pattern": "monthly" }` — the event's window is **computed at request time** from the current in-game month (2 PM BDT boundary), so it rolls over automatically with zero edits. Explicit `start_date`/`end_date` in the JSON always override the pattern. |
 | `duration_days` | number | ✅ | Event length in days. Must equal the calendar span. For recurring events this is resolved automatically (28–31); the JSON value is only a fallback. |
-| `status` | string | ✅ | Only `"hidden"` and `"ended"` matter to code (kill-switches). `"active"` / `"coming soon"` are informational. |
+| `status` | string | ✅ | `"hidden"` (never shown) and `"ended"` (forces ended, kill-switch priority) are always respected. `"active"` / `"coming soon"` are informational. `"early"` **manually unlocks the "Plan early" state** on a coming-soon card immediately — outside the 7-day window, even with no `start_date` (see §1c). |
 | `banner_gradient` | string | ✅ | Tailwind gradient classes for the card tint (e.g. `"from-[#0a1a3a] via-[#1a2a5a] to-[#3a1a5a]"`). |
 | `text_panel_color` | string | ✅ | Hex color for the card text panel tint. |
 | `image` | string | ✅ | Banner path, e.g. `/assets/events/{id}/banner.jpg`. |
@@ -173,6 +173,7 @@ with **no** `start_date`/`end_date`. `lib/eventHelpers.js` → `resolveEventDate
 Events unlock for planning **7 calendar days before their `start_date`** (`EARLY_PLAN_DAYS` in `lib/eventHelpers.js`):
 
 - The home-page card switches from the dimmed "Coming soon" look to a clickable gold-ringed card ("Plan early" pill, "Coming {Month Day}" + "Starts in N days"). Before the window, the card stays locked; direct `/plan/{id}` URLs always work (plans simply start from Day 1 until the event is live).
+- **Manual override — `status: "early"`**: unlocks the same "Plan early" card **immediately**, independent of the 7-day window (and even with no `start_date` yet — the labels then read "Coming soon"). Use it to open an event for planning as soon as its data is ready. `"ended"` still wins; once the event's start time passes, it shows as a normal active event.
 - ⚠️ **The event must carry full draw data to be planable** — `draw_cost_*`, `discount_draw_cost`, `milestones` (array), `premium_supply` (array), `shop_items`, `prize_pool`. A placeholder-only entry (e.g. banner fields only) unlocks visually but the wizard can't build a plan for it. Add the full data when you add the coming-soon entry, not after it starts.
 - Recurring events (collector) resolve `start_date` per request, so they automatically become planable inside their own pre-start window too.
 

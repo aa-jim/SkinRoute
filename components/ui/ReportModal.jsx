@@ -69,46 +69,46 @@ export default function ReportModal({ open, onClose, context }) {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/70 px-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[520px] max-h-[90vh] overflow-y-auto rounded-2xl border border-border-subtle bg-navy-light p-5"
+        className="w-full max-w-[520px] max-h-[90vh] overflow-y-auto rounded-xl border-2 border-ink bg-paper-raised shadow-hard-lg p-5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="flex items-center gap-2">
-            <Bug size={20} className="text-accent-coral" />
-            <h3 className="font-heading text-lg font-bold text-text-primary">Report a Bug</h3>
+            <Bug size={20} className="text-brick" />
+            <h3 className="font-heading text-lg font-bold text-ink">Report a Bug</h3>
           </div>
           <button type="button" onClick={onClose} aria-label="Close">
-            <X size={18} className="text-text-muted hover:text-text-primary transition-colors" />
+            <X size={18} className="text-ink-soft hover:text-ink transition-colors" />
           </button>
         </div>
 
         {status === STATUS.success ? (
           <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <CheckCircle2 size={40} className="text-accent-green" />
-            <p className="font-heading font-bold text-text-primary">Report sent</p>
-            <p className="text-xs text-text-muted max-w-[300px]">
+            <CheckCircle2 size={40} className="text-fern" />
+            <p className="font-heading font-bold text-ink">Report sent</p>
+            <p className="text-xs text-ink-soft max-w-[300px]">
               Thanks! Your report was received and will be looked into.
             </p>
             <button
               type="button"
               onClick={onClose}
-              className="mt-2 px-5 py-2 rounded-lg bg-accent-blue text-white font-heading font-bold hover:opacity-90 transition-opacity"
+              className="mt-2 px-5 py-2 rounded-md border-2 border-ink text-ink font-heading font-semibold hover:bg-ink hover:text-paper-raised transition-colors"
             >
               Done
             </button>
           </div>
         ) : (
           <>
-            <p className="text-xs text-text-muted leading-relaxed mb-4">
+            <p className="text-xs text-ink-soft leading-relaxed mb-4">
               Something look wrong with a plan? Describe what you expected vs what you got. Your
               event inputs and plan details are attached automatically.
             </p>
 
-            <label className="block text-[11px] text-text-muted uppercase tracking-wide mb-1.5">
+            <label className="block text-[11px] text-ink-soft uppercase tracking-wide mb-1.5">
               What went wrong?
             </label>
             <textarea
@@ -117,27 +117,27 @@ export default function ReportModal({ open, onClose, context }) {
               rows={3}
               maxLength={2000}
               placeholder="e.g. The recharge plan total is 100 BDT higher than the sum of the packs shown..."
-              className="w-full rounded-lg bg-navy border border-border-subtle px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted/60 focus:outline-none focus:border-accent-gold/50 resize-y"
+              className="w-full rounded-md bg-white/70 border border-line-strong px-3 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-brick resize-y"
             />
 
-            <label className="block text-[11px] text-text-muted uppercase tracking-wide mt-4 mb-1.5">
+            <label className="block text-[11px] text-ink-soft uppercase tracking-wide mt-4 mb-1.5">
               Technical details (auto)
             </label>
-            <pre className="w-full max-h-56 overflow-y-auto rounded-lg bg-navy border border-border-subtle px-3 py-2.5 text-[11px] leading-relaxed text-text-muted whitespace-pre-wrap break-words">
+            <pre className="w-full max-h-56 overflow-y-auto rounded-md bg-ink border border-ink px-3 py-2.5 font-mono text-[11px] leading-relaxed text-paper/85 whitespace-pre-wrap break-words">
               {report.technical}
             </pre>
 
             {accessKey.length === 0 && (
-              <p className="flex items-start gap-2 mt-3 px-3 py-2 rounded-lg bg-accent-amber/10 border border-accent-amber/40 text-xs text-text-primary">
-                <AlertTriangle size={14} className="text-accent-amber shrink-0 mt-0.5" />
+              <p className="flex items-start gap-2 mt-3 px-3 py-2 rounded-lg bg-gold/10 border border-gold/40 text-xs text-ink">
+                <AlertTriangle size={14} className="text-gold-dark shrink-0 mt-0.5" />
                 Report form is not configured yet (missing NEXT_PUBLIC_WEB3FORMS_KEY). Once the key
                 is added, this form sends reports to the inbox.
               </p>
             )}
 
             {status === STATUS.error && (
-              <p className="flex items-start gap-2 mt-3 px-3 py-2 rounded-lg bg-accent-coral/10 border border-accent-coral/40 text-xs text-text-primary">
-                <AlertTriangle size={14} className="text-accent-coral shrink-0 mt-0.5" />
+              <p className="flex items-start gap-2 mt-3 px-3 py-2 rounded-lg bg-brick/10 border border-brick/40 text-xs text-ink">
+                <AlertTriangle size={14} className="text-brick shrink-0 mt-0.5" />
                 {errorMsg}
               </p>
             )}
@@ -146,7 +146,7 @@ export default function ReportModal({ open, onClose, context }) {
               type="button"
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className="mt-4 w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-accent-gold text-navy font-heading font-bold hover:opacity-90 transition-opacity disabled:opacity-40"
+              className="mt-4 w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-brick text-[#FFFBF2] font-heading font-bold hover:opacity-90 transition-opacity disabled:opacity-40"
             >
               <Send size={15} />
               {status === STATUS.sending ? "Sending..." : "Send report"}

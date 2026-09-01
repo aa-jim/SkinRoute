@@ -9,7 +9,7 @@
       "status": "active",
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
       "text_panel_color": "#412814",
-      "image": "/assets/events/exquisite_collection/banner.webp",
+      "image": "/assets/events/exquisite_collection/banner.png",
       "draw_cost_1x": 50,
       "draw_cost_10x": 500,
       "discount_draw_cost": {
@@ -38,92 +38,92 @@
       ],
       "shop_items": [
         {
-          "id": "balmond_vulcan_lionheart",
-          "name": "Vulcan Lionheart",
-          "hero": "Balmond",
+          "id": "argus_raiden_maru",
+          "name": "Raiden Maru",
+          "hero": "Argus",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 720,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/balmond_vulcan_lionheart.jpg"
+          "image": "/assets/skins/collector/argus_raiden_maru.jpg"
         },
         {
-          "id": "cecilion_crimson_wings",
-          "name": "Crimson Wings",
-          "hero": "Cecilion",
+          "id": "yss_lone_destructor",
+          "name": "Lone Destructor",
+          "hero": "Yi Sun-shin",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/cecilion_crimson_wings.jpg"
+          "image": "/assets/skins/collector/yss_lone_destructor.jpg"
         },
         {
-          "id": "natan_tidal_lord",
-          "name": "Tidal Lord",
-          "hero": "Natan",
+          "id": "harith_psychic",
+          "name": "Psychic",
+          "hero": "Harith",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/natan_tidal_lord.jpg"
+          "image": "/assets/skins/collector/harith_psychic.jpg"
         },
         {
-          "id": "valentina_celestial_judicator",
-          "name": "Celestial Judicator",
-          "hero": "Valentina",
+          "id": "novaria_dragonsworn",
+          "name": "Dragonsworn",
+          "hero": "Novaria",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/valentina_celestial_judicator.jpg"
+          "image": "/assets/skins/collector/novaria_dragonsworn.jpg"
         },
         {
-          "id": "silvanna_queen_frost",
-          "name": "Queen Frost",
-          "hero": "Silvanna",
+          "id": "yz_blood_serpent",
+          "name": "Blood Serpent",
+          "hero": "Yu Zhong",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/silvanna_queen_frost.jpg"
+          "image": "/assets/skins/collector/yz_blood_serpent.jpg"
         },
         {
-          "id": "saber_onimaru",
-          "name": "Onimaru",
-          "hero": "Saber",
+          "id": "leomord_inferno_soul",
+          "name": "Inferno Soul",
+          "hero": "Leomord",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/saber_onimaru.jpg"
+          "image": "/assets/skins/luckybox/leomord_inferno_soul.jpg"
         },
         {
-          "id": "lancelot_royal_matador",
-          "name": "Royal Matador",
-          "hero": "Lancelot",
+          "id": "alpha_onimusha_commander",
+          "name": "Onimusha Commander",
+          "hero": "Alpha",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/lancelot_royal_matador.jpg"
+          "image": "/assets/skins/luckybox/alpha_onimusha_commander.jpg"
         },
         {
-          "id": "odette_mermaid_princess",
-          "name": "Mermaid Princess",
-          "hero": "Odette",
+          "id": "eudora_emerald_enchantress",
+          "name": "Emerald Enchantress",
+          "hero": "Eudora",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/odette_mermaid_princess.jpg"
+          "image": "/assets/skins/luckybox/eudora_emerald_enchantress.jpg"
         }
       ],
       "prize_pool": [
@@ -134,9 +134,8 @@
           "drop_rate": 0.0008,
           "dup_value": 240,
           "skin_ids": [
-            "balmond_vulcan_lionheart", "lesley_falcon_mistress", "aldous_realm_watcher",
-            "valentina_celestial_judicator", "silvanna_queen_frost",
-            "saber_onimaru", "lancelot_royal_matador", "odette_mermaid_princess"
+            "argus_raiden_maru", "yss_lone_destructor", "harith_psychic", "novaria_dragonsworn", "yz_blood_serpent",
+            "eudora_emerald_enchantress", "alpha_onimusha_commander", "leomord_inferno_soul"
           ]
         },
         { "id": "special_skin", "name": "Special Skin", "type": "special", "count": 3, "drop_rate": 0.009, "crest_value": 45, "is_skin": true },
@@ -532,10 +531,10 @@
       "name": "The Aspirants",
       "type": "bingo",
       "card_label": "Aspirants",
-      "start_date": null,
-      "end_date": null,
-      "duration_days": 31,
-      "status": "coming soon",
+      "start_date": "2026-09-16",
+      "end_date": "2026-10-08",
+      "duration_days": 23,
+      "status": "early",
       "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
       "text_panel_color": "#5c1a3a",
       "image": "/assets/events/aspirants_2026/banner.jpe",
