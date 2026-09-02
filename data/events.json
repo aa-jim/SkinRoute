@@ -60,15 +60,15 @@
           "image": "/assets/skins/collector/yss_lone_destructor.jpg"
         },
         {
-          "id": "harith_psychic",
-          "name": "Psychic",
-          "hero": "Harith",
+          "id": "miya_doom_catalyst",
+          "name": "Doom Catalyst",
+          "hero": "Miya",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/harith_psychic.jpg"
+          "image": "/assets/skins/collector/miya_doom_catalyst.jpg"
         },
         {
           "id": "novaria_dragonsworn",
@@ -134,7 +134,7 @@
           "drop_rate": 0.0008,
           "dup_value": 240,
           "skin_ids": [
-            "argus_raiden_maru", "yss_lone_destructor", "harith_psychic", "novaria_dragonsworn", "yz_blood_serpent",
+            "argus_raiden_maru", "yss_lone_destructor", "miya_doom_catalyst", "novaria_dragonsworn", "yz_blood_serpent",
             "eudora_emerald_enchantress", "alpha_onimusha_commander", "leomord_inferno_soul"
           ]
         },
