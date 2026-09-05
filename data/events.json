@@ -587,25 +587,11 @@
           "hero": "Ruby",
           "is_skin": true,
           "image": "/assets/events/aspirants_2026/target/ruby_mecha_maiden.png"
-        },
-        {
-          "id": "change_tech_tensai",
-          "name": "Tech Tensai",
-          "hero": "Chang'e",
-          "is_skin": true,
-          "image": "/assets/events/aspirants_2026/target/change_tech_tensai.png"
-        },
-        {
-          "id": "lesley_deadeye_spectre",
-          "name": "Deadeye Spectre",
-          "hero": "Lesley",
-          "is_skin": true,
-          "image": "/assets/events/aspirants_2026/target/lesley_deadeye_spectre.png"
         }
       ],
       "bingo": {
         "type": "line_3x3",
-        "pool_size": 4,
+        "pool_size": 2,
         "skins": [
           {
             "id": "angela_cyber_cherubin",
@@ -615,16 +601,6 @@
           {
             "id": "ruby_mecha_maiden",
             "name": "Mecha Maiden (Ruby)",
-            "guaranteed_pity": false
-          },
-          {
-            "id": "change_tech_tensai",
-            "name": "Tech Tensai (Chang'e)",
-            "guaranteed_pity": false
-          },
-          {
-            "id": "lesley_deadeye_spectre",
-            "name": "Deadeye Spectre (Lesley)",
             "guaranteed_pity": false
           }
         ],
