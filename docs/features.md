@@ -66,7 +66,7 @@ Shared state lives in `WizardProvider` (`lib/wizardContext.js`): `resources`, `t
   - Footer: "Plan completes by day {completionDay} of {duration_days}."
   - Themed-crest events: **premium-supply recharge tasks are always completed** (cheapest pack per phase — the ~20 free tokens per phase are the event's best value), and **passes are only added for a real balance gap** (passes are the cheapest dia-per-BDT, so they beat packs when the user is dia-poor). When the **surprise window is still reachable**, the plan buys at least enough day-1 passes to claim its free-draw tiers (3 passes = 300 recharge on JJK/SF) — so a user whose balance already covers all spending still gets the surprise draws instead of a bloated 5–6-pass plan. After all steps, a **global pack reconciliation** re-partitions the total regular-pack diamonds into the cheapest single-knapsack combination (phase-start days keep their recharge credit, passes/FP packs never move), adopted only when strictly cheaper and re-verified — the reported recharge may tick up 1–3 diamonds, but BDT never increases.
 - **Day-by-day schedule** (`ScheduleTable`) — see below.
-- **Actions**: "← Adjust plan" (back to Step 3, or Step 2 for bingo) and "Download PDF" (client-side generation via jsPDF; shows "Preparing..." while generating).
+- **Actions**: "← Adjust plan" (back to Step 3, or Step 2 for bingo) and "Download PDF" (client-side generation via jsPDF; shows "Preparing..." while generating). On phones the two buttons stack full-width (Download PDF on top); they sit side-by-side from sm: up.
 - Footer reminders: claim free-draw tokens in-game daily; algorithmic estimates disclaimer.
 
 #### Schedule table

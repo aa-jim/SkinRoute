@@ -265,19 +265,19 @@ export default function StepFour() {
             </p>
             <div className="grid grid-cols-3 gap-3 text-center">
               <div>
-                <p className="font-heading text-3xl font-bold text-fern">
+                <p className="font-heading text-xl sm:text-3xl font-bold text-fern">
                   {p.winCondition.draws.lucky[0]}–{p.winCondition.draws.lucky[1]}
                 </p>
                 <p className="text-[12px] text-ink-soft">Lucky draws</p>
               </div>
               <div>
-                <p className="font-heading text-3xl font-bold text-gold-dark">
+                <p className="font-heading text-xl sm:text-3xl font-bold text-gold-dark">
                   {p.winCondition.draws.realistic}
                 </p>
                 <p className="text-[12px] text-ink-soft">Realistic draws</p>
               </div>
               <div>
-                <p className="font-heading text-3xl font-bold text-brick">
+                <p className="font-heading text-xl sm:text-3xl font-bold text-brick">
                   {p.winCondition.draws.worst}
                 </p>
                 <p className="text-[12px] text-ink-soft">Worst case draws</p>
@@ -385,11 +385,11 @@ export default function StepFour() {
         />
       )}
 
-      <div className="flex justify-between gap-3 mt-8">
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 mt-8">
         <button
           type="button"
           onClick={() => setCurrentStep(event.type === "bingo" ? 2 : 3)}
-          className="px-4 sm:px-6 py-2.5 rounded-md border-2 border-ink text-ink font-heading font-semibold hover:bg-ink hover:text-paper-raised transition-colors whitespace-nowrap"
+          className="w-full sm:w-auto px-4 sm:px-6 py-2.5 rounded-md border-2 border-ink text-ink font-heading font-semibold hover:bg-ink hover:text-paper-raised transition-colors whitespace-nowrap text-center"
         >
           ← Adjust plan
         </button>
@@ -397,7 +397,7 @@ export default function StepFour() {
           type="button"
           onClick={handleDownload}
           disabled={downloading}
-          className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-md bg-brick text-[#FFFBF2] font-heading font-semibold shadow-hard-sm hover:bg-brick-dark transition-colors disabled:opacity-50 whitespace-nowrap"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-md bg-brick text-[#FFFBF2] font-heading font-semibold shadow-hard-sm hover:bg-brick-dark transition-colors disabled:opacity-50 whitespace-nowrap"
         >
           <Download size={16} />
           {downloading ? "Preparing..." : "Download PDF"}
@@ -415,7 +415,7 @@ export default function StepFour() {
       <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gold/10 border border-gold/50 text-xs text-ink mt-4">
       <AlertTriangle size={14} className="text-gold-dark shrink-0" />
        <span className="text-center">
-        Algorithmic plans are estimates and may contain errors. Cross-check against in-game values.
+        Algorithmic plans are estimations and may contain errors. Cross-check against in-game values.
        </span>
       </div>      
     </div>
