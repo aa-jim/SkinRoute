@@ -27,10 +27,10 @@ export default function PageDecor({ fixed = false }) {
           className={`absolute -left-12 flex flex-col gap-8 lg:gap-10 xl:gap-12 skew-y-[20deg] z-0 ${
             fixed
               ? "top-[43%] lg:top-[45%] xl:top-[39%]"
-              : "top-[42%] xl:top-[36%]"
+              : "top-[42%] xl:top-[38%]"
           }`}
         >
-          <div className="w-[0] lg:w-[24rem] xl:w-[28rem] h-12 lg:h-20 xl:h-24 bg-[#2D1E17]" />
+          <div className="w-[0] lg:w-[24rem] xl:w-[34rem] h-12 lg:h-20 xl:h-24 bg-[#2D1E17]" />
           <div className="w-[0] lg:w-[24rem] xl:w-[28rem] h-12 lg:h-20 xl:h-24 bg-[#2D1E17]" />
         </div>
 
