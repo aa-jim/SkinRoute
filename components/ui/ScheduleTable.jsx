@@ -128,6 +128,55 @@ function actionIcon(line) {
   return null;
 }
 
+const SUBROW_STYLE = "border-l-4 border-l-gold bg-gold/5";
+
+function Subrow({ subrow, showCoa }) {
+  return (
+    <tr className={`${SUBROW_STYLE} border-t border-line-strong`}>
+      <td className="px-4 py-2 font-mono font-bold text-ink-soft" />
+      <td className="px-4 py-2 text-ink text-[13px]">
+        <div className="flex items-center gap-1.5 text-brick-dark font-medium mb-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+          If no bingo at {subrow.checkpointDraws}:
+        </div>
+        <ActionCell lines={subrow.notes} />
+      </td>
+      <td className="px-4 py-2 text-right text-ink">{subrow.draws}</td>
+      <td className="px-4 py-2 text-right">
+        <span className="inline-flex items-center justify-center min-w-8 h-8 px-1.5 rounded-full border border-gold/60 bg-gold/15 font-mono text-xs font-bold text-gold-dark">
+          {subrow.cumulative}
+        </span>
+      </td>
+      <td className="px-4 py-2 text-right text-sea">{subrow.dia > 0 ? subrow.dia.toLocaleString() : "—"}</td>
+      {showCoa && <td className="px-4 py-2 text-right text-gold-dark">{subrow.coa > 0 ? subrow.coa.toLocaleString() : "—"}</td>}
+    </tr>
+  );
+}
+
+function SubrowCard({ subrow, showCoa }) {
+  return (
+    <div className="subrow border-l-4 border-l-gold bg-gold/5 pl-4 pt-2 mt-2">
+      <div className="flex items-center gap-1.5 text-brick-dark font-medium text-[13px] mb-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+        If no bingo at {subrow.checkpointDraws}:
+      </div>
+      <ActionCell lines={subrow.notes} />
+      <div className="grid grid-cols-2 gap-3 mt-2 pt-2 border-t border-line-strong">
+        <div>
+          <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink-faint mb-1">Spent today</p>
+          {subrow.dia > 0 && <p className="text-[11px] text-sea m-0">{subrow.dia.toLocaleString()} dia</p>}
+          {showCoa && subrow.coa > 0 && <p className="text-[11px] text-gold-dark m-0">{subrow.coa.toLocaleString()} CoA</p>}
+        </div>
+        <div>
+          <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink-faint mb-1">Total spent</p>
+          {subrow.cumulativeDia > 0 && <p className="text-[11px] text-sea m-0">{subrow.cumulativeDia.toLocaleString()} dia</p>}
+          {showCoa && subrow.cumulativeCoa > 0 && <p className="text-[11px] text-gold-dark m-0">{subrow.cumulativeCoa.toLocaleString()} CoA</p>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ActionCell({ lines }) {
   if (!lines || lines.length === 0) return null;
   return (
@@ -225,7 +274,7 @@ const DAY_CARD_STYLES = {
   gap: "border-l-4 border-l-brick bg-brick/10",
 };
 
-function DayCards({ rows, showCoa }) {
+function DayCards({ rows, showCoa, isBingo, bingoStage, plan, isAspirants }) {
   return (
     <div className="sm:hidden flex flex-col gap-2.5">
       {rows.map((row) => (
@@ -253,7 +302,7 @@ function DayCards({ rows, showCoa }) {
               )}
             </div>
           </div>
-          <ActionCell lines={row.actionLines} />
+          <ActionCell lines={row.filteredActionLines ?? row.actionLines} />
           {(row.dia > 0 || (showCoa && row.coa > 0)) && (
             <div className="grid grid-cols-2 gap-3 mt-2 pt-2 border-t border-line-strong">
               <div>
@@ -268,6 +317,9 @@ function DayCards({ rows, showCoa }) {
               </div>
             </div>
           )}
+          {row.subrow && isAspirants && bingoStage >= 2 && (
+            <SubrowCard subrow={row.subrow} showCoa={showCoa} />
+          )}
         </div>
       ))}
     </div>
@@ -276,10 +328,11 @@ function DayCards({ rows, showCoa }) {
 
 export default function ScheduleTable({ plan, event, startDay = 1 }) {
   const [expanded, setExpanded] = useState(false);
-  // Bingo staged reveal: expose the schedule tier-by-tier (30 -> 40 -> 50 -> 60).
   const [bingoStage, setBingoStage] = useState(0);
   const isCollector = plan.eventType === "collector";
   const showFromToday = startDay > 1;
+  const isBingo = plan.eventType === "bingo";
+  const isAspirants = isBingo && event?.id === "aspirants_2026";
 
   function filterRows(rows) {
     const filtered = rows.filter((r) => r.day >= startDay);
@@ -287,9 +340,6 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
     let cumDraws = 0;
     let cumDia = 0;
     let cumCoa = 0;
-    // Bingo only: mark the highest win-condition tier (30/40/50/60) the running
-    // total has reached, so the Cumulative cell can be highlighted at milestones.
-    const isBingo = plan.eventType === "bingo";
     const tierDraws = isBingo && plan.winCondition?.draws
       ? [plan.winCondition.draws.lucky[0], plan.winCondition.draws.lucky[1], plan.winCondition.draws.realistic, plan.winCondition.draws.worst].filter((t) => typeof t === "number")
       : [];
@@ -302,7 +352,49 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
         // mark only the FIRST day the running total crosses each tier
         if (drawTier == null && cumDraws >= t && cumDraws - r.draws < t) drawTier = t;
       }
-      return { ...r, cumulative: cumDraws, cumulativeDia: cumDia, cumulativeCoa: cumCoa, drawTier };
+      let subrow = null;
+      let filteredActionLines = r.actionLines ?? r.notes ?? [];
+      let filteredDraws = r.draws;
+      let filteredDia = r.dia ?? r.diaSpent ?? 0;
+      let filteredCumulative = cumDraws;
+      let filteredCumulativeDia = cumDia;
+      let filteredCumulativeCoa = cumCoa;
+      if (isAspirants && r.day === plan.checkpointDay) {
+        const notes = r.actionLines ?? r.notes ?? [];
+        const tenxNotes = notes.filter(n => n.includes("10-draw") || n.includes("10x") || (n.includes("Buy") && n.includes("dias pack")));
+        const dailyNotes = notes.filter(n => !(n.includes("10-draw") || n.includes("10x") || (n.includes("Buy") && n.includes("dias pack"))));
+        if (tenxNotes.length > 0) {
+          const tenxDraws = tenxNotes.some(n => n.includes("10")) ? 10 : 0;
+          // Subrow dia is the discounted 10x cost; fallback to r.dia if not available
+          const tenxCost = event.discount_draw_cost?.first_time_10x ?? event.draw_cost_10x ?? 1050;
+          const tenxDiaVal = tenxDraws > 0 ? tenxCost : 0;
+          // If daily part exists (usually 1x daily), split; otherwise keep whole row as subrow and leave main empty
+          if (dailyNotes.length > 0) {
+            filteredDraws = Math.max(0, r.draws - tenxDraws);
+            filteredDia = Math.max(0, r.dia - tenxDiaVal);
+            filteredCumulative = cumDraws - tenxDraws;
+            filteredCumulativeDia = cumDia - tenxDiaVal;
+            filteredActionLines = dailyNotes;
+          } else {
+            // No daily notes — entire row is 10x/packs; still create subrow but keep main as empty daily stub (0 draws)
+            filteredDraws = 0;
+            filteredDia = 0;
+            filteredCumulative = cumDraws - tenxDraws;
+            filteredCumulativeDia = cumDia - tenxDiaVal;
+            filteredActionLines = [];
+          }
+          subrow = {
+            checkpointDraws: 40,
+            draws: tenxDraws,
+            cumulative: cumDraws,
+            dia: tenxDiaVal,
+            cumulativeDia: cumDia,
+            cumulativeCoa: cumCoa,
+            notes: tenxNotes,
+          };
+        }
+      }
+      return { ...r, draws: filteredDraws, dia: filteredDia, cumulative: filteredCumulative, cumulativeDia: filteredCumulativeDia, cumulativeCoa: filteredCumulativeCoa, drawTier, subrow, filteredActionLines };
     });
   }
 
@@ -348,7 +440,7 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
               {visibleRows.map((row) => (
                 <tr key={row.day} className={`border-t border-line-strong ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
                   <td className={`px-4 py-2.5 font-mono font-bold ${row.tag ? DATE_TAG_STYLES[row.tag] : "text-ink-soft"}`}>{row.date}</td>
-                  <td className="px-4 py-2.5 text-ink"><ActionCell lines={row.actionLines} /></td>
+                  <td className="px-4 py-2.5 text-ink"><ActionCell lines={row.filteredActionLines ?? row.actionLines} /></td>
                   <td className="px-4 py-2.5 text-right text-ink">{row.draws}</td>
                   <td className="px-4 py-2.5 text-right">
                     {row.drawTier ? (
@@ -414,30 +506,56 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
   // ---------------------------------------------------------------------
   const themedRows = filterRows(buildThemedCrestRows(plan, event) ?? []);
   const rows = themedRows ?? [];
-  const isBingo = plan.eventType === "bingo";
-  // BINGO: tiered reveal. stage 0 -> up to & incl. 30-draw day, 1 -> 40, 2 -> 50, 3 -> 60 (all).
   let visibleRows;
   let displayTotals;
   if (isBingo) {
     const tiers = plan.winCondition?.draws
       ? [plan.winCondition.draws.lucky[0], plan.winCondition.draws.lucky[1], plan.winCondition.draws.realistic, plan.winCondition.draws.worst].filter((t) => typeof t === "number")
       : [];
+    const maxStage = isAspirants ? 3 : 3;
     const stageTiers = [tiers[0], tiers[1], tiers[2], tiers[3]].filter(Boolean);
-    const targetTier = stageTiers[Math.min(bingoStage, stageTiers.length - 1)];
+    let targetTier;
+    if (isAspirants) {
+      if (bingoStage === 0) targetTier = tiers[0];
+      else if (bingoStage === 1) targetTier = tiers[1];
+      else if (bingoStage === 2) targetTier = tiers[2];
+      else targetTier = tiers[3];
+    } else {
+      targetTier = stageTiers[Math.min(bingoStage, stageTiers.length - 1)];
+    }
     if (expanded || !targetTier) {
       visibleRows = rows;
+    } else if (isAspirants) {
+      const cpIdx = rows.findIndex(r => r.day === plan.checkpointDay);
+      if (bingoStage === 0) {
+        let cut = rows.length;
+        for (let i = 0; i < rows.length; i++) { if (rows[i].cumulative >= targetTier) { cut = i + 1; break; } }
+        visibleRows = rows.slice(0, cut);
+      } else if (bingoStage === 1) {
+        visibleRows = cpIdx >= 0 ? rows.slice(0, cpIdx + 1) : rows.slice(0, 1);
+      } else if (bingoStage === 2) {
+        visibleRows = cpIdx >= 0 ? rows.slice(0, cpIdx + 1) : rows;
+      } else {
+        visibleRows = rows;
+      }
     } else {
-      // show through the first row whose cumulative >= the target tier
       let cut = rows.length;
       for (let i = 0; i < rows.length; i++) {
         if (rows[i].cumulative >= targetTier) { cut = i + 1; break; }
       }
       visibleRows = rows.slice(0, cut);
     }
-    displayTotals = visibleRows.reduce(
+    let baseTotals = visibleRows.reduce(
       (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia }),
       { draws: 0, dia: 0 }
     );
+    if (isAspirants && bingoStage >= 2) {
+      const cp = visibleRows.find(r => r.subrow) || rows.find(r => r.subrow);
+      if (cp?.subrow) {
+        baseTotals = { draws: baseTotals.draws + cp.subrow.draws, dia: baseTotals.dia + cp.subrow.dia };
+      }
+    }
+    displayTotals = baseTotals;
   } else {
     visibleRows = expanded ? rows : rows.slice(0, 10);
     displayTotals = visibleRows.reduce(
@@ -457,7 +575,7 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
         </p>
       )}
       <IconLegend isCollector={false} />
-      <DayCards rows={visibleRows} showCoa={false} />
+      <DayCards rows={visibleRows} showCoa={false} isBingo={isBingo} bingoStage={bingoStage} plan={plan} isAspirants={isAspirants} />
 
       <div className="hidden sm:block rounded-lg border-2 border-ink bg-paper-raised shadow-hard overflow-hidden overflow-x-auto">
         <table className="w-full text-sm">
@@ -472,24 +590,29 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
           </thead>
           <tbody>
             {visibleRows.map((row) => (
-              <tr key={row.day} className={`border-t border-line-strong ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
-                <td className={`px-4 py-2.5 font-mono font-bold ${row.tag ? DATE_TAG_STYLES[row.tag] : "text-ink-soft"}`}>{row.date}</td>
-                <td className="px-4 py-2.5 text-ink"><ActionCell lines={row.actionLines} /></td>
-                <td className="px-4 py-2.5 text-right text-ink">{row.draws}</td>
-                <td className="px-4 py-2.5 text-right">
-                  {row.drawTier ? (
-                    <span
-                      title={`${row.cumulative} total draws (≥ ${row.drawTier} tier reached)`}
-                      className="inline-flex items-center justify-center min-w-8 h-8 px-1.5 rounded-full border border-gold/60 bg-gold/15 font-mono text-xs font-bold text-gold-dark"
-                    >
-                      {row.cumulative}
-                    </span>
-                  ) : (
-                    <span className="text-brick font-semibold">{row.cumulative}</span>
-                  )}
-                </td>
-                <td className="px-4 py-2.5 text-right text-sea">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
-              </tr>
+              <>
+                <tr key={row.day} className={`border-t border-line-strong ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
+                  <td className={`px-4 py-2.5 font-mono font-bold ${row.tag ? DATE_TAG_STYLES[row.tag] : "text-ink-soft"}`}>{row.date}</td>
+                  <td className="px-4 py-2.5 text-ink"><ActionCell lines={row.filteredActionLines ?? row.actionLines} /></td>
+                  <td className="px-4 py-2.5 text-right text-ink">{row.draws}</td>
+                  <td className="px-4 py-2.5 text-right">
+                    {row.drawTier ? (
+                      <span
+                        title={`${row.cumulative} total draws (≥ ${row.drawTier} tier reached)`}
+                        className="inline-flex items-center justify-center min-w-8 h-8 px-1.5 rounded-full border border-gold/60 bg-gold/15 font-mono text-xs font-bold text-gold-dark"
+                      >
+                        {row.cumulative}
+                      </span>
+                    ) : (
+                      <span className="text-brick font-semibold">{row.cumulative}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2.5 text-right text-sea">{row.dia > 0 ? row.dia.toLocaleString() : "—"}</td>
+                </tr>
+                {row.subrow && isAspirants && bingoStage >= 2 && (
+                  <Subrow subrow={row.subrow} showCoa={false} />
+                )}
+              </>
             ))}
           </tbody>
           {(displayTotals.draws > 0 || displayTotals.dia > 0) && (
@@ -505,41 +628,53 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
         </table>
       </div>
 
-      {/* Bingo staged reveal — tier-by-tier text. Non-bingo keeps the expand-all. */}
       {isBingo ? (
-        bingoStage < 3 || expanded ? (
+        (isAspirants ? bingoStage < 3 : bingoStage < 3) || expanded ? (
           <div className="w-full mt-2 flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium text-brick">
-            {bingoStage < 2 ? (
-              <>
-                <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">Didn&apos;t hit the bingo?</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (expanded) setExpanded(false);
-                    else if (bingoStage < 3) setBingoStage((s) => s + 1);
-                    else setExpanded(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]"
-                >
-                  Continue <ChevronDown size={14} />
-                </button>
-              </>
-            ) : (
-              <>
-                <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">sigh…this time for sure</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (expanded) setExpanded(false);
-                    else if (bingoStage < 3) setBingoStage((s) => s + 1);
-                    else setExpanded(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]"
-                >
-                  Continue <ChevronDown size={14} />
-                </button>
-              </>
-            )}
+            {(() => {
+              const maxStage = isAspirants ? 3 : 3;
+              if (bingoStage === 0) {
+                return (
+                  <>
+                    <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">Didn&apos;t hit the bingo?</span>
+                    <button type="button" onClick={() => { if (expanded) setExpanded(false); else if (bingoStage < maxStage) setBingoStage((s) => s + 1); else setExpanded(true); }} className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]">Continue <ChevronDown size={14} /></button>
+                  </>
+                );
+              }
+              if (bingoStage === 1) {
+                return (
+                  <>
+                    <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">Didn&apos;t hit the bingo at 40?</span>
+                    <button type="button" onClick={() => { if (expanded) setExpanded(false); else if (bingoStage < maxStage) setBingoStage((s) => s + 1); else setExpanded(true); }} className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]">Continue <ChevronDown size={14} /></button>
+                  </>
+                );
+              }
+              if (bingoStage === 2 && isAspirants) {
+                return (
+                  <>
+                    <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">sigh…this time for sure — Continue to 60?</span>
+                    <button type="button" onClick={() => { if (expanded) setExpanded(false); else if (bingoStage < maxStage) setBingoStage((s) => s + 1); else setExpanded(true); }} className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]">Continue <ChevronDown size={14} /></button>
+                  </>
+                );
+              }
+              if (bingoStage === 2 && !isAspirants) {
+                return (
+                  <>
+                    <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">Keep going to 60?</span>
+                    <button type="button" onClick={() => { if (expanded) setExpanded(false); else if (bingoStage < maxStage) setBingoStage((s) => s + 1); else setExpanded(true); }} className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]">Continue <ChevronDown size={14} /></button>
+                  </>
+                );
+              }
+              if (bingoStage === 3 && !isAspirants) {
+                return (
+                  <>
+                    <span className="font-mono text-[11px] font-semibold text-brick-dark mb-1">Final push to 60?</span>
+                    <button type="button" onClick={() => { if (expanded) setExpanded(false); else if (bingoStage < maxStage) setBingoStage((s) => s + 1); else setExpanded(true); }} className="inline-flex items-center gap-1.5 bg-ink text-[#FFFBF2] font-heading font-semibold hover:opacity-90 transition-opacity px-6 py-2 rounded-md text-[13px]">Continue <ChevronDown size={14} /></button>
+                  </>
+                );
+              }
+              return null;
+            })()}
           </div>
         ) : null
       ) : rows.length > 10 ? (

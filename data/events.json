@@ -549,7 +549,7 @@
       "milestones": "PLACEHOLDER_NEEDS_CONFIRMATION",
       "premium_supply": [
         {
-          "phase": 1, "start_day": 8, "duration_days": 5,
+          "phase": 1, "start_day": 3, "duration_days": 5,
           "tasks": [
             { "type": "login",        "tokens": 1 },
             { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
@@ -561,7 +561,7 @@
           ]
         },
         {
-          "phase": 2, "start_day": 15, "duration_days": 5,
+          "phase": 2, "start_day": 10, "duration_days": 5,
           "tasks": [
             { "type": "login",        "tokens": 1 },
             { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
