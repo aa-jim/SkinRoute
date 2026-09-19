@@ -144,6 +144,19 @@ Each simulates from `startDay` to `duration_days`, one row per day, and **claims
 - `winCondition.bdtCost` (bingo) = per-tier **BDT** read off the final day-by-day schedule: a prefix sum of the actual pack + pass purchases (`packsByDay` + pass purchase dates) over the days up to the day each draw tier is reached. It is a strict prefix of the single full-event recharge plan — `worst` always equals `recharge.totalBdt`, and a tier covered by owned diamonds alone is 0. Shown as a second line in the Step 4 diamond cards and a "Plan Cost (BDT)" column in the PDF. BDT per tier is now computed by `buildBingoPlanForTarget` probes (targetDraws 30/40/50, `isProbe` skips the bdtCost recursion; worst = the plan itself = `recharge.totalBdt`); the first-time 10x is only bought for targets > 40 (the sim reserves it for the 40→50 hop) and tiers are capped monotonic.
 - Aspirants' per-confidence diamond costs are recomputed by re-running the sim at each target.
 
+### Aspirants (bingo) end-game funding
+
+The Aspirants event has a compressed post-phase accumulation window (day 15–23 for a day-1 start) where the 50%-off daily draws plus the reserved first-time 10x must land exactly on 60. The funding loop (`buildBingoPlanForTarget`, `isAspirants` branch) stages injections in tier order:
+
+1. **Starved-day top-up** — the first accumulation day that can't afford its discounted daily draw gets a small pack on that day, keeping the 1/day cadence alive so the 40-checkpoint lands as early as the calendar allows.
+2. **40-checkpoint** — `firstAccDay = lastPhaseEnd + 1` (unified offset, was `+2` in one spot, `+1` in another); the day the running total first crosses 40.
+3. **50-push** — the first-time 10x (1,050 dia) plus any remaining draws, dated on the day *after* the checkpoint (never on the checkpoint day itself — the checkpoint day's purchases are always ≤ its own day's budget).
+4. **60-push** — the final block lands exactly on 60.
+
+**Under-recharge fix (Sep 19):** the tail branch previously computed `needTail = max(0, shortfall − remainingDays × 105)` — crediting a 50%-off daily draw on every remaining day. When the residual fell below that projected saving the branch injected **nothing**, so the `guard < 8` budget exhausted with 175–734 diamonds unfunded (and an "N extra diamonds needed" warning) while simultaneously over-buying (e.g. an `r_2195` left 4,816 dia idle). The fix: (a) tail fallback `needTail = max(0, shortfall − savings) || shortfall` — the saving still sizes the injection where it applies, but the raw residual is always funded; (b) no-progress escape — the loop tracks whether the iteration injected anything and funds the recomputed residual on the tail day when no stage had something to fund. Measured: day-1/0-dia ৳3,615 → **৳3,415**, day-4 ৳9,601 → **৳9,390**, day-10 ৳10,623 → **৳10,542**; all 108 grid cells (dia 0–4,000 × start day 1/4/10/17/21/23 × FP unclaimed/claimed) pass with 0 warnings, 60 draws, `diaLeft ≥ 0`. The 6 non-aspirants regression hashes are byte-identical. `npm run verify:aspirants` enforces all of the above.
+
+Deliberate consequence: reported BDT **rises** wherever the old plan was unfundable — the old figures priced diamonds the schedule never actually bought.
+
 ### Start Today vs Day 1
 
 - `startFromToday` state lives in the wizard context (lifted from StepFour); `buildPlan` receives `activeStartDay` as `overrideStartDay`.
