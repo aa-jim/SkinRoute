@@ -385,11 +385,14 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
           // (fallback: the event's own first_time_10x price).
           const tenxCost = event.discount_draw_cost?.first_time_10x ?? event.draw_cost_10x ?? 1050;
           const tenxDiaVal = planSub?.diaSpent ?? (tenxDraws > 0 ? tenxCost : 0);
-          // Main row = its own numbers only.
+          // Main row = its own numbers only. Its cumulative is the pre-row
+          // total + the main draws (the sub row may carry free token claims
+          // drawn AFTER the checkpoint daily, so plain "day cum - sub draws"
+          // would read 38 instead of 40 on the checkpoint row).
           filteredDraws = planMain?.draws ?? Math.max(0, r.draws - tenxDraws);
           filteredDia = planMain?.diaSpent ?? Math.max(0, r.dia - tenxDiaVal);
-          filteredCumulative = cumDraws - tenxDraws;
-          filteredCumulativeDia = cumDia - tenxDiaVal;
+          filteredCumulative = cumDraws - r.draws + filteredDraws;
+          filteredCumulativeDia = cumDia - (r.diaSpent ?? r.dia ?? 0) + filteredDia;
           filteredActionLines = dailyNotes;
           subrow = {
             checkpointDraws: planSub?.checkpointDraws ?? 40,

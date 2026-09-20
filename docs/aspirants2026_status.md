@@ -23,6 +23,13 @@
 
 ## 3. Bugs that need fixing
 
+> **RESOLVED (Sep 21 2026):** All four bugs in §3 are fixed. See the "Aspirants: lazy-cadence pacing applied" entry in `AGENTS.md` and the `docs/architecture.md` simulator line. The staged-funding guard loop, simulator accumulation mode, and pack selection now produce the target shape for all day-1 plans:
+>- 40 exactly on day 15 (Sep 30) with the 10x same-day → 50 (sub-row); 51 on day 16 (Oct 1); 60 exactly on day 23 (Oct 8, no idle tail).
+>- The 0-dia day-1 plan is byte-hash pinned (`7fe7408383add391`) and unchanged — it still reaches 40 on day 16 (Oct 1) via a small top-up pack because it's starved, not paced.
+>- Rich day-1 plans (dia ≥ 2000) follow the calendar, not the balance: lazy-cadence holds skip surplus accumulation draws so 38 lands on 9/27 (tokens) → 40 on 9/30 → 60 on 10/8.
+>- Pass selection matches the ideal pack combos: day-1 0-dia → 4 pass (880 dia) + `r_257×2 + fp_* + smalls`, BDT 3,029; dia 2,025 → 3× phase-start pass + r_257, BDT 1,070.
+>- `verify:aspirants`: **PASS 144 aspirants plans** (60 draws, 0 warnings, funded, tiers monotonic) + 6 byte-identical non-aspirants. `next lint` (3 pre-existing `<img>` warnings) + `next build` pass.
+
 ### 3.1 Pack selection (symptoms)
 - **10x day (Oct1):** planner picks `r_275×4 (1100 dia)`; ideal via knapsack for container 1033 is `r_55+r_275+r_706 (1036 dia, 1880 BDT)`. Container mismatch.
 - **Tail day (Oct2):** planner picks `r_86+r_257+r_565 (908 dia)`; ideal for container ~1225 is `r_5+r_257×2+r_706 (1225 dia, 2228 BDT)` (or `r_275×2+r_5+r_706=1261` depending on exact container). Under by ~300 dia.

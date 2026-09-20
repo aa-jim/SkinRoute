@@ -61,6 +61,13 @@ const REGRESSION_CASES = [
   ["exquisite_collection", 500, 5],
 ];
 
+// Byte-pinned aspirants plans (sha256 over the whole plan object, "worst"
+// confidence). The 0-dia day-1 plan is the hand-validated reference shape -
+// the lazy-cadence pacing change must provably never move it.
+const ASPIRANTS_BASELINE = {
+  "dia0|start1|fp none": "7fe7408383add391",
+};
+
 const failures = [];
 function check(cond, label, detail) {
   if (!cond) failures.push(`${label} :: ${detail}`);
@@ -149,7 +156,7 @@ function verifyAspirants(plan, dia, startDay, fpLabel) {
     check(splitRow.main.diaLeft >= 0, label, `main-row diaLeft=${splitRow.main.diaLeft} < 0`);
     check(splitRow.main.diaLeft === prevLeft + splitRow.main.diaAdd - splitRow.main.diaSpent, label,
       `main-row balance ${splitRow.main.diaLeft} != ${prevLeft}+${splitRow.main.diaAdd}-${splitRow.main.diaSpent}`);
-    check(splitRow.subrow.draws === 10, label, `sub-row draws=${splitRow.subrow.draws} != 10`);
+    check(splitRow.subrow.draws >= 10, label, `sub-row draws=${splitRow.subrow.draws} < 10 (the 10x)`);
     check(splitRow.subrow.diaSpent <= splitRow.diaSpent, label,
       `sub-row spend ${splitRow.subrow.diaSpent} > day spend ${splitRow.diaSpent}`);
     check(splitRow.main.notes.every((n) => !isTenxNote(n) && !(n.includes("Buy") && n.includes("dias pack"))), label,
@@ -158,6 +165,15 @@ function verifyAspirants(plan, dia, startDay, fpLabel) {
       `sub-row notes missing the first-time 10x: ${JSON.stringify(splitRow.subrow.notes)}`);
     check(splitRow.day === plan.tenxDay, label,
       `split day ${splitRow.day} != tenxDay ${plan.tenxDay}`);
+    // The main row must read EXACTLY the checkpoint number: it carries the
+    // draws up to and including the 40th. (When free token claims alone cross
+    // 40 before the 10x day - cumBefore >= 40 - the clamp yields 0 main draws
+    // and the day legitimately shows its own cum; that case has never fired.)
+    {
+      const cumBeforeSplit = rows.slice(0, idx).reduce((s, r) => s + (r.draws ?? 0), 0);
+      check(cumBeforeSplit >= 40 || cumBeforeSplit + splitRow.main.draws === 40, label,
+        `checkpoint row reads ${cumBeforeSplit + splitRow.main.draws} != 40`);
+    }
     check(cpRowOf(rows) === 0 || cpRowOf(rows) <= splitRow.day, label,
       `40-checkpoint (day ${cpRowOf(rows)}) after the 10x day (${splitRow.day})`);
   } else if (rows.some((r) => notesOf(r).some(isTenxNote))) {
@@ -223,6 +239,20 @@ function verifyAspirants(plan, dia, startDay, fpLabel) {
   check(bc.worst === plan.recharge.totalBdt, label, `bdtCost.worst ${bc.worst} != recharge.totalBdt ${plan.recharge.totalBdt}`);
   check((dc.worst ?? 0) <= totals.dia, label, `diaCost.worst ${dc.worst} > spend ${totals.dia}`);
 
+  // 12. Lazy cadence (surplus day-1 plans): with a rich starting balance the
+  //     pacing is calendar-driven - the 40-checkpoint lands exactly on the
+  //     first accumulation day (day 15, right after phase 2 closes) and the
+  //     schedule reaches 60 on the final day, so there is no stockpiled
+  //     mid-phase checkpoint (the old 42 -> 52 on day 12) and no idle tail
+  //     days at the end.
+  if (startDay === 1 && dia >= 2000) {
+    check(cpRowOf(rows) === 15, label,
+      `rich-start checkpoint on day ${cpRowOf(rows)} (expected 15 - the first accumulation day)`);
+    const lastDrawDay = rows.filter((r) => (r.draws ?? 0) > 0).pop()?.day ?? 0;
+    check(lastDrawDay === ASPIRANTS.duration_days, label,
+      `last draw on day ${lastDrawDay} != ${ASPIRANTS.duration_days} - idle tail days at the end`);
+  }
+
   return {
     dia, startDay, fp: fpLabel,
     bdt: plan.recharge.totalBdt,
@@ -247,6 +277,13 @@ for (const fp of GRID_FP) {
     for (const dia of GRID_DIA) {
             const fpLabel = fp === ALL_FP ? "claimed" : "none";
       const plan = planAspirants(dia, startDay, fp);
+      // Byte pin: hand-validated aspirants plans must never drift.
+      const baselineKey = `dia${dia}|start${startDay}|fp ${fpLabel}`;
+      if (ASPIRANTS_BASELINE[baselineKey]) {
+        const bHash = createHash("sha256").update(JSON.stringify(plan)).digest("hex").slice(0, 16);
+        check(bHash === ASPIRANTS_BASELINE[baselineKey], `pin ${baselineKey}`,
+          `plan hash ${bHash} != baseline ${ASPIRANTS_BASELINE[baselineKey]}`);
+      }
       results.push(verifyAspirants(plan, dia, startDay, fpLabel));
       // DEBUG: print dia=0 start=1 fp=none schedule
       if (dia === 0 && startDay === 1 && fpLabel === "none") {
