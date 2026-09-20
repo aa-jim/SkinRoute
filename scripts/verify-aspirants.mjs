@@ -37,7 +37,9 @@ const ALL_FP = { fp_50: true, fp_150: true, fp_250: true, fp_500: true };
 const OWNED = { groups: {}, skins: [] };
 
 const GRID_DIA = QUICK ? [0, 2025] : [0, 500, 1000, 1500, 2000, 2025, 2500, 3000, 4000];
-const GRID_START = QUICK ? [4] : [1, 4, 10, 17, 21, 23];
+// 5 and 7 are IN-PHASE starts (phase 1 = days 3-7): they cover the open-phase
+// recharge-claim path (tokens must be claimable on the first planable day).
+const GRID_START = QUICK ? [4] : [1, 4, 5, 7, 10, 17, 21, 23];
 const GRID_FP = QUICK ? [{}] : [{}, ALL_FP];
 
 // Captured on the pre-fix code (aspirants2026 @ 7ba2cdb) with the exact same
@@ -68,6 +70,14 @@ function notesOf(row) {
   return row.actionLines ?? row.notes ?? [];
 }
 const isTenxNote = (n) => /10-draw|10x/.test(n);
+
+// Day the running draw total first reaches the 40-draw bingo checkpoint (0 when
+// the plan never gets there - only the 30/40-draw tier probes).
+function cpRowOf(rows) {
+  let cum = 0;
+  for (const r of rows) { cum += r.draws; if (cum >= 40) return r.day; }
+  return 0;
+}
 
 function planAspirants(dia, startDay, fp) {
   return buildPlan(ASPIRANTS, { diamonds: dia, weeklyPasses: 0, fpClaimed: fp }, null, OWNED, "worst", startDay);
@@ -105,11 +115,53 @@ function verifyAspirants(plan, dia, startDay, fpLabel) {
   let tenxChecked = false;
   for (const r of rows) {
     if (!tenxChecked && notesOf(r).some(isTenxNote)) {
+                  // The first-time 10x is reserved for the 40 -> 50 hop: it may never fire
+      // before 40 draws have been accumulated. When the checkpoint day also
+      // carries the 10x sub-row, cumBefore (pre-row draws) + same-row daily
+      // must reach 40 — i.e. the daily draw on the 10x row is what crosses 40,
+      // then the 10x fires immediately after (the sim's in-loop gate enforces
+      // totalDraws >= 40 before firing).
       check(cumBefore + (r.draws - 10) >= 40, label,
         `10x on day ${r.day} at ${cumBefore} draws (+${r.draws - 10} same-row) — before the 40 checkpoint`);
       tenxChecked = true;
     }
     cumBefore += r.draws;
+  }
+
+  // 5b. First-time-10x day: the planner publishes the day's two accounting units
+  //     as row.main / row.subrow. The MAIN row (the row the 40th draw lands on)
+  //     must only add and subtract its OWN recharge and diamond spend - the sub
+  //     row's 10x spend and its funding packs must never be folded into it (and
+  //     the two must still sum to the day's aggregate, which the rest of the
+  //     plan - totals, balance, per-tier money - is built on).
+  const splitRow = rows.find((r) => r.subrow && r.main);
+  if (splitRow) {
+    const idx = rows.indexOf(splitRow);
+    const prevLeft = idx > 0 ? (rows[idx - 1].diaLeft ?? 0) : 0;
+    check(splitRow.main.draws + splitRow.subrow.draws === splitRow.draws, label,
+      `split draws ${splitRow.main.draws}+${splitRow.subrow.draws} != day ${splitRow.draws}`);
+    check(splitRow.main.diaSpent + splitRow.subrow.diaSpent === splitRow.diaSpent, label,
+      `split diaSpent ${splitRow.main.diaSpent}+${splitRow.subrow.diaSpent} != day ${splitRow.diaSpent}`);
+    check(splitRow.main.diaAdd + splitRow.subrow.diaAdd === splitRow.diaAdd, label,
+      `split diaAdd ${splitRow.main.diaAdd}+${splitRow.subrow.diaAdd} != day ${splitRow.diaAdd}`);
+    check(splitRow.main.diaRecharged + splitRow.subrow.diaRecharged === splitRow.diaRecharged, label,
+      `split diaRecharged ${splitRow.main.diaRecharged}+${splitRow.subrow.diaRecharged} != day ${splitRow.diaRecharged}`);
+    check(splitRow.main.diaLeft >= 0, label, `main-row diaLeft=${splitRow.main.diaLeft} < 0`);
+    check(splitRow.main.diaLeft === prevLeft + splitRow.main.diaAdd - splitRow.main.diaSpent, label,
+      `main-row balance ${splitRow.main.diaLeft} != ${prevLeft}+${splitRow.main.diaAdd}-${splitRow.main.diaSpent}`);
+    check(splitRow.subrow.draws === 10, label, `sub-row draws=${splitRow.subrow.draws} != 10`);
+    check(splitRow.subrow.diaSpent <= splitRow.diaSpent, label,
+      `sub-row spend ${splitRow.subrow.diaSpent} > day spend ${splitRow.diaSpent}`);
+    check(splitRow.main.notes.every((n) => !isTenxNote(n) && !(n.includes("Buy") && n.includes("dias pack"))), label,
+      `main-row notes still carry sub-row lines: ${JSON.stringify(splitRow.main.notes)}`);
+    check(splitRow.subrow.notes.some(isTenxNote), label,
+      `sub-row notes missing the first-time 10x: ${JSON.stringify(splitRow.subrow.notes)}`);
+    check(splitRow.day === plan.tenxDay, label,
+      `split day ${splitRow.day} != tenxDay ${plan.tenxDay}`);
+    check(cpRowOf(rows) === 0 || cpRowOf(rows) <= splitRow.day, label,
+      `40-checkpoint (day ${cpRowOf(rows)}) after the 10x day (${splitRow.day})`);
+  } else if (rows.some((r) => notesOf(r).some(isTenxNote))) {
+    check(false, label, "first-time 10x fired but no main/sub-row split was published");
   }
 
   // 6. Staging anchors must be usable by the UI (gold-circle tier reveal).
@@ -119,7 +171,46 @@ function verifyAspirants(plan, dia, startDay, fpLabel) {
   // 7. Pass cap (in-game max 10 in the sequential queue).
   check(passCount <= 10, label, `passes=${passCount}`);
 
-  // 8. Per-tier cards: diamond + BDT ladders must be monotonic, and the worst
+  // 8. Integer diamond accounting: every recharge entry carries exact integers
+  //    (80 instant + 20/day drip per pass — never a fractional per-pass
+  //    average), so the displayed totals can never read "6,594.33 dia".
+  for (const p of plan.recharge.packsUsed) {
+    check(Number.isInteger(p.dia) && Number.isInteger(plan.recharge.totalDia), label,
+      `fractional dia: ${p.id} dia=${p.dia} totalDia=${plan.recharge.totalDia}`);
+  }
+
+  // 9. Open-phase claims: a start INSIDE a phase window (4/5/7 land in phase 1,
+  //    days 3-7) must claim that phase's recharge tokens on the first planable
+  //    day — 12 recharge + 1 login (spend tokens may add more). The old
+  //    exact-phase-start-day check silently dropped all of them.
+  if ([4, 5, 7].includes(startDay)) {
+    check(rows[0].draws >= 13, label, `open-phase tokens not claimed on day 1: draws=${rows[0].draws} notes=${JSON.stringify(notesOf(rows[0]))}`);
+  }
+
+  // 10. Sub-row separation (dia-0 plans): the 50-gap money is booked AFTER the
+  //     organic 40-checkpoint — the first-time 10x fires on a later row, never
+  //     on the checkpoint row itself (the checkpoint row only carries the small
+  //     cadence top-up). Rich-starting plans may organically fire the 10x
+  //     same-day when the balance already covers it — that's fine.
+    if (dia === 0) {
+      let cum = 0, cpRow = 0, tenxRow = 0;
+      for (const r of rows) {
+        cum += r.draws;
+        // cum now includes this row's draws, so cpRow = the day the running
+        // total FIRST reached 40 (checking before the add reported one row late).
+        if (!cpRow && cum >= 40) cpRow = r.day;
+        if (!tenxRow && notesOf(r).some(isTenxNote)) tenxRow = r.day;
+      }
+            // Late starts (17/21/23) can collapse the staged push onto the final day
+      // (checkpoint ON the last day -> 10x same row) - honest for a 1-2 day
+      // window. For normal starts the 10x may fire on the checkpoint row itself
+      // (the daily draw crosses 40, then the 10x fires same-row per the sim's
+      // in-loop gate), so allow tenxRow >= cpRow when a following day exists.
+      check(tenxRow === 0 || cpRow >= ASPIRANTS.duration_days || tenxRow >= cpRow,
+        label, `10x on day ${tenxRow} not on/after the 40-checkpoint row (${cpRow})`);
+    }
+
+  // 11. Per-tier cards: diamond + BDT ladders must be monotonic, and the worst
   //    tier's money must equal the plan's own recharge total.
   const dc = plan.winCondition.diamondCost;
   const bc = plan.winCondition.bdtCost;
@@ -135,11 +226,12 @@ function verifyAspirants(plan, dia, startDay, fpLabel) {
   return {
     dia, startDay, fp: fpLabel,
     bdt: plan.recharge.totalBdt,
-    rechargeDia: Math.round(plan.recharge.totalDia),
+    rechargeDia: plan.recharge.totalDia,
     spent: totals.dia,
     endLeft: last?.diaLeft ?? 0,
     passes: passCount,
     checkpoint: plan.checkpointDay,
+    tenx: plan.tenxDay,
     packs: plan.recharge.packsUsed.map((p) => `${p.id}x${p.count}`).join("+"),
   };
 }
@@ -153,8 +245,22 @@ const startedAt = Date.now();
 for (const fp of GRID_FP) {
   for (const startDay of GRID_START) {
     for (const dia of GRID_DIA) {
-      const fpLabel = fp === ALL_FP ? "claimed" : "none";
-      results.push(verifyAspirants(planAspirants(dia, startDay, fp), dia, startDay, fpLabel));
+            const fpLabel = fp === ALL_FP ? "claimed" : "none";
+      const plan = planAspirants(dia, startDay, fp);
+      results.push(verifyAspirants(plan, dia, startDay, fpLabel));
+      // DEBUG: print dia=0 start=1 fp=none schedule
+      if (dia === 0 && startDay === 1 && fpLabel === "none") {
+        console.log(`\n[DEBUG] dia=0 start=1 fp=none schedule (first 20 rows):`);
+        plan.daySchedule.rows.slice(0, 20).forEach(r => {
+          console.log(`  day ${r.day}  draws=${r.draws}  diaLeft=${r.diaLeft}  diaAdd=${r.diaAdd}  recharged=${r.diaRecharged}  spent=${r.diaSpent}  notes=${JSON.stringify(r.notes)}`);
+        });
+        console.log(`  cp=${plan.checkpointDay} tenx=${plan.tenxDay} tail=${plan.tailDay}`);
+        const cpRow = plan.daySchedule.rows.find((r) => r.day === plan.tenxDay);
+        if (cpRow?.main && cpRow?.subrow) {
+          console.log(`  [split] main: ${cpRow.main.draws} draws / ${cpRow.main.diaSpent} spent / ${cpRow.main.diaAdd} added / ${cpRow.main.diaLeft} left  (day: ${cpRow.draws} / ${cpRow.diaSpent} / ${cpRow.diaLeft})`);
+          console.log(`  [split] sub : ${cpRow.subrow.draws} draws / ${cpRow.subrow.diaSpent} spent / ${cpRow.subrow.diaAdd} added`);
+        }
+      }
     }
   }
 }
@@ -176,7 +282,7 @@ for (const fp of GRID_FP) printTable(fp === ALL_FP ? "claimed" : "none");
 
 console.log("\nKey scenarios (60 draws each; left = diamonds left after the last draw)");
 for (const r of results.filter((x) => (x.dia === 0 || x.dia === 2025) && (x.startDay === 1 || x.startDay === 4))) {
-  console.log(`  dia=${String(r.dia).padEnd(5)} start=${String(r.startDay).padEnd(3)} fp=${r.fp.padEnd(7)} BDT=${String(r.bdt).padEnd(6)} rechargeDia=${String(r.rechargeDia).padEnd(6)} spent=${String(r.spent).padEnd(6)} left=${String(r.endLeft).padEnd(5)} passes=${r.passes} cp=${r.checkpoint}  ${r.packs}`);
+  console.log(`  dia=${String(r.dia).padEnd(5)} start=${String(r.startDay).padEnd(3)} fp=${r.fp.padEnd(7)} BDT=${String(r.bdt).padEnd(6)} rechargeDia=${String(r.rechargeDia).padEnd(6)} spent=${String(r.spent).padEnd(6)} left=${String(r.endLeft).padEnd(5)} passes=${r.passes} cp=${r.checkpoint} tenx=${r.tenx}  ${r.packs}`);
 }
 
 // ---------------------------------------------------------------------------

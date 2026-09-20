@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { ChevronDown, ChevronUp, Gem, Key, Scroll, Sparkles, Wallet, Ticket, AlertTriangle, Coins, Clock } from "lucide-react";
 
 function dayToDate(startDate, day) {
@@ -56,6 +56,12 @@ function buildThemedCrestRows(plan, event) {
       dia: r.diaSpent,
       cumulativeDia,
       actionLines: supplyStart ? [supplyStart, ...r.notes] : r.notes,
+      // Aspirants: the planner's main-row / sub-row split of the first-time-10x
+      // day (planOrchestrator.attachAspirantsSubrowSplit) must survive this
+      // rebuild — filterRows() renders the main row from it instead of
+      // re-deriving the split from note text.
+      main: r.main ?? null,
+      subrow: r.subrow ?? null,
       tag,
     };
   });
@@ -359,32 +365,34 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
       let filteredCumulative = cumDraws;
       let filteredCumulativeDia = cumDia;
       let filteredCumulativeCoa = cumCoa;
-      if (isAspirants && r.day === plan.checkpointDay) {
+      // Prefer the planner's own split (planOrchestrator.attachAspirantsSubrowSplit):
+      // row.main / row.subrow carry the first-time-10x day's two accounting units
+      // with exact numbers, so the main row (the 40th draw) only shows its OWN
+      // recharge and diamond spend - never the sub row's 10x + funding packs. The
+      // note-matching derivation below stays as the fallback for plans built
+      // before that field existed (e.g. a cached response).
+      const planSub = isAspirants ? r.subrow : null;
+      const planMain = isAspirants ? r.main : null;
+      if (isAspirants && (planSub || r.day === plan.checkpointDay)) {
         const notes = r.actionLines ?? r.notes ?? [];
-        const tenxNotes = notes.filter(n => n.includes("10-draw") || n.includes("10x") || (n.includes("Buy") && n.includes("dias pack")));
-        const dailyNotes = notes.filter(n => !(n.includes("10-draw") || n.includes("10x") || (n.includes("Buy") && n.includes("dias pack"))));
+        const isTenx = (n) => n.includes("10-draw") || n.includes("10x");
+        const isPack = (n) => n.includes("Buy") && n.includes("dias pack");
+        const tenxNotes = planSub?.notes ?? notes.filter((n) => isTenx(n) || isPack(n));
+        const dailyNotes = planMain?.notes ?? notes.filter((n) => !(isTenx(n) || isPack(n)));
         if (tenxNotes.length > 0) {
-          const tenxDraws = tenxNotes.some(n => n.includes("10")) ? 10 : 0;
-          // Subrow dia is the discounted 10x cost; fallback to r.dia if not available
+          const tenxDraws = planSub?.draws ?? (tenxNotes.some((n) => n.includes("10")) ? 10 : 0);
+          // Subrow dia is the discounted 10x cost; the planner publishes it exactly
+          // (fallback: the event's own first_time_10x price).
           const tenxCost = event.discount_draw_cost?.first_time_10x ?? event.draw_cost_10x ?? 1050;
-          const tenxDiaVal = tenxDraws > 0 ? tenxCost : 0;
-          // If daily part exists (usually 1x daily), split; otherwise keep whole row as subrow and leave main empty
-          if (dailyNotes.length > 0) {
-            filteredDraws = Math.max(0, r.draws - tenxDraws);
-            filteredDia = Math.max(0, r.dia - tenxDiaVal);
-            filteredCumulative = cumDraws - tenxDraws;
-            filteredCumulativeDia = cumDia - tenxDiaVal;
-            filteredActionLines = dailyNotes;
-          } else {
-            // No daily notes — entire row is 10x/packs; still create subrow but keep main as empty daily stub (0 draws)
-            filteredDraws = 0;
-            filteredDia = 0;
-            filteredCumulative = cumDraws - tenxDraws;
-            filteredCumulativeDia = cumDia - tenxDiaVal;
-            filteredActionLines = [];
-          }
+          const tenxDiaVal = planSub?.diaSpent ?? (tenxDraws > 0 ? tenxCost : 0);
+          // Main row = its own numbers only.
+          filteredDraws = planMain?.draws ?? Math.max(0, r.draws - tenxDraws);
+          filteredDia = planMain?.diaSpent ?? Math.max(0, r.dia - tenxDiaVal);
+          filteredCumulative = cumDraws - tenxDraws;
+          filteredCumulativeDia = cumDia - tenxDiaVal;
+          filteredActionLines = dailyNotes;
           subrow = {
-            checkpointDraws: 40,
+            checkpointDraws: planSub?.checkpointDraws ?? 40,
             draws: tenxDraws,
             cumulative: cumDraws,
             dia: tenxDiaVal,
@@ -590,8 +598,11 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
           </thead>
           <tbody>
             {visibleRows.map((row) => (
-              <>
-                <tr key={row.day} className={`border-t border-line-strong ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
+              // Keyed Fragment (not a bare <>): the map renders a row plus an
+              // optional sub row, and React warns (dev console error) without a
+              // key on the outermost element.
+              <Fragment key={row.day}>
+                <tr className={`border-t border-line-strong ${row.tag ? TAG_STYLES[row.tag] : ""}`}>
                   <td className={`px-4 py-2.5 font-mono font-bold ${row.tag ? DATE_TAG_STYLES[row.tag] : "text-ink-soft"}`}>{row.date}</td>
                   <td className="px-4 py-2.5 text-ink"><ActionCell lines={row.filteredActionLines ?? row.actionLines} /></td>
                   <td className="px-4 py-2.5 text-right text-ink">{row.draws}</td>
@@ -612,7 +623,7 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
                 {row.subrow && isAspirants && bingoStage >= 2 && (
                   <Subrow subrow={row.subrow} showCoa={false} />
                 )}
-              </>
+              </Fragment>
             ))}
           </tbody>
           {(displayTotals.draws > 0 || displayTotals.dia > 0) && (
