@@ -39,7 +39,7 @@ export default function PackRecommendation({ recharge, eventDurationDays }) {
             </div>
             <div className="flex justify-between text-[11px]">
               <span className="text-ink-soft capitalize">{pack.type}</span>
-              <span className="text-[#40607F]">{(pack.count * pack.dia).toLocaleString()} dia</span>
+              <span className="text-[#40607F]">{(pack.diaTotal ? pack.dia : pack.count * pack.dia).toLocaleString()} dia</span>
               <span className="text-gold-dark font-semibold">৳{(pack.count * pack.bdt).toLocaleString()}</span>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function PackRecommendation({ recharge, eventDurationDays }) {
                 </td>
                 <td className="px-4 py-2.5 text-ink-soft capitalize">{pack.type}</td>
                 <td className="px-4 py-2.5 text-right text-ink">×{pack.count}</td>
-                <td className="px-4 py-2.5 text-right text-ink">{(pack.count * pack.dia).toLocaleString()}</td>
+                <td className="px-4 py-2.5 text-right text-ink">{(pack.diaTotal ? pack.dia : pack.count * pack.dia).toLocaleString()}</td>
                 <td className="px-4 py-2.5 text-right text-gold-dark font-semibold">
                   ৳{(pack.count * pack.bdt).toLocaleString()}
                 </td>

@@ -534,7 +534,7 @@
       "start_date": "2026-09-16",
       "end_date": "2026-10-08",
       "duration_days": 23,
-      "status": "early",
+      "status": "active",
       "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
       "text_panel_color": "#5c1a3a",
       "image": "/assets/events/aspirants_2026/banner.jpe",
@@ -546,7 +546,7 @@
       },
       "draw_currency": "diamonds",
       "has_pity_first_10": true,
-      "milestones": "PLACEHOLDER_NEEDS_CONFIRMATION",
+      "milestones": [],
       "premium_supply": [
         {
           "phase": 1, "start_day": 3, "duration_days": 5,
