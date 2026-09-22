@@ -63,9 +63,14 @@ const REGRESSION_CASES = [
 
 // Byte-pinned aspirants plans (sha256 over the whole plan object, "worst"
 // confidence). The 0-dia day-1 plan is the hand-validated reference shape -
-// the lazy-cadence pacing change must provably never move it.
+// balance-poor pacing must provably stay need-driven. Updated deliberately
+// when a reviewed change improves the shape: the converge-on-checkpoint hold
+// (Sep 2026) moved the checkpoint from 10/1 to 9/30 (d15, the first
+// accumulation day) with one unbroken cadence, ৳3,700 → ৳3,415 (the starved
+// d5/d15 holds now draw on d6/d14 instead, the d16 emergency pass and the
+// 9/30 idle day are gone, and the final push shrank from 4 to 2 singles).
 const ASPIRANTS_BASELINE = {
-  "dia0|start1|fp none": "7fe7408383add391",
+  "dia0|start1|fp none": "9e06d324be8a13ec",
 };
 
 const failures = [];

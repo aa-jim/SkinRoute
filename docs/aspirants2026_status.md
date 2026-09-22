@@ -23,11 +23,11 @@
 
 ## 3. Bugs that need fixing
 
-> **RESOLVED (Sep 21 2026):** All four bugs in §3 are fixed. See the "Aspirants: lazy-cadence pacing applied" entry in `AGENTS.md` and the `docs/architecture.md` simulator line. The staged-funding guard loop, simulator accumulation mode, and pack selection now produce the target shape for all day-1 plans:
+> **RESOLVED (Sep 21 2026, refined Sep 22):** All four bugs in §3 are fixed. See the "Aspirants: converge-on-checkpoint pacing + pass-structure guard" entry in `AGENTS.md` and the `docs/architecture.md` simulator line. The staged-funding guard loop, simulator accumulation mode, and pack selection now produce the target shape for all day-1 plans:
 >- 40 exactly on day 15 (Sep 30) with the 10x same-day → 50 (sub-row); 51 on day 16 (Oct 1); 60 exactly on day 23 (Oct 8, no idle tail).
->- The 0-dia day-1 plan is byte-hash pinned (`7fe7408383add391`) and unchanged — it still reaches 40 on day 16 (Oct 1) via a small top-up pack because it's starved, not paced.
->- Rich day-1 plans (dia ≥ 2000) follow the calendar, not the balance: lazy-cadence holds skip surplus accumulation draws so 38 lands on 9/27 (tokens) → 40 on 9/30 → 60 on 10/8.
->- Pass selection matches the ideal pack combos: day-1 0-dia → 4 pass (880 dia) + `r_257×2 + fp_* + smalls`, BDT 3,029; dia 2,025 → 3× phase-start pass + r_257, BDT 1,070.
+>- The 0-dia day-1 plan is byte-hash pinned (`9e06d324be8a13ec`) and now ALSO paced by the calendar: ৳3,415, checkpoint on day 15 (Sep 30), no idle days, final push 2 singles (was ৳3,700 / d16 / 4 singles).
+>- Rich day-1 plans (dia ≥ 2000) follow the calendar, not the balance: converge-on-checkpoint holds skip surplus accumulation draws so 39 lands on 9/29 → 40 on 9/30 → 60 on 10/8, with no mid-gap stockpile draw (the old spareHold over-counted the anchor-frozen days).
+>- Pass selection matches the ideal pack combos: day-1 0-dia → 4 passes + `r_257 + fp_* + smalls`, BDT 3,415; dia 2,000/2,025 → 3× phase-start passes + r_257 (+ fp_150 on the 10x day), BDT 1,380. Mid-phase starts get the same drop-candidate search (startDay-5 2,000-dia: 3 passes, not 4) and a tier-pacing guard rejects any pass structure that slips the checkpoint.
 >- `verify:aspirants`: **PASS 144 aspirants plans** (60 draws, 0 warnings, funded, tiers monotonic) + 6 byte-identical non-aspirants. `next lint` (3 pre-existing `<img>` warnings) + `next build` pass.
 
 ### 3.1 Pack selection (symptoms)
