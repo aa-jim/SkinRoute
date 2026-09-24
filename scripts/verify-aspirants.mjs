@@ -69,8 +69,13 @@ const REGRESSION_CASES = [
 // accumulation day) with one unbroken cadence, ৳3,700 → ৳3,415 (the starved
 // d5/d15 holds now draw on d6/d14 instead, the d16 emergency pass and the
 // 9/30 idle day are gone, and the final push shrank from 4 to 2 singles).
+// Re-pinned (Sep 24 2026, token-guard scoping): the pre-checkpoint hold is now
+// scoped to days with pending phase tokens, so the ladder no longer rests in
+// front of the checkpoint. The reference plan keeps its ৳3,415 - the 40-checkpoint
+// + same-day first-time 10x simply move to 9/29 (d14, the same pacing the rich
+// plans get) and the 10x's funding packs ride along one day earlier.
 const ASPIRANTS_BASELINE = {
-  "dia0|start1|fp none": "9e06d324be8a13ec",
+  "dia0|start1|fp none": "772ce2f03ad12bcf",
 };
 
 const failures = [];
@@ -244,18 +249,34 @@ function verifyAspirants(plan, dia, startDay, fpLabel) {
   check(bc.worst === plan.recharge.totalBdt, label, `bdtCost.worst ${bc.worst} != recharge.totalBdt ${plan.recharge.totalBdt}`);
   check((dc.worst ?? 0) <= totals.dia, label, `diaCost.worst ${dc.worst} > spend ${totals.dia}`);
 
-  // 12. Lazy cadence (surplus day-1 plans): with a rich starting balance the
-  //     pacing is calendar-driven - the 40-checkpoint lands exactly on the
-  //     first accumulation day (day 15, right after phase 2 closes) and the
-  //     schedule reaches 60 on the final day, so there is no stockpiled
-  //     mid-phase checkpoint (the old 42 -> 52 on day 12) and no idle tail
-  //     days at the end.
+  // 12. Lazy cadence + no-gap ladder (surplus day-1 plans): with a rich starting
+  //     balance the pacing is calendar-driven - the days before the last phase
+  //     rest while the pending phase tokens carry the ladder (cum 19), then
+  //     every day from the 30-draw tier on draws without a gap: 39 lands on
+  //     9/28 (d13, phase 2's closing tail) and 40 on the checkpoint day 9/29
+  //     (d14) with the first-time 10x firing the SAME day (the user's rule:
+  //     40 reached, no bingo -> buy for 50 and 10x that same day). 60 lands on
+  //     the final day, so there is no stockpiled mid-phase checkpoint (the old
+  //     42 -> 52 on day 12) and no idle tail days at the end.
   if (startDay === 1 && dia >= 2000) {
-    check(cpRowOf(rows) === 15, label,
-      `rich-start checkpoint on day ${cpRowOf(rows)} (expected 15 - the first accumulation day)`);
+    check(cpRowOf(rows) === 14, label,
+      `rich-start checkpoint on day ${cpRowOf(rows)} (expected 14 - phase 2's closing day)`);
+    check(plan.tenxDay === 14, label,
+      `rich-start 10x on day ${plan.tenxDay} (expected 14 - same-day 10x on the checkpoint)`);
     const lastDrawDay = rows.filter((r) => (r.draws ?? 0) > 0).pop()?.day ?? 0;
     check(lastDrawDay === ASPIRANTS.duration_days, label,
       `last draw on day ${lastDrawDay} != ${ASPIRANTS.duration_days} - idle tail days at the end`);
+    // No zero-draw day once the running total has passed the 30-draw tier.
+    let cum = 0;
+    let firstPast30 = 0;
+    const zeroAfter30 = [];
+    for (const r of rows) {
+      cum += r.draws ?? 0;
+      if (!firstPast30 && cum >= 30) firstPast30 = r.day;
+      if (firstPast30 && r.day >= firstPast30 && (r.draws ?? 0) === 0) zeroAfter30.push(r.day);
+    }
+    check(zeroAfter30.length === 0, label,
+      `zero-draw day(s) [${zeroAfter30.join(",")}] after cum >= 30 (day ${firstPast30})`);
   }
 
   return {

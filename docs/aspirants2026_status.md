@@ -23,11 +23,11 @@
 
 ## 3. Bugs that need fixing
 
-> **RESOLVED (Sep 21 2026, refined Sep 22):** All four bugs in §3 are fixed. See the "Aspirants: converge-on-checkpoint pacing + pass-structure guard" entry in `AGENTS.md` and the `docs/architecture.md` simulator line. The staged-funding guard loop, simulator accumulation mode, and pack selection now produce the target shape for all day-1 plans:
->- 40 exactly on day 15 (Sep 30) with the 10x same-day → 50 (sub-row); 51 on day 16 (Oct 1); 60 exactly on day 23 (Oct 8, no idle tail).
->- The 0-dia day-1 plan is byte-hash pinned (`9e06d324be8a13ec`) and now ALSO paced by the calendar: ৳3,415, checkpoint on day 15 (Sep 30), no idle days, final push 2 singles (was ৳3,700 / d16 / 4 singles).
->- Rich day-1 plans (dia ≥ 2000) follow the calendar, not the balance: converge-on-checkpoint holds skip surplus accumulation draws so 39 lands on 9/29 → 40 on 9/30 → 60 on 10/8, with no mid-gap stockpile draw (the old spareHold over-counted the anchor-frozen days).
->- Pass selection matches the ideal pack combos: day-1 0-dia → 4 passes + `r_257 + fp_* + smalls`, BDT 3,415; dia 2,000/2,025 → 3× phase-start passes + r_257 (+ fp_150 on the 10x day), BDT 1,380. Mid-phase starts get the same drop-candidate search (startDay-5 2,000-dia: 3 passes, not 4) and a tier-pacing guard rejects any pass structure that slips the checkpoint.
+> **RESOLVED (Sep 21 2026, refined Sep 22 and Sep 24):** All four bugs in §3 are fixed. See the "Aspirants: converge-on-checkpoint pacing + pass-structure guard" and "Aspirants: no-gap ladder into the checkpoint" entries in `AGENTS.md` and the `docs/architecture.md` simulator line. The staged-funding guard loop, simulator accumulation mode, and pack selection now produce the target shape for all day-1 plans:
+>- 40 exactly on day 14 (Sep 29, phase 2's closing day) with the 10x same-day → 50 (sub-row); 51 on day 15 (Sep 30); 60 exactly on day 23 (Oct 8, no idle tail). The ladder draws every day from the 30-draw tier on — 39 on Sep 28 → 40 + 10x on Sep 29 — so there is no gap in front of the checkpoint.
+>- The 0-dia day-1 plan is byte-hash pinned (`772ce2f03ad12bcf`) and paced by the calendar: ৳3,415, checkpoint on day 14 (Sep 29) with the same-day 10x, no idle days, final push 1 single (was ৳3,700 / d16 / 4 singles; the ৳3,415 release had moved the checkpoint d16 → d15, the token-guard scoping then d15 → d14).
+>- Rich day-1 plans (dia ≥ 2000) follow the calendar, not the balance: the token-guarded hold skips surplus accumulation draws only while future phase tokens are pending (plateau at cum 19 through 9/24), so 39 lands on 9/28 → 40 + same-day 10x on 9/29 → 60 on 10/8, with no stockpile draw and no gap after the 30-draw tier.
+>- Pass selection matches the ideal pack combos: day-1 0-dia → 4 passes + `r_257 + fp_* + smalls`, BDT 3,415; dia 2,000 → ৳1,236, dia 2,025 → ৳1,175 (3× phase-start passes + r_257 + a small top-up on the 10x day). Mid-phase starts get the same drop-candidate search (startDay-5 2,000-dia: 3 passes, ৳1,304) and a tier-pacing guard rejects any pass structure that slips the checkpoint.
 >- `verify:aspirants`: **PASS 144 aspirants plans** (60 draws, 0 warnings, funded, tiers monotonic) + 6 byte-identical non-aspirants. `next lint` (3 pre-existing `<img>` warnings) + `next build` pass.
 
 ### 3.1 Pack selection (symptoms)
