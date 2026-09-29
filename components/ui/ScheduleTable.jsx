@@ -2,6 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { ChevronDown, ChevronUp, Gem, Key, Scroll, Sparkles, Wallet, Ticket, AlertTriangle, Coins, Clock } from "lucide-react";
+import { isAspirantsEvent } from "@/lib/eventHelpers";
 
 function dayToDate(startDate, day) {
   // Anchored at 08:00 UTC (= 2PM BDT in-game day reset) so the calendar date
@@ -338,7 +339,7 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
   const isCollector = plan.eventType === "collector";
   const showFromToday = startDay > 1;
   const isBingo = plan.eventType === "bingo";
-  const isAspirants = isBingo && event?.id === "aspirants_2026";
+  const isAspirants = isBingo && isAspirantsEvent(event);
 
   function filterRows(rows) {
     const filtered = rows.filter((r) => r.day >= startDay);

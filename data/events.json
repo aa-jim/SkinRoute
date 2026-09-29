@@ -530,6 +530,7 @@
       "id": "aspirants_2026",
       "name": "The Aspirants",
       "type": "bingo",
+      "category": "aspirants",
       "card_label": "Aspirants",
       "start_date": "2026-09-16",
       "end_date": "2026-10-08",
@@ -601,6 +602,93 @@
           {
             "id": "ruby_mecha_maiden",
             "name": "Mecha Maiden (Ruby)",
+            "guaranteed_pity": false
+          }
+        ],
+        "guaranteed_pity_skin_id": null,
+        "shared_pool_event_id": null,
+        "sub_event_id": null
+      }
+    },
+
+
+
+    {
+      "id": "aspirants_5.0",
+      "name": "The Aspirants",
+      "type": "bingo",
+      "category": "aspirants",
+      "card_label": "Aspirants",
+      "start_date": "2026-10-09",
+      "end_date": "2026-11-08",
+      "duration_days": 31,
+      "status": "early",
+      "banner_gradient": "from-[#7a1f4a] via-[#c0396b] to-[#e8558a]",
+      "text_panel_color": "#5c1a3a",
+      "image": "/assets/events/aspirants_5.0/banner.jpg",
+      "draw_cost_1x": 210,
+      "draw_cost_10x": 2100,
+      "discount_draw_cost": {
+        "daily_1x": 105,
+        "first_time_10x": 1050
+      },
+      "draw_currency": "diamonds",
+      "has_pity_first_10": true,
+      "milestones": [],
+      "premium_supply": [
+        {
+          "phase": 1, "start_day": 8, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+          ]
+        },
+        {
+          "phase": 2, "start_day": 15, "duration_days": 5,
+          "tasks": [
+            { "type": "login",        "tokens": 1 },
+            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
+            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
+            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
+            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
+            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
+            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+          ]
+        }
+      ],
+      "shop_items": [
+        {
+          "id": "obsidia_imperatrix_arashi",
+          "name": "Imperatrix Arashi",
+          "hero": "Obsidia",
+          "is_skin": true,
+          "image": "/assets/events/aspirants_5.0/target/obsidia_imperatrix_arashi.webp"
+        },
+        {
+          "id": "selena_silverbolt_raiko",
+          "name": "Silverbolt Raiko",
+          "hero": "Selena",
+          "is_skin": true,
+          "image": "/assets/events/aspirants_5.0/target/selena_silverbolt_raiko.webp"
+        }
+      ],
+      "bingo": {
+        "type": "line_3x3",
+        "pool_size": 2,
+        "skins": [
+          {
+            "id": "obsidia_imperatrix_arashi",
+            "name": "Imperatrix Arashi (Obsidia)",
+            "guaranteed_pity": false
+          },
+          {
+            "id": "selena_silverbolt_raiko",
+            "name": "Silverbolt Raiko (Selena)",
             "guaranteed_pity": false
           }
         ],

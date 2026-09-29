@@ -16,6 +16,7 @@ Every MLBB event is data-driven. Adding the next event = adding one JSON object 
 | `name` | string | ✅ | Display name (nav, wizard header, PDF). |
 | `card_label` | string | optional | Short badge label (e.g. "Aspirants"). Falls back to `name`. |
 | `type` | string | ✅ | `"collector"`, `"themed_crest"`, `"bingo"` (also accepted: `"legend"`, `"special"` → treated as themed crest). **Drives everything.** |
+| `category` | string | optional | `"aspirants"` marks an event as an **Aspirants** edition (hit-bingo: first completed *box* wins). Any event with this field gets the Aspirants planner + UI — the dedicated simulator, the staged 40-checkpoint, the same-day first-time 10x at the 40→50 hop, the main/sub-row split, and the "box"/"Box completion" wording. **Omit it for plain bingo** (line completion) — `lib/eventHelpers.js` → `isAspirantsEvent()` is the single predicate, so no event id is ever hardcoded. Every Aspirants edition must set it. |
 | `start_date` / `end_date` | string | see note | `YYYY-MM-DD`. Day resets at 2 PM BDT (08:00 UTC); an event ending on `end_date` is live until 2 PM BDT the next day. **Not needed for recurring events** (see below). |
 | `recurring` | object | optional | `{ "pattern": "monthly" }` — the event's window is **computed at request time** from the current in-game month (2 PM BDT boundary), so it rolls over automatically with zero edits. Explicit `start_date`/`end_date` in the JSON always override the pattern. |
 | `duration_days` | number | ✅ | Event length in days. Must equal the calendar span. For recurring events this is resolved automatically (28–31); the JSON value is only a fallback. |
@@ -184,8 +185,12 @@ Shared across all events; only change when Moonton changes BDT prices or the pas
 | Block | Fields | Notes |
 |---|---|---|
 | `weekly_pass` | `bdt`, `dia_instant`, `dia_daily`, `days`, `recharge_task_value`, `coa_box_daily` | Passes are **sequential** (queued), not simultaneous: instant diamonds on purchase day, then one pass's drip at a time. `recharge_task_value` (100) is what a pass counts as recharge on its purchase day (surprise tasks + supply windows). |
-| `first_purchase` | `fp_50/150/250/500`: `bdt`, `dia_base`, `dia_bonus`, `dia_extra`, `total` | The 2× diamond bonus packs. Code uses `bdt`, `dia_base` (recharge mode), `total`. Claimed state comes from the wizard. |
-| `regular` | `r_*`: `bdt`, `total` | Normal diamond packs (unbounded in the knapsack). |
+| `first_purchase` | `fp_50/150/250/500`: `bdt`, `dia_base`, `dia_bonus`, `dia_extra`, `total` | The 2× diamond bonus packs. Claimed state comes from the wizard. |
+| `regular` | `r_*`: `bdt`, `dia_base`, `dia_bonus`, `total` | Normal diamond packs (unbounded in the knapsack). |
+
+**The base+bonus split is the recharge-task credit, not a cosmetic split.** MLBB sells packs as "234+23 Diamonds": the **first** number is what counts toward a recharge *task* (premium-supply windows, surprise tasks), while the "+n" lands in the wallet but is **not** credited to the task. So `r_257` gives 257 diamonds but only 234 recharge credit. Always satisfy `dia_base + dia_bonus = total`.
+
+The weekly pass has the same split from a different source: it yields `dia_instant + dia_daily × days` (220) into the wallet, but only its `recharge_task_value` (100) counts toward a recharge task.
 | `coa_packs` | daily/monthly rates | Unused by code (kept for reference). |
 
 ## 3. Assets
@@ -203,7 +208,7 @@ Shared across all events; only change when Moonton changes BDT prices or the pas
 4. Fill `premium_supply` phases + tasks (array; themed crest = all phases, collector = phase 1 matters).
 5. Fill `shop_items` (target skins, outfit1 variants if any).
 6. Fill `prize_pool` — **sum of all `drop_rate` values must be exactly 1.0**.
-7. Bingo: fill `bingo` block; skip `prize_pool`.
+7. Bingo: fill `bingo` block; skip `prize_pool`. Aspirants editions also set `"category": "aspirants"` (top level) — this is what selects the Aspirants planner and the box wording.
 8. Add images under `public/assets/events/{id}/` (banner + target/).
 9. Validate JSON:
    ```powershell
@@ -215,6 +220,6 @@ Shared across all events; only change when Moonton changes BDT prices or the pas
 
 ## Field-usage cheat sheet
 
-- **Planner**: `type`, `duration_days`, `premium_supply`, `milestones`, `discount_draw_cost`, `draw_cost_1x/10x`, `shop_items[].crest_cost`/`outfit1_variant.crest_cost`, `prize_pool` (calculator), `bingo.guaranteed_pity_skin_id`, `has_surprise_tasks`/`surprise_tasks`
+- **Planner**: `type`, `category` (aspirants edition), `duration_days`, `premium_supply`, `milestones`, `discount_draw_cost`, `draw_cost_1x/10x`, `shop_items[].crest_cost`/`outfit1_variant.crest_cost`, `prize_pool` (calculator), `bingo.guaranteed_pity_skin_id`, `has_surprise_tasks`/`surprise_tasks`
 - **UI only**: `name`, `card_label`, `banner_gradient`, `text_panel_color`, `image`, `tier`, `base_crest_cost` (strikethrough), `end_date` (countdown)
 - **Ignored entirely**: `draw_currency`, `has_pity_first_10`, `bingo.pool_size`, `shop_items[].limit`/`is_skin`, `prize_pool[].is_skin`, `surprise_rewards_ladder`
