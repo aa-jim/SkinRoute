@@ -176,12 +176,25 @@ Aspirants is **not** an event id — it is a data category. Any `data/events.jso
 
 **No-gap ladder**: past the 30-draw tier the plan draws every remaining day. The tail `spareHold` (`lib/idealSchedule.aspirants.js`) only rests *below* 30 draws — it models remaining capacity as `duration - day`, which on a long edition reads "plenty of room" at cum 50 and would idle a week right after the checkpoint. Idling buys nothing (each skipped daily is the same 105 dia whenever it happens) and only strands the final draws on the last days. This is a no-op on calendars tight enough that the hold never fired.
 
-**Pass recharge is computed twice — they must agree.** A pass bought on a premium-supply phase-start day credits `recharge_task_value` toward that phase's tasks, and the quantity is needed in two places: `injectPhasePacks` estimates it to size the phase's recharge container, and `simulateAspirantsFixedShape` books it from the real purchase schedule (`passRechargeByDay`, returned on the plan as `passRechargeBooked`; the estimate as `passRechargeAssumed`). Two traps make the estimate drift:
+**Pass recharge is computed twice — they must agree.** A pass bought on a premium-supply phase-start day credits `recharge_task_value` toward that phase's tasks, and the quantity is needed in two places: `injectPhasePacks` estimates it to size the phase's recharge container, and `simulateAspirantsFixedShape` books it from the real purchase schedule (`passRechargeByDay`, returned on the plan as `passRechargeBooked`; the estimate as `passRechargeAssumed`). Both now read **one** helper, `distributeOwnedAndExtraPasses`, so they cannot drift by construction. Two traps make an estimate drift:
 
 - `distributePassPurchases` emits **two entries for the same day** whenever `firstPassBuyDay` equals a phase start (a plan beginning on the phase-start day) — `[{day:10,count:1},{day:10,count:2}]` for 3 passes. Reading it with `.find()` silently drops the second and under-counts by 200 credit. Always `filter(day === anchor).reduce(sum)`, matching `buildPassDripSchedule`.
 - `injectPhasePacks(sink, passCountOverride, dropOverride)` must **not** default those parameters to the live values: a default is bound once at call time, so the `optimalPassCount++` in its pass-substitution branch was invisible to every later re-sim. They are `null`-defaulted and resolved inside the loop.
 
 The verifier asserts `passRechargeAssumed === passRechargeBooked` per phase-start day, in both directions.
+
+**Owned passes are never re-dated onto a window.** `distributeOwnedAndExtraPasses` splits the plan's pass count into the passes the user **already owns** and the ones it **buys**:
+
+- owned → `[{ day: firstPassBuyDay, count: owned }]` — the day they were really bought, so their drip and instant payout are right and their recharge credit is spent *there*;
+- extra → `distributePassPurchases(extra, …)`, i.e. only these can land on a buyable phase day.
+
+This split is the whole point. Handing `distributePassPurchases` the **total** re-dated already-owned passes onto the phase-start days, where each credited `recharge_task_value` *inside* the window: a user with 2 owned passes booked 300 of in-window recharge off a single 200 BDT purchase and claimed all 12 tokens, including the `recharge_250` tier that the 100 of real in-window credit cannot clear. A pass counts toward a premium-supply task only when it is bought **inside that phase's window** — an owned pass was bought before the plan, so it can never help one. The fix makes such plans *more* expensive, and correctly so: they were previously under-buying because they were spending credit the user had already spent.
+
+`passesInBalance` (all owned passes already absorbed into the balance) stacks everything at `firstPassBuyDay` too, so the two paths agree.
+
+`ownedPassCount` is injected into every aspirants simulation by the `simPlain`/`simWithPacks` wrappers rather than at each call site, so no trial can forget it. The plan publishes three diagnostics for the verifier: `ownedPassDia` (in-window dia the owned passes deliver — real spend capacity that `recharge` deliberately does not list, so whole-plan funding is `startingDia + ownedPassDia + recharge.totalDia >= spend`), plus `firstPassBuyDay` and `ownedPassCount`.
+
+**A bought pass can never land before the plan's first day.** `distributePassPurchases` falls back to `firstPassBuyDay` when no buyable phase day is left. On a late start whose phases have all closed that is **day 1 — before the schedule even begins** — so those passes were priced into the `weekly_pass` recharge entry (count + dia) while producing **no "Buy N× weekly pass" note**, because the note loop's `sim.rows[day - startDay]` lookup misses for a day the schedule does not cover. The shopping list and the price silently disagreed (a day-29 start on `aspirants_5.0` billed 5 passes and showed 1). `distributeOwnedAndExtraPasses` therefore takes `earliestBuyDay` and clamps the **bought** passes' day to it; the **owned** passes are deliberately *not* clamped, since their drip is a fact about the player's account modelled across the whole event. A no-op for a day-1 start.
 
 ### Start Today vs Day 1
 

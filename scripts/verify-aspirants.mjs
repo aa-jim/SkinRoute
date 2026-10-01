@@ -99,6 +99,23 @@ function gridStartsFor(event) {
 
 const GRID_DIA = QUICK ? [0, 2025] : [0, 500, 1000, 1500, 2000, 2025, 2500, 3000, 4000];
 const GRID_FP = QUICK ? [{}] : [{}, ALL_FP];
+// Already-owned weekly passes. The grid used to hardcode `weeklyPasses: 0`, which
+// is exactly the condition that hid the owned-pass recharge bug: a pass the user
+// already holds was re-dated onto a premium-supply phase start and credited
+// `recharge_task_value` inside that window, so the plan claimed 12 tokens off a
+// single 200 BDT purchase. Check 6c guards these cells.
+//
+// The owned dimension runs on its OWN sub-grid rather than multiplying the whole
+// matrix. Owned passes only interact with the calendar through the phase windows
+// and the start day, so what matters is covering every start day x owned count;
+// the full dia x fp sweep on top of that added ~4x runtime (each plan costs
+// ~0.35-0.5s because of the per-tier bdtCost probes) for no extra signal. The
+// two dia levels are the extremes - balance-poor (where the recharge is on the
+// critical path) and rich (where it is not) - and FP is orthogonal to a pass
+// purchase, so `none` is enough.
+const GRID_OWNED = QUICK ? [0, 2] : [0, 1, 2, 3];
+const OWNED_DIA = QUICK ? [0] : [0, 2025];
+const OWNED_FP = [{}];
 // Start days are per-event (see gridStartsFor below), derived from that event's
 // own premium-supply phases and duration. The reference edition resolves to
 // 1/4/5/7/10/17/21/23, where 4/5/7 land inside phase 1 (days 3-7) and cover the
@@ -189,8 +206,17 @@ const REGRESSION_CASES = [
 // BDT with the overshoot cut from 525 to 213 dia. Both are cheaper, not dearer —
 // no day-1 pass is being paid for, and no pass is credited drip it cannot
 // deliver. Still 60 draws, fully funded, 0 warnings.
+// Re-pinned 1d6e11f317f6940d -> 8e8e344ab6af7d3e (2026-09-30, owned-pass recharge
+// fix). The plan's BEHAVIOUR is byte-identical: stripping the three new
+// diagnostic fields (`ownedPassDia`, `firstPassBuyDay`, `ownedPassCount`) from
+// the payload reproduces 1d6e11f317f6940d exactly, and the numbers are the same
+// as before - 3,487 BDT, 60 draws, 0 dia left, 0 warnings, checkpoint + same-day
+// 10x on day 15. `weeklyPasses: 0` is unaffected by construction: with no owned
+// passes `distributeOwnedAndExtraPasses` reduces to `distributePassPurchases`,
+// and `earliestBuyDay` is startDay=1, which never clamps. The hash moved only
+// because the plan object gained fields - the same cosmetic re-pin as Sep 28.
 const ASPIRANTS_BASELINE = {
-  "aspirants_2026|dia0|start1|fp none": "1d6e11f317f6940d",
+  "aspirants_2026|dia0|start1|fp none": "8e8e344ab6af7d3e",
 };
 
 const failures = [];
@@ -212,13 +238,18 @@ function cpRowOf(rows) {
   return 0;
 }
 
-function planAspirants(event, dia, startDay, fp) {
-  return buildPlan(event, { diamonds: dia, weeklyPasses: 0, fpClaimed: fp }, null, OWNED, "worst", startDay);
+function planAspirants(event, dia, startDay, fp, ownedPasses = 0, passDaysRemaining = 0) {
+  return buildPlan(event, {
+    diamonds: dia,
+    weeklyPasses: ownedPasses,
+    passDaysRemaining: ownedPasses > 0 ? passDaysRemaining : undefined,
+    fpClaimed: fp,
+  }, null, OWNED, "worst", startDay);
 }
 
-function verifyAspirants(event, plan, dia, startDay, fpLabel) {
+function verifyAspirants(event, plan, dia, startDay, fpLabel, ownedPasses = 0) {
   const a = anchorsOf(event);
-  const label = `${event.id} dia=${dia} start=${startDay} fp=${fpLabel}`;
+  const label = `${event.id} dia=${dia} start=${startDay} fp=${fpLabel} own=${ownedPasses}`;
   const rows = plan.daySchedule.rows;
   const totals = plan.daySchedule.totals;
   const last = rows[rows.length - 1];
@@ -233,9 +264,13 @@ function verifyAspirants(event, plan, dia, startDay, fpLabel) {
   check(plan.warnings.length === 0, label, `warnings=${JSON.stringify(plan.warnings.map((w) => w.message))}`);
 
   // 3. Whole-plan funding: starting balance + suggested recharge must cover the
-  //    total draw spend.
-  check(dia + plan.recharge.totalDia >= totals.dia, label,
-    `starting ${dia} + recharge ${plan.recharge.totalDia} < spend ${totals.dia}`);
+  //    total draw spend. The user's ALREADY-OWNED passes are spend capacity too,
+  //    but they are not a purchase so `recharge` deliberately does not list them
+  //    - they are published separately as `ownedPassDia`. Without this term an
+  //    owned-pass plan reads as underfunded even when the schedule is fully paid
+  //    for, and the check cannot tell that apart from a real shortfall.
+  check(dia + (plan.ownedPassDia ?? 0) + plan.recharge.totalDia >= totals.dia, label,
+    `starting ${dia} + ownedPassDia ${plan.ownedPassDia ?? 0} + recharge ${plan.recharge.totalDia} < spend ${totals.dia}`);
 
   // 4. No row may show a negative balance, and no row may carry negative values.
   for (const r of rows) {
@@ -328,6 +363,33 @@ function verifyAspirants(event, plan, dia, startDay, fpLabel) {
       const actual = booked[d] ?? 0;
       check(v === actual, label,
         `pass recharge on day ${d}: assumed ${v}, simulator booked ${actual}`);
+    }
+  }
+
+  // 6c. OWNED passes must never be RE-DATED onto a phase-start day. A pass only
+  //     counts toward a premium-supply task when it is bought inside that phase's
+  //     window. The user's already-owned passes keep the day they were really
+  //     bought (`firstPassBuyDay`), so their recharge_task_value is spent there.
+  //     The bug this guards: those passes were re-dated onto the phase start,
+  //     where they credited 100 each INSIDE the window — a 2-owned-pass plan
+  //     booked 300 of "in-window" recharge off one 200 BDT purchase and claimed
+  //     all 12 tokens, including the recharge_250 tier that the 100 of real
+  //     in-window credit cannot clear.
+  //
+  //     So pass recharge may only be booked on a day the plan tells the user to
+  //     buy a pass, or on `firstPassBuyDay` — which is legitimately in-window
+  //     when the user bought the pass during that phase (it is NOT a re-date).
+  if (ownedPasses > 0) {
+    const boughtDays = new Set();
+    for (const r of rows) {
+      if (notesOf(r).some((n) => isPassNote(n))) boughtDays.add(r.day);
+    }
+    const ownedDay = plan.firstPassBuyDay;
+    for (const [dStr, v] of Object.entries(plan.passRechargeBooked ?? {})) {
+      if (v === 0) continue;
+      const d = Number(dStr);
+      check(boughtDays.has(d) || d === ownedDay, label,
+        `day ${d} books ${v} pass recharge but the plan buys no pass that day and it is not the owned passes' purchase day (${ownedDay}) — owned passes must never be re-dated onto a window`);
     }
   }
 
@@ -478,19 +540,31 @@ function verifyAspirants(event, plan, dia, startDay, fpLabel) {
       check(p.rechargeDia === wp.recharge_task_value, label,
         `pass recharge credit ${p.rechargeDia} != recharge_task_value ${wp.recharge_task_value}`);
     }
-    // Strong form: replay the drip from the purchase notes themselves.
-    const receipts = [];
-    for (const r of rows) {
-      for (const n of notesOf(r)) {
-        if (!isPassNote(n)) continue;
-        receipts.push({ day: r.day, count: parseInt((n.match(/(\d+)/) || [])[1] ?? "1", 10) || 1 });
+    // Strong form: replay the drip from the purchase notes themselves. The
+    // owned passes are NOT in those notes (the user already has them) but they
+    // still occupy the front of the sequential queue, so they must be seeded
+    // into the replay or it over-credits the bought passes. Both totals are
+    // taken with the same owned seed, so the comparison is the MARGINAL yield
+    // of the passes the plan actually buys — which is what the row is booked as.
+    {
+      const wp2 = packsData.weekly_pass;
+      const ownedSeed = (plan.ownedPassCount ?? 0) > 0
+        ? [{ day: plan.firstPassBuyDay, count: plan.ownedPassCount }]
+        : [];
+      const ownedOnly = passPurchasesTotalDia(ownedSeed, wp2, event.duration_days);
+      const receipts = [];
+      for (const r of rows) {
+        for (const n of notesOf(r)) {
+          if (!isPassNote(n)) continue;
+          receipts.push({ day: r.day, count: parseInt((n.match(/(\d+)/) || [])[1] ?? "1", 10) || 1 });
+        }
       }
-    }
-    const booked = passRows.reduce((s, p) => s + p.dia, 0);
-    if (receipts.length > 0 && booked > 0) {
-      const replayed = passPurchasesTotalDia(receipts, wp, event.duration_days);
-      check(booked === replayed, label,
-        `pass wallet yield ${booked} != ${replayed} replayed from the schedule's own purchases ${JSON.stringify(receipts)}`);
+      const booked = passRows.reduce((s, p) => s + p.dia, 0);
+      if (receipts.length > 0 && booked > 0) {
+        const replayed = passPurchasesTotalDia([...ownedSeed, ...receipts], wp2, event.duration_days) - ownedOnly;
+        check(booked === replayed, label,
+          `pass wallet yield ${booked} != ${replayed} replayed from the schedule's own purchases ${JSON.stringify(receipts)} (owned ${plan.ownedPassCount ?? 0} seeded at day ${plan.firstPassBuyDay})`);
+      }
     }
   }
 
@@ -551,35 +625,54 @@ const startedAt = Date.now();
 for (const event of ASPIRANTS_EVENTS) {
   const starts = QUICK ? gridStartsFor(event).slice(0, 1) : gridStartsFor(event);
   const an = anchorsOf(event);
+  const ownedPlanCount = starts.length * (
+    GRID_FP.length * GRID_DIA.length                       // owned = 0, full matrix
+    + (GRID_OWNED.length - 1) * OWNED_FP.length * OWNED_DIA.length * 2   // owned > 0, sub-grid x 2 drip states
+  );
   console.log(
-    `\nAspirants grid [${event.id}]: ${GRID_DIA.length} dia x ${starts.length} startDay x ${GRID_FP.length} fp ` +
-    `= ${GRID_DIA.length * starts.length * GRID_FP.length} plans ` +
+    `\nAspirants grid [${event.id}]: ${GRID_DIA.length} dia x ${starts.length} startDay x ${GRID_FP.length} fp`
+    + ` + ${GRID_OWNED.length} ownedPass (sub-grid ${OWNED_DIA.length} dia) = ${ownedPlanCount} plans ` +
     `(duration ${event.duration_days}d, phases ${an.phases.map((p) => `${p.start_day}-${an.phaseEnd(p)}`).join("/") || "none"}, lastPhaseEnd ${an.lastPhaseEnd})`
   );
-  for (const fp of GRID_FP) {
-    for (const startDay of starts) {
-      for (const dia of GRID_DIA) {
+  // owned = 0 runs the FULL dia x start x fp matrix (the byte-pinned reference
+  // shape); owned > 0 runs the narrower sub-grid above, once per pass count.
+  const ownedCells = (owned) => (owned === 0
+    ? GRID_FP.flatMap((fp) => GRID_DIA.map((dia) => ({ fp, dia })))
+    : OWNED_FP.flatMap((fp) => OWNED_DIA.map((dia) => ({ fp, dia }))));
+  for (const startDay of starts) {
+    for (const owned of GRID_OWNED) {
+      // A partially-used pass (days remaining < 7 per pass) puts the queue cursor
+      // mid-pass, a different drip/recharge shape from a freshly-bought one, so
+      // each owned count runs at both extremes.
+      const remCases = owned > 0
+        ? [[owned * 7, "full"], [Math.max(1, owned * 7 - 3), "part"]]
+        : [[0, "none"]];
+      for (const { fp, dia } of ownedCells(owned)) {
         const fpLabel = fp === ALL_FP ? "claimed" : "none";
-        const plan = planAspirants(event, dia, startDay, fp);
-        // Byte pin: hand-validated aspirants plans must never drift.
-        const baselineKey = `${event.id}|dia${dia}|start${startDay}|fp ${fpLabel}`;
-        if (ASPIRANTS_BASELINE[baselineKey]) {
-          const bHash = createHash("sha256").update(JSON.stringify(plan)).digest("hex").slice(0, 16);
-          check(bHash === ASPIRANTS_BASELINE[baselineKey], `pin ${baselineKey}`,
-            `plan hash ${bHash} != baseline ${ASPIRANTS_BASELINE[baselineKey]}`);
-        }
-        results.push(verifyAspirants(event, plan, dia, startDay, fpLabel));
-        // DEBUG: print the reference edition's dia=0 start=1 fp=none schedule.
-        if (QUICK === false && event.id === ASPIRANTS.id && dia === 0 && startDay === 1 && fpLabel === "none") {
-          console.log(`\n[DEBUG] ${event.id} dia=0 start=1 fp=none schedule (first 20 rows):`);
-          plan.daySchedule.rows.slice(0, 20).forEach(r => {
-            console.log(`  day ${r.day}  draws=${r.draws}  diaLeft=${r.diaLeft}  diaAdd=${r.diaAdd}  recharged=${r.diaRecharged}  spent=${r.diaSpent}  notes=${JSON.stringify(r.notes)}`);
-          });
-          console.log(`  cp=${plan.checkpointDay} tenx=${plan.tenxDay} tail=${plan.tailDay}`);
-          const cpRow = plan.daySchedule.rows.find((r) => r.day === plan.tenxDay);
-          if (cpRow?.main && cpRow?.subrow) {
-            console.log(`  [split] main: ${cpRow.main.draws} draws / ${cpRow.main.diaSpent} spent / ${cpRow.main.diaAdd} added / ${cpRow.main.diaLeft} left  (day: ${cpRow.draws} / ${cpRow.diaSpent} / ${cpRow.diaLeft})`);
-            console.log(`  [split] sub : ${cpRow.subrow.draws} draws / ${cpRow.subrow.diaSpent} spent / ${cpRow.subrow.diaAdd} added`);
+        for (const [rem, remLabel] of remCases) {
+          const plan = planAspirants(event, dia, startDay, fp, owned, rem);
+          // Byte pin: hand-validated aspirants plans must never drift. Only the
+          // owned=0 cells are pinned — an owned-pass plan is not the reference
+          // shape, and pinning one would freeze today's numbers.
+          const baselineKey = `${event.id}|dia${dia}|start${startDay}|fp ${fpLabel}`;
+          if (owned === 0 && ASPIRANTS_BASELINE[baselineKey]) {
+            const bHash = createHash("sha256").update(JSON.stringify(plan)).digest("hex").slice(0, 16);
+            check(bHash === ASPIRANTS_BASELINE[baselineKey], `pin ${baselineKey}`,
+              `plan hash ${bHash} != baseline ${ASPIRANTS_BASELINE[baselineKey]}`);
+          }
+          results.push(verifyAspirants(event, plan, dia, startDay, `${fpLabel}/${remLabel}`, owned));
+          // DEBUG: print the reference edition's dia=0 start=1 fp=none schedule.
+          if (QUICK === false && owned === 0 && event.id === ASPIRANTS.id && dia === 0 && startDay === 1 && fpLabel === "none") {
+            console.log(`\n[DEBUG] ${event.id} dia=0 start=1 fp=none schedule (first 20 rows):`);
+            plan.daySchedule.rows.slice(0, 20).forEach(r => {
+              console.log(`  day ${r.day}  draws=${r.draws}  diaLeft=${r.diaLeft}  diaAdd=${r.diaAdd}  recharged=${r.diaRecharged}  spent=${r.diaSpent}  notes=${JSON.stringify(r.notes)}`);
+            });
+            console.log(`  cp=${plan.checkpointDay} tenx=${plan.tenxDay} tail=${plan.tailDay}`);
+            const cpRow = plan.daySchedule.rows.find((r) => r.day === plan.tenxDay);
+            if (cpRow?.main && cpRow?.subrow) {
+              console.log(`  [split] main: ${cpRow.main.draws} draws / ${cpRow.main.diaSpent} spent / ${cpRow.main.diaAdd} added / ${cpRow.main.diaLeft} left  (day: ${cpRow.draws} / ${cpRow.diaSpent} / ${cpRow.diaLeft})`);
+              console.log(`  [split] sub : ${cpRow.subrow.draws} draws / ${cpRow.subrow.diaSpent} spent / ${cpRow.subrow.diaAdd} added`);
+            }
           }
         }
       }
@@ -668,8 +761,22 @@ console.log("\nPack recharge semantics (packs.json)");
   // Every pack a plan actually bought must expose the split.
   for (const r of results) {
     for (const p of r.packRows ?? []) {
-      check(p.rechargeDia != null && p.rechargeDia <= p.dia, `${r.eventId} pack ${p.id}`,
-        `rechargeDia ${p.rechargeDia} not <= wallet dia ${p.dia}`);
+      // For a REGULAR/FP pack the recharge credit can never exceed the wallet
+      // yield (only the "+bonus" half is excluded). The weekly pass is the one
+      // exception and the comparison is against its FULL yield, not its
+      // in-window `dia`: a pass bought on the event's last day delivers just its
+      // 80 instant because the drip falls outside the window, yet it still
+      // credits the full recharge_task_value on the purchase day. Comparing the
+      // credit against the truncated in-window dia is a false positive.
+      if (p.id === "weekly_pass") {
+        const wp = packsData.weekly_pass;
+        const fullYield = wp.dia_instant + wp.dia_daily * wp.days;
+        check(p.rechargeDia != null && p.rechargeDia <= fullYield, `${r.eventId} pack ${p.id}`,
+          `rechargeDia ${p.rechargeDia} not <= the pass's full yield ${fullYield}`);
+      } else {
+        check(p.rechargeDia != null && p.rechargeDia <= p.dia, `${r.eventId} pack ${p.id}`,
+          `rechargeDia ${p.rechargeDia} not <= wallet dia ${p.dia}`);
+      }
     }
   }
   const withBonus = all.filter((p) => p.dia_bonus > 0).length;

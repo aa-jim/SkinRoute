@@ -9,7 +9,7 @@
       "status": "active",
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
       "text_panel_color": "#412814",
-      "image": "/assets/events/exquisite_collection/banner.png",
+      "image": "/assets/events/exquisite_collection/banner.webp",
       "draw_cost_1x": 50,
       "draw_cost_10x": 500,
       "discount_draw_cost": {
@@ -38,92 +38,92 @@
       ],
       "shop_items": [
         {
-          "id": "argus_raiden_maru",
-          "name": "Raiden Maru",
-          "hero": "Argus",
+          "id": "sun_celestial_rebel",
+          "name": "Celestial Rebel",
+          "hero": "Sun",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 720,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/argus_raiden_maru.jpg"
+          "image": "/assets/skins/collector/sun_celestial_rebel.jpeg"
         },
         {
-          "id": "yss_lone_destructor",
-          "name": "Lone Destructor",
-          "hero": "Yi Sun-shin",
+          "id": "aamon_soul_reaver",
+          "name": "Soul Reaver",
+          "hero": "Aamon",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/yss_lone_destructor.jpg"
+          "image": "/assets/skins/collector/aamon_soul_reaver.jpg"
         },
         {
-          "id": "miya_doom_catalyst",
-          "name": "Doom Catalyst",
-          "hero": "Miya",
+          "id": "angela_floral_elf",
+          "name": "Floral Elf",
+          "hero": "Angela",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/miya_doom_catalyst.jpg"
+          "image": "/assets/skins/collector/angela_floral_elf.jpg"
         },
         {
-          "id": "novaria_dragonsworn",
-          "name": "Dragonsworn",
-          "hero": "Novaria",
+          "id": "brody_ore-chemist",
+          "name": "Ore-Chemist",
+          "hero": "Brody",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/novaria_dragonsworn.jpg"
+          "image": "/assets/skins/collector/brody_ore-chemist.jpg"
         },
         {
-          "id": "yz_blood_serpent",
-          "name": "Blood Serpent",
-          "hero": "Yu Zhong",
+          "id": "paquito_blazing_tiger",
+          "name": "Blazing Tiger",
+          "hero": "Paquito",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/yz_blood_serpent.jpg"
+          "image": "/assets/skins/collector/paquito_blazing_tiger.jpg"
         },
         {
-          "id": "leomord_inferno_soul",
-          "name": "Inferno Soul",
-          "hero": "Leomord",
+          "id": "guinevere_lady_crane",
+          "name": "Lady Crane",
+          "hero": "Guinevere",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/leomord_inferno_soul.jpg"
+          "image": "/assets/skins/luckybox/guinevere_lady_crane.jpg"
         },
         {
-          "id": "alpha_onimusha_commander",
-          "name": "Onimusha Commander",
-          "hero": "Alpha",
+          "id": "kaja_skyblocker",
+          "name": "Skyblocker",
+          "hero": "Kaja",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/alpha_onimusha_commander.jpg"
+          "image": "/assets/skins/luckybox/kaja_skyblocker.jpg"
         },
         {
-          "id": "eudora_emerald_enchantress",
-          "name": "Emerald Enchantress",
-          "hero": "Eudora",
+          "id": "uranus_video_game_dominator",
+          "name": "Video Game Dominator",
+          "hero": "Uranus",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/eudora_emerald_enchantress.jpg"
+          "image": "/assets/skins/luckybox/uranus_video_game_dominator.jpg"
         }
       ],
       "prize_pool": [
