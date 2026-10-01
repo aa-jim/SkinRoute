@@ -1,6 +1,7 @@
 "use client";
 
 import { useWizard } from "@/lib/wizardContext";
+import { isAspirantsEvent } from "@/lib/eventHelpers";
 
 export default function StepTwo() {
   const { event, target, setTarget, goNext, goBack } = useWizard();
@@ -32,7 +33,7 @@ export default function StepTwo() {
       </h2>
       <p className="text-sm text-ink-soft mb-6">
         {isBingo
-          ? `First completed ${event.id === "aspirants_2026" ? "box" : "bingo line"} wins any 1 unowned skin below`
+          ? `First completed ${isAspirantsEvent(event) ? "box" : "bingo line"} wins any 1 unowned skin below`
           : "Choose the skin you want to get"}
       </p>
 
@@ -96,7 +97,7 @@ export default function StepTwo() {
                       </p>
                     ) : (
                       <p className="text-[10.5px] font-semibold text-fern">
-                        {event.id === "aspirants_2026" ? "Box completion" : "Line completion"}
+                        {isAspirantsEvent(event) ? "Box completion" : "Line completion"}
                       </p>
                     )
                   ) : isDiscounted ? (

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Gem, Layers, Target, Wallet, AlertTriangle, Download, Calendar, CalendarDays, RefreshCw, Scroll } from "lucide-react";
 import { useWizard } from "@/lib/wizardContext";
 import { todayEventDay } from "@/lib/planOrchestrator";
-import { daysUntilStart } from "@/lib/eventHelpers";
+import { daysUntilStart, isAspirantsEvent } from "@/lib/eventHelpers";
 import { exportPlanPdf } from "@/lib/exporter";
 import SummaryCard from "@/components/ui/SummaryCard";
 import ScheduleTable from "@/components/ui/ScheduleTable";
@@ -261,7 +261,7 @@ export default function StepFour() {
         <div className="mb-8">
           <div className="rounded-xl border-2 border-plum bg-plum/10 px-5 py-4 mb-4">
             <p className="font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-plum-dark mb-2">
-              {event.id === "aspirants_2026" ? "The Aspirants" : "Bingo — first line completion"}
+              {isAspirantsEvent(event) ? "The Aspirants" : "Bingo — first line completion"}
             </p>
             <div className="grid grid-cols-3 gap-3 text-center">
               <div>
