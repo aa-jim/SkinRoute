@@ -193,6 +193,50 @@ Shared across all events; only change when Moonton changes BDT prices or the pas
 The weekly pass has the same split from a different source: it yields `dia_instant + dia_daily × days` (220) into the wallet, but only its `recharge_task_value` (100) counts toward a recharge task.
 | `coa_packs` | daily/monthly rates | Unused by code (kept for reference). |
 
+## 5. `special` events (e.g. `11.11_2026` — the 11.11 Kagura Legend)
+
+A `special` event routes through the **themed-crest** planner but adds a curated slate of
+mechanics beyond a normal crest pool. No new planner wiring is required on top of
+`buildThemedCrestPlan` — everything is data-driven through `event.special_mechanics`
+and a crest-yield calibration scalar.
+
+- **`special_mechanics`** (opt-in). Each field is read by the themed-crest simulator
+  only when declared (`event.special_mechanics ?? null`), so a missing block runs
+  the historical path byte-identically:
+  - `first_time_10x` — one 10x draw at the discounted (50%) daily price, bought as soon
+    as the balance covers it.
+  - `mega_draw` — `{ day, tokens, costs }`: one-time tokens bought on `day` at the
+    listed per-token costs.
+  - `promo_draw` — `{ day, max_draws, real_cost_per_draw, promo_dia }`: a surge of draws
+    on `day` spending real dia each, backed by `promo_dia` of promo diamonds.
+  - `recharge_rebate` — `{ threshold_dia, tokens, max_hits }`: awards `tokens` for any
+    day carrying ≥ `threshold_dia` recharge, capped at `max_hits`.
+  - `streak_recharge` — `{ min_credit, consecutive_days, tiers }`: awards `tiers.tokens`
+    once the recharge run reaches that many consecutive days (each ≥ `min_credit`). Days
+    that lack their own recharge are covered by the streak-forcing loop so the tokens
+    are not silently forfeited.
+  - `claim_tokens_early` — claims a premium-supply phase the moment every task is
+    satisfied, instead of waiting for the window to close.
+  - `pass_buy_days` — `{ day, … }` template (one entry per pass, last repeats): spreads
+    the plan's passes onto those days so each pass credits `recharge_task_value` on its
+    own purchase day, satisfying the streak floor without extra packs.
+  - `max_passes` — overrides the `[floor(span/7), 10]` pass cap, declared only when a
+    single pass beyond the drip-cap still pays (11.11's 5th pass at 0.7 dia/BDT).
+- **`crest_rate_multiplier`** (optional, default 1) — multiplies the raw E[crest/draw]
+  **before** the `1.0 / 0.95 / 0.85` confidence ladder, e.g. `1.15` moves 11.5 → 13.225
+  → 114 / 119 / 133 draws. One scalar keeps optimistic < realistic < worst by
+  construction.
+- **Prize pool** sums to 1.0 and ships 7 rows: `legend_luckybox` @ 0.003%, `epic` @ 0.012%,
+  `special` @ 0.15%, `elite` @ 1%, `basic` @ 10%, `crest (Stardust Core)` @ 23%,
+  `items` @ 65.835%. Milestones award 15/15/15/30/30 crests at draws 15/20/30/40/50.
+- **`duration_days`**: 31. Premium supply: phase 1 (day 3, 5 days: `recharge_500`=18 tokens),
+  phase 2 (day 10, 5 days: `recharge_500`=14 + `spend_250`=2 = 16 tokens), both with
+  `claim_tokens_early` (claims land on day 3 and day 14).
+- **`has_surprise_tasks`**: `false` (no surprise window), so the optional day-1 pass is
+  dropped unless the price comparison keeps it.
+
+Run `npm run verify:special` (144-plan grid) to lock invariants.
+
 ## 3. Assets
 
 - Banner: `public/assets/events/{event_id}/banner.jpg|jpeg|png`

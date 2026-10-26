@@ -125,15 +125,31 @@ const OWNED_FP = [{}];
 // Captured on the pre-fix code (aspirants2026 @ 7ba2cdb) with the exact same
 // inputs; the aspirants fix must not touch any other event type.
 // Re-pinned Sep 28 2026 for the pack recharge-credit correction: recharge tasks
-// now count each pack's BASE (the "234+23" split) and the weekly pass its
-// recharge_task_value, not the wallet yield. Recharge containers therefore need
-// more packs, which moves prices. Plus data corrections: r_14/r_28/r_42 added,
-// and r_5/r_11/r_22 repriced to 14/28/55 per the in-game shop.
+// Regression baseline: plan hashes that must stay byte-identical so a change to
+// the shared themed-crest / bingo branch can't quietly move JJK / SF / Collector.
+//
+// Hashes are `sha256(JSON.stringify(plan)).slice(0, 16)` over the full plan
+// payload, so ANY schedule field moving (notes, diaLeft, pack split) moves them.
+//
+// - street_fighter / jujutsu_kaisen: themed-crest events, route through
+//   buildThemedCrestPlanWithPacks.
+// - exquisite_collection: PRE-EXISTING FAILURE (see AGENTS.md "Pre-existing,
+//   NOT from this change"). The working tree carries uncommitted
+//   data/events.json line changes that predate these baselines; they fail on the
+//   clean tree too. Left as-is so the mismatch stays visible rather than being
+//   papered over.
+//
+// The jujutsu_kaisen entries moved when the final-push `diaLeft` bug was fixed
+// (lib/idealSchedule.themedCrest.js sets finalRow.diaLeft after the push, so the
+// last row's balance no longer overstates by the push cost). That is the
+// intended behaviour — the old hashes priced diamonds the schedule never had.
+// street_fighter was byte-identical (its last row carries no push, so its
+// diaLeft was already correct).
 const REGRESSION_BASELINE = {
   "street_fighter_2026|dia0|start1": "b77cb45e54c975d2",
   "street_fighter_2026|dia1000|start1": "419318e45797c6e0",
-  "jujutsu_kaisen_2026|dia0|start1": "284d079cb08d5cdb",
-  "jujutsu_kaisen_2026|dia2000|start1": "38d4f14ace16dfc9",
+  "jujutsu_kaisen_2026|dia0|start1": "26bd8195e8816a41",
+  "jujutsu_kaisen_2026|dia2000|start1": "c2b019f7d04c1861",
   "exquisite_collection|dia0|start1": "b9dd6e79146006ad",
   "exquisite_collection|dia500|start5": "4307cf9cd5995c62",
 };
