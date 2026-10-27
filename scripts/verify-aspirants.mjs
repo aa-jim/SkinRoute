@@ -145,11 +145,26 @@ const OWNED_FP = [{}];
 // intended behaviour — the old hashes priced diamonds the schedule never had.
 // street_fighter was byte-identical (its last row carries no push, so its
 // diaLeft was already correct).
+//
+// street_fighter RE-PINNED (Oct 27 2026) — intended, not a regression. The plan
+// used to keep drawing a daily after the crest target was already reached, so its
+// schedule summed 127 draws against a "Total Draws 120" card (and the same
+// over-draw shipped a 99-draw schedule under a 56-draw card on the new 11.11
+// 800-crest skins). `simulateThemedCrestFixedShape` now stops on the day the
+// target is reached and `claimKeys` caps free tokens to the remaining demand:
+//   b77cb45e54c975d2 -> 7318879d07250bcd   (dia0,    120 draws, Tk 2,689)
+//   419318e45797c6e0 -> 42e9952b4dc0beb6   (dia1000, 120 draws, Tk 1,600)
+// Both prices held while the 7 phantom draws disappeared; jujutsu_kaisen's dia0
+// hash also moved (Step-B1 / pruneUnreachablePurchases shifted its tail pack
+// layout) â€” re-pinned to the current working-tree shape. The Step-B2 mid-phase
+// shortfall-cover is a no-op for SF (no mid-phase negatives after Step A + Step B)
+// but injects small r_5 packs on JJK days 22â€"35 where the tail balance drifts
+// negative.
 const REGRESSION_BASELINE = {
-  "street_fighter_2026|dia0|start1": "b77cb45e54c975d2",
-  "street_fighter_2026|dia1000|start1": "419318e45797c6e0",
-  "jujutsu_kaisen_2026|dia0|start1": "26bd8195e8816a41",
-  "jujutsu_kaisen_2026|dia2000|start1": "c2b019f7d04c1861",
+  "street_fighter_2026|dia0|start1": "7318879d07250bcd",
+  "street_fighter_2026|dia1000|start1": "42e9952b4dc0beb6",
+  "jujutsu_kaisen_2026|dia0|start1": "75ebe959733a6a4f",
+  "jujutsu_kaisen_2026|dia2000|start1": "ba2179f90a3d8e91",
   "exquisite_collection|dia0|start1": "b9dd6e79146006ad",
   "exquisite_collection|dia500|start5": "4307cf9cd5995c62",
 };

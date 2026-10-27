@@ -229,13 +229,23 @@ and a crest-yield calibration scalar.
 - **Prize pool** sums to 1.0 and ships 7 rows: `legend_luckybox` @ 0.003%, `epic` @ 0.012%,
   `special` @ 0.15%, `elite` @ 1%, `basic` @ 10%, `crest (Stardust Core)` @ 23%,
   `items` @ 65.835%. Milestones award 15/15/15/30/30 crests at draws 15/20/30/40/50.
-- **`duration_days`**: 31. Premium supply: phase 1 (day 3, 5 days: `recharge_500`=18 tokens),
-  phase 2 (day 10, 5 days: `recharge_500`=14 + `spend_250`=2 = 16 tokens), both with
-  `claim_tokens_early` (claims land on day 3 and day 14).
+- **`duration_days`**: 31. Premium supply: **phase 1 opens day 8** and **phase 2 opens day 15**
+  (5 days each, identical 9-task list — `login`=1 + `recharge` 1/50/100×2/250×4/500×5 +
+  `spend` 100/250/500×2 = **18 tokens per phase, 36 total**), both with `claim_tokens_early`.
+- **Promo draws on day 9** (`promo_draw`): up to **21 draws** at 20 real dia each, backed by
+  `promo_dia: 1680` of promo diamonds.
+- **`pass_buy_days`**: `[1,1,2,3,4]` — the five passes are spread over the first five days so
+  each credits its own `recharge_task_value` toward the 8-day consecutive-recharge streak.
+- **Shop items**: Kagura at **1,600 crests** + six **800-crest** skins (Gusion, Hayabusa,
+  Nolan, Thamuz, Wanwan, X-Borg). An 800-crest target needs only ~56 draws, so its schedule
+  **finishes around day 9 of 31** — the planner stops there and never bills the day-15 phase
+  packs (see `architecture.md` → "A plan never draws past `targetDraws`").
 - **`has_surprise_tasks`**: `false` (no surprise window), so the optional day-1 pass is
   dropped unless the price comparison keeps it.
 
-Run `npm run verify:special` (144-plan grid) to lock invariants.
+Run `npm run verify:special` (228-plan grid: 144 on Kagura + a low-target grid over all six
+800-crest skins) to lock invariants — including the universal
+`Σ rows.draws === drawsNeeded.draws === totals.draws`.
 
 ## 3. Assets
 
