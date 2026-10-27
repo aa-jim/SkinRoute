@@ -696,6 +696,93 @@
         "shared_pool_event_id": null,
         "sub_event_id": null
       }
+    },
+    {
+      "id": "11.11_2026",
+      "name": "11.11",
+      "type": "special",
+      "type_label": "11.11",
+      "card_label": "11.11",
+      "start_date": "2026-11-06",
+      "end_date": "2026-12-06",
+      "duration_days": 31,
+      "status": "coming soon",
+      "banner_gradient": "from-[#0b1230] via-[#3a1030] to-[#8c1f2a]",
+      "text_panel_color": "#2a0f22",
+      "image": "/assets/events/11.11_2026/banner.png",
+      "draw_cost_1x": 100,
+      "draw_cost_10x": 1000,
+      "discount_draw_cost": {
+        "daily_1x": 50,
+        "first_time_10x": 500
+      },
+      "draw_currency": "diamonds",
+      "crest_rate_multiplier": 1.15,
+      "has_pity_first_10": true,
+      "has_surprise_tasks": false,
+      "special_mechanics": {
+        "first_time_10x": true,
+        "mega_draw": { "day": 1, "tokens": 2, "costs": [10, 49] },
+        "promo_draw": { "day": 5, "max_draws": 21, "real_cost_per_draw": 20, "promo_dia": 1680 },
+        "recharge_rebate": { "threshold_dia": 100, "tokens": 1, "max_hits": 3 },
+        "streak_recharge": {
+          "min_credit": 100,
+          "consecutive_days": 8,
+          "tiers": [
+            { "days": 5, "tokens": 1 },
+            { "days": 8, "tokens": 2 }
+          ]
+        },
+        "claim_tokens_early": true,
+        "pass_buy_days": [1, 1, 2, 4, 5],
+        "max_passes": 5
+      },
+      "milestones": [
+        { "draws": 15, "reward_type": "crests", "crests": 15 },
+        { "draws": 20, "reward_type": "crests", "crests": 15 },
+        { "draws": 30, "reward_type": "crests", "crests": 15 },
+        { "draws": 40, "reward_type": "crests", "crests": 30 },
+        { "draws": 50, "reward_type": "crests", "crests": 30 }
+      ],
+      "premium_supply": [
+        {
+          "phase": 1,
+          "start_day": 3,
+          "duration_days": 5,
+          "tasks": [
+            { "type": "recharge_500", "tokens": 18, "threshold_dia": 500 }
+          ]
+        },
+        {
+          "phase": 2,
+          "start_day": 10,
+          "duration_days": 5,
+          "tasks": [
+            { "type": "recharge_500", "tokens": 14, "threshold_dia": 500 },
+            { "type": "spend_250", "tokens": 2, "threshold_dia": 250 }
+          ]
+        }
+      ],
+      "prize_pool": [
+        { "id": "legend_luckybox", "name": "Double 11 / Collector / Luckybox Skin", "type": "legend", "count": 8, "drop_rate": 0.00003, "crest_value": 200, "is_skin": true },
+        { "id": "epic_skin", "name": "Epic Skin", "type": "epic", "count": 18, "drop_rate": 0.00012, "crest_value": 80, "is_skin": true },
+        { "id": "special_skin", "name": "Special Skin", "type": "special", "count": 20, "drop_rate": 0.0015, "crest_value": 50, "is_skin": true },
+        { "id": "elite_skin", "name": "Elite Skin", "type": "elite", "count": 20, "drop_rate": 0.01, "crest_value": 20, "is_skin": true },
+        { "id": "basic_skin", "name": "Basic Skin", "type": "basic", "count": 30, "drop_rate": 0.1, "crest_value": 10, "is_skin": true },
+        { "id": "stardust_crest_pool", "name": "Stardust Core Crests", "type": "crest", "drop_rate": 0.23, "crest_values": [50] },
+        { "id": "small_items", "name": "Items (Familiarity Sweets, Emotes, etc.)", "type": "items", "count": 14, "drop_rate": 0.65835, "crest_value": 3, "is_skin": false }
+      ],
+      "shop_items": [
+        {
+          "id": "kagura_legend_1111",
+          "name": "Kagura Legend",
+          "hero": "Kagura",
+          "is_skin": true,
+          "tier": "Legend",
+          "crest_cost": 1600,
+          "image": "/assets/events/11.11_2026/banner.png"
+        }
+      ]
     }
   ]
 }

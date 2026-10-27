@@ -346,6 +346,13 @@
 - `planOrchestrator.js` — `todayEventDay` delegates to `eventDayNow` (StepFour, passFirstBuyDay, reportBug all inherit)
 - `ScheduleTable.jsx` + `exporter.js` — `dayToDate` now UTC-anchored (Date.UTC + getUTC*) so date labels match in-game days in any timezone
 
+### 11.11 — Kagura Legend (special type, Oct 26 2026)
+- Event `11.11_2026`: type special, type_label 11.11, 31 days, status coming soon.
+- Calibration: event.crest_rate_multiplier = 1.15 -> 114/119/133 draws.
+- special_mechanics: mega draw (d1), first-time 10x, promo draws (d5), recharge rebate, 8-day consecutive-recharge streak, early phase claim (d3: 18 tokens, d14: 16 tokens), pass_buy_days spread [1,1,2,4,5], max_passes 5.
+- Bug fix: themed-crest final-push finalRow.diaLeft = dia (JJK hash moved 284d079cb08d5cdb -> 26bd8195e8816a41); exporter Diamonds Needed added special. New npm run verify:special harness (144 plans, all pass).
+- Docs: docs/events.md +5 special events section.
+
 ## Next Steps (planned)
 - Final QA before launch: one test bug report with the new 6-field format, verify deploy env var on Vercel (`NEXT_PUBLIC_WEB3FORMS_KEY` — the "Import .env" flow), confirm SupportButton donation numbers in production
 

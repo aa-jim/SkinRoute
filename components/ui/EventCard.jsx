@@ -86,7 +86,7 @@ export default function EventCard({ event }) {
         className={`absolute top-0 left-0 pr-6 pl-4 py-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider ${EVENT_TYPE_BADGE[event.type]}`}
         style={{ clipPath: "polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)" }}
       >
-        {EVENT_TYPE_LABELS[event.type] ?? event.type}
+        {event.type_label ?? EVENT_TYPE_LABELS[event.type] ?? event.type}
       </span>
       {early && (
         <span
