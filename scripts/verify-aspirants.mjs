@@ -302,6 +302,12 @@ function verifyAspirants(event, plan, dia, startDay, fpLabel, ownedPasses = 0) {
   //    for, and the check cannot tell that apart from a real shortfall.
   check(dia + (plan.ownedPassDia ?? 0) + plan.recharge.totalDia >= totals.dia, label,
     `starting ${dia} + ownedPassDia ${plan.ownedPassDia ?? 0} + recharge ${plan.recharge.totalDia} < spend ${totals.dia}`);
+  // NOTE: the 30 aspirants_2026 owned-pass cells (own=1/2/3, start 1/4/5/7/10) are
+  // a PRE-EXISTING failure â€” see AGENTS.md "Aspirants: already-owned passes were
+  // credited to premium-supply windows". The aspirants (bingo) planner does not
+  // fully account for owned-pass dia in its tail recharge when the owned passes
+  // shorten the bought-pass pipeline. This is in the bingo branch, NOT the
+  // themed-crest B2 fix, and is left unfixed so the gap stays visible.
 
   // 4. No row may show a negative balance, and no row may carry negative values.
   for (const r of rows) {
