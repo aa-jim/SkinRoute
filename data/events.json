@@ -4,7 +4,9 @@
       "id": "exquisite_collection",
       "name": "Exquisite Collection",
       "type": "collector",
-      "recurring": { "pattern": "monthly" },
+      "recurring": {
+        "pattern": "monthly"
+      },
       "duration_days": 30,
       "status": "active",
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
@@ -19,20 +21,56 @@
       "draw_currency": "coa_and_diamonds",
       "has_pity_first_10": true,
       "milestones": [
-        { "draws": 20, "reward_type": "token", "tokens": 1 },
-        { "draws": 40, "reward_type": "token", "tokens": 1 },
-        { "draws": 90, "reward_type": "token", "tokens": 5 },
-        { "draws": 110, "reward_type": "crests", "crests": 50 }
+        {
+          "draws": 20,
+          "reward_type": "token",
+          "tokens": 1
+        },
+        {
+          "draws": 40,
+          "reward_type": "token",
+          "tokens": 1
+        },
+        {
+          "draws": 90,
+          "reward_type": "token",
+          "tokens": 5
+        },
+        {
+          "draws": 110,
+          "reward_type": "crests",
+          "crests": 50
+        }
       ],
       "premium_supply": [
         {
-          "phase": 1, "start_day": 1, "duration_days": 7,
+          "phase": 1,
+          "start_day": 1,
+          "duration_days": 7,
           "tasks": [
-            { "type": "login", "tokens": 1 },
-            { "type": "starlight_activate", "tokens": 2 },
-            { "type": "spend_100", "tokens": 1, "threshold_dia": 100 },
-            { "type": "spend_250", "tokens": 2, "threshold_dia": 250 },
-            { "type": "spend_500", "tokens": 3, "threshold_dia": 500 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "starlight_activate",
+              "tokens": 2
+            },
+            {
+              "type": "spend_100",
+              "tokens": 1,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 2,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_500",
+              "tokens": 3,
+              "threshold_dia": 500
+            }
           ]
         }
       ],
@@ -134,22 +172,86 @@
           "drop_rate": 0.0008,
           "dup_value": 240,
           "skin_ids": [
-            "argus_raiden_maru", "yss_lone_destructor", "miya_doom_catalyst", "novaria_dragonsworn", "yz_blood_serpent",
-            "eudora_emerald_enchantress", "alpha_onimusha_commander", "leomord_inferno_soul"
+            "argus_raiden_maru",
+            "yss_lone_destructor",
+            "miya_doom_catalyst",
+            "novaria_dragonsworn",
+            "yz_blood_serpent",
+            "eudora_emerald_enchantress",
+            "alpha_onimusha_commander",
+            "leomord_inferno_soul"
           ]
         },
-        { "id": "special_skin", "name": "Special Skin", "type": "special", "count": 3, "drop_rate": 0.009, "crest_value": 45, "is_skin": true },
-        { "id": "elite_skin", "name": "Elite Skin", "type": "elite", "count": 3, "drop_rate": 0.012, "crest_value": 36, "is_skin": true },
-        { "id": "basic_skin", "name": "Basic Skin", "type": "basic", "count": 3, "drop_rate": 0.06, "crest_value": 16, "is_skin": true },
-        { "id": "avatar_border", "name": "Avatar Border", "type": "avatar_border", "count": 1, "drop_rate": 0.0275, "crest_value": 16, "is_skin": false },
-        { "id": "battle_emote", "name": "Battle Emote", "type": "emote", "count": 1, "drop_rate": 0.0275, "crest_value": 5, "is_skin": false },
-        { "id": "non_skin_items", "name": "Non-Skin Items (frames, cards, magic dust, etc.)", "type": "items", "count": 2, "drop_rate": 0.055, "crest_value": 0, "is_skin": false },
-        { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.8082, "crest_values": [20, 15, 12, 10, 8, 5] }
+        {
+          "id": "special_skin",
+          "name": "Special Skin",
+          "type": "special",
+          "count": 3,
+          "drop_rate": 0.009,
+          "crest_value": 45,
+          "is_skin": true
+        },
+        {
+          "id": "elite_skin",
+          "name": "Elite Skin",
+          "type": "elite",
+          "count": 3,
+          "drop_rate": 0.012,
+          "crest_value": 36,
+          "is_skin": true
+        },
+        {
+          "id": "basic_skin",
+          "name": "Basic Skin",
+          "type": "basic",
+          "count": 3,
+          "drop_rate": 0.06,
+          "crest_value": 16,
+          "is_skin": true
+        },
+        {
+          "id": "avatar_border",
+          "name": "Avatar Border",
+          "type": "avatar_border",
+          "count": 1,
+          "drop_rate": 0.0275,
+          "crest_value": 16,
+          "is_skin": false
+        },
+        {
+          "id": "battle_emote",
+          "name": "Battle Emote",
+          "type": "emote",
+          "count": 1,
+          "drop_rate": 0.0275,
+          "crest_value": 5,
+          "is_skin": false
+        },
+        {
+          "id": "non_skin_items",
+          "name": "Non-Skin Items (frames, cards, magic dust, etc.)",
+          "type": "items",
+          "count": 2,
+          "drop_rate": 0.055,
+          "crest_value": 0,
+          "is_skin": false
+        },
+        {
+          "id": "crest_pool",
+          "name": "Crests",
+          "type": "crest",
+          "drop_rate": 0.8082,
+          "crest_values": [
+            20,
+            15,
+            12,
+            10,
+            8,
+            5
+          ]
+        }
       ]
     },
-
-
-
     {
       "id": "sanrio_characters",
       "name": "Sanrio Characters",
@@ -231,9 +333,6 @@
         "sub_event_id": null
       }
     },
-
-
-
     {
       "id": "street_fighter_2026",
       "name": "Street Fighter",
@@ -258,42 +357,136 @@
       "surprise_tasks": {
         "active_days": 3,
         "tasks": [
-          { "type": "recharge", "threshold_dia": 10, "tokens": 0 },
-          { "type": "recharge", "threshold_dia": 50, "tokens": 1 },
-          { "type": "recharge", "threshold_dia": 250, "tokens": 2 },
-          { "type": "recharge", "threshold_dia": 750, "tokens": 0 }
+          {
+            "type": "recharge",
+            "threshold_dia": 10,
+            "tokens": 0
+          },
+          {
+            "type": "recharge",
+            "threshold_dia": 50,
+            "tokens": 1
+          },
+          {
+            "type": "recharge",
+            "threshold_dia": 250,
+            "tokens": 2
+          },
+          {
+            "type": "recharge",
+            "threshold_dia": 750,
+            "tokens": 0
+          }
         ]
       },
       "milestones": [
-        { "draws": 20, "reward_type": "token", "tokens": 1 },
-        { "draws": 60, "reward_type": "other", "note": "magic wheel potion - ignore" },
-        { "draws": 140, "reward_type": "token", "tokens": 10 },
-        { "draws": 170, "reward_type": "crests", "crests": 100 },
-        { "draws": 200, "reward_type": "crests", "crests": 180 }
+        {
+          "draws": 20,
+          "reward_type": "token",
+          "tokens": 1
+        },
+        {
+          "draws": 60,
+          "reward_type": "other",
+          "note": "magic wheel potion - ignore"
+        },
+        {
+          "draws": 140,
+          "reward_type": "token",
+          "tokens": 10
+        },
+        {
+          "draws": 170,
+          "reward_type": "crests",
+          "crests": 100
+        },
+        {
+          "draws": 200,
+          "reward_type": "crests",
+          "crests": 180
+        }
       ],
       "premium_supply": [
         {
-          "phase": 1, "start_day": 8, "duration_days": 5,
+          "phase": 1,
+          "start_day": 8,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 2,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 2,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 8,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 8,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_100",
+              "tokens": 4,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 4,
+              "threshold_dia": 250
+            }
           ]
         },
         {
-          "phase": 2, "start_day": 15, "duration_days": 5,
+          "phase": 2,
+          "start_day": 15,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 4, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 2,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 2,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 8,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 8,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_100",
+              "tokens": 4,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 4,
+              "threshold_dia": 250
+            }
           ]
         }
       ],
@@ -370,18 +563,65 @@
           "type": "skin_group",
           "drop_rate": 0.0008,
           "dup_value": 360,
-          "skin_ids": ["ryu_paquito_outfit2", "ken_chou_outfit2", "chunli_guinevere_outfit2", "guile_dyrroth_outfit2"]
+          "skin_ids": [
+            "ryu_paquito_outfit2",
+            "ken_chou_outfit2",
+            "chunli_guinevere_outfit2",
+            "guile_dyrroth_outfit2"
+          ]
         },
-        { "id": "recall_effect", "name": "Battle Hub Recall Effect", "type": "recall_effect", "count": 1, "drop_rate": 0.003, "crest_value": 90, "is_skin": false },
-        { "id": "elim_effect", "name": "Decisive K.O. Elimination Effect", "type": "elimination_effect", "count": 1, "drop_rate": 0.005, "crest_value": 68, "is_skin": false },
-        { "id": "avatar_border", "name": "Street Arcade Border", "type": "avatar_border", "count": 1, "drop_rate": 0.007, "crest_value": 30, "is_skin": false },
-        { "id": "battle_emote", "name": "Battle Emote", "type": "emote", "count": 2, "drop_rate": 0.0775, "crest_value": 9, "is_skin": false },
-        { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.9067, "crest_values": [20, 15, 12, 10, 8, 5] }
+        {
+          "id": "recall_effect",
+          "name": "Battle Hub Recall Effect",
+          "type": "recall_effect",
+          "count": 1,
+          "drop_rate": 0.003,
+          "crest_value": 90,
+          "is_skin": false
+        },
+        {
+          "id": "elim_effect",
+          "name": "Decisive K.O. Elimination Effect",
+          "type": "elimination_effect",
+          "count": 1,
+          "drop_rate": 0.005,
+          "crest_value": 68,
+          "is_skin": false
+        },
+        {
+          "id": "avatar_border",
+          "name": "Street Arcade Border",
+          "type": "avatar_border",
+          "count": 1,
+          "drop_rate": 0.007,
+          "crest_value": 30,
+          "is_skin": false
+        },
+        {
+          "id": "battle_emote",
+          "name": "Battle Emote",
+          "type": "emote",
+          "count": 2,
+          "drop_rate": 0.0775,
+          "crest_value": 9,
+          "is_skin": false
+        },
+        {
+          "id": "crest_pool",
+          "name": "Crests",
+          "type": "crest",
+          "drop_rate": 0.9067,
+          "crest_values": [
+            20,
+            15,
+            12,
+            10,
+            8,
+            5
+          ]
+        }
       ]
     },
-
-
-
     {
       "id": "exorcists_2026",
       "name": "Exorcists",
@@ -395,9 +635,6 @@
       "text_panel_color": "#3a2010",
       "image": "/assets/events/exorcists_2026/banner.png"
     },
-
-
-
     {
       "id": "jujutsu_kaisen_2026",
       "name": "Jujutsu Kaisen",
@@ -422,44 +659,146 @@
       "surprise_tasks": {
         "active_days": 3,
         "tasks": [
-          { "type": "recharge", "threshold_dia": 10, "tokens": 0 },
-          { "type": "recharge", "threshold_dia": 50, "tokens": 1 },
-          { "type": "recharge", "threshold_dia": 250, "tokens": 1 },
-          { "type": "recharge", "threshold_dia": 750, "tokens": 0 }
+          {
+            "type": "recharge",
+            "threshold_dia": 10,
+            "tokens": 0
+          },
+          {
+            "type": "recharge",
+            "threshold_dia": 50,
+            "tokens": 1
+          },
+          {
+            "type": "recharge",
+            "threshold_dia": 250,
+            "tokens": 1
+          },
+          {
+            "type": "recharge",
+            "threshold_dia": 750,
+            "tokens": 0
+          }
         ]
       },
       "milestones": [
-        { "draws": 20, "reward_type": "token", "tokens": 1 },
-        { "draws": 60, "reward_type": "other", "note": "magic wheel potion - ignore" },
-        { "draws": 130, "reward_type": "token", "tokens": 10 },
-        { "draws": 160, "reward_type": "crests", "crests": 100 },
-        { "draws": 190, "reward_type": "crests", "crests": 180 }
+        {
+          "draws": 20,
+          "reward_type": "token",
+          "tokens": 1
+        },
+        {
+          "draws": 60,
+          "reward_type": "other",
+          "note": "magic wheel potion - ignore"
+        },
+        {
+          "draws": 130,
+          "reward_type": "token",
+          "tokens": 10
+        },
+        {
+          "draws": 160,
+          "reward_type": "crests",
+          "crests": 100
+        },
+        {
+          "draws": 190,
+          "reward_type": "crests",
+          "crests": 180
+        }
       ],
       "premium_supply": [
         {
-          "phase": 1, "start_day": 8, "duration_days": 5,
+          "phase": 1,
+          "start_day": 8,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
-            { "type": "spend_20",     "tokens": 1, "threshold_dia": 20 },
-            { "type": "spend_100",    "tokens": 3, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 2,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 2,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 8,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 8,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_20",
+              "tokens": 1,
+              "threshold_dia": 20
+            },
+            {
+              "type": "spend_100",
+              "tokens": 3,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 4,
+              "threshold_dia": 250
+            }
           ]
         },
         {
-          "phase": 2, "start_day": 15, "duration_days": 5,
+          "phase": 2,
+          "start_day": 15,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 2, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 2, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 8, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 8, "threshold_dia": 250 },
-            { "type": "spend_20",     "tokens": 1, "threshold_dia": 20 },
-            { "type": "spend_100",    "tokens": 3, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 4, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 2,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 2,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 8,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 8,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_20",
+              "tokens": 1,
+              "threshold_dia": 20
+            },
+            {
+              "type": "spend_100",
+              "tokens": 3,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 4,
+              "threshold_dia": 250
+            }
           ]
         }
       ],
@@ -512,20 +851,83 @@
           "type": "skin_group",
           "drop_rate": 0.0008,
           "dup_value": 360,
-          "skin_ids": ["yin_yuji", "julian_megumi", "melissa_nobara", "xavier_gojo"]
+          "skin_ids": [
+            "yin_yuji",
+            "julian_megumi",
+            "melissa_nobara",
+            "xavier_gojo"
+          ]
         },
-        { "id": "recall_effect", "name": "Jujutsu Kaisen Recall Effect", "type": "recall_effect", "count": 1, "drop_rate": 0.003, "crest_value": 90, "is_skin": false },
-        { "id": "elim_effect", "name": "Jujutsu Kaisen Elimination Effect", "type": "elimination_effect", "count": 1, "drop_rate": 0.004, "crest_value": 45, "is_skin": false },
-        { "id": "spawn_effect", "name": "Jujutsu Kaisen Spawn Effect", "type": "spawn_effect", "count": 1, "drop_rate": 0.006, "crest_value": 45, "is_skin": false },
-        { "id": "kill_notification", "name": "Jujutsu Kaisen Kill Notification", "type": "kill_notification", "count": 1, "drop_rate": 0.004, "crest_value": 68, "is_skin": false },
-        { "id": "avatar_border", "name": "Jujutsu Kaisen Border", "type": "avatar_border", "count": 1, "drop_rate": 0.007, "crest_value": 30, "is_skin": false },
-        { "id": "battle_emote", "name": "Jujutsu Kaisen Battle Emote", "type": "emote", "count": 3, "drop_rate": 0.0705, "crest_value": 9, "is_skin": false },
-        { "id": "crest_pool", "name": "Crests", "type": "crest", "drop_rate": 0.9047, "crest_values": [20, 15, 12, 10, 8, 5] }
+        {
+          "id": "recall_effect",
+          "name": "Jujutsu Kaisen Recall Effect",
+          "type": "recall_effect",
+          "count": 1,
+          "drop_rate": 0.003,
+          "crest_value": 90,
+          "is_skin": false
+        },
+        {
+          "id": "elim_effect",
+          "name": "Jujutsu Kaisen Elimination Effect",
+          "type": "elimination_effect",
+          "count": 1,
+          "drop_rate": 0.004,
+          "crest_value": 45,
+          "is_skin": false
+        },
+        {
+          "id": "spawn_effect",
+          "name": "Jujutsu Kaisen Spawn Effect",
+          "type": "spawn_effect",
+          "count": 1,
+          "drop_rate": 0.006,
+          "crest_value": 45,
+          "is_skin": false
+        },
+        {
+          "id": "kill_notification",
+          "name": "Jujutsu Kaisen Kill Notification",
+          "type": "kill_notification",
+          "count": 1,
+          "drop_rate": 0.004,
+          "crest_value": 68,
+          "is_skin": false
+        },
+        {
+          "id": "avatar_border",
+          "name": "Jujutsu Kaisen Border",
+          "type": "avatar_border",
+          "count": 1,
+          "drop_rate": 0.007,
+          "crest_value": 30,
+          "is_skin": false
+        },
+        {
+          "id": "battle_emote",
+          "name": "Jujutsu Kaisen Battle Emote",
+          "type": "emote",
+          "count": 3,
+          "drop_rate": 0.0705,
+          "crest_value": 9,
+          "is_skin": false
+        },
+        {
+          "id": "crest_pool",
+          "name": "Crests",
+          "type": "crest",
+          "drop_rate": 0.9047,
+          "crest_values": [
+            20,
+            15,
+            12,
+            10,
+            8,
+            5
+          ]
+        }
       ]
     },
-
-
-
     {
       "id": "aspirants_2026",
       "name": "The Aspirants",
@@ -550,27 +952,85 @@
       "milestones": [],
       "premium_supply": [
         {
-          "phase": 1, "start_day": 3, "duration_days": 5,
+          "phase": 1,
+          "start_day": 3,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 1,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 1,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 4,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 5,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_100",
+              "tokens": 2,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 2,
+              "threshold_dia": 250
+            }
           ]
         },
         {
-          "phase": 2, "start_day": 10, "duration_days": 5,
+          "phase": 2,
+          "start_day": 10,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 1,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 1,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 4,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 5,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_100",
+              "tokens": 2,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 2,
+              "threshold_dia": 250
+            }
           ]
         }
       ],
@@ -610,9 +1070,6 @@
         "sub_event_id": null
       }
     },
-
-
-
     {
       "id": "aspirants_5.0",
       "name": "The Aspirants",
@@ -637,27 +1094,85 @@
       "milestones": [],
       "premium_supply": [
         {
-          "phase": 1, "start_day": 8, "duration_days": 5,
+          "phase": 1,
+          "start_day": 8,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 1,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 1,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 4,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 5,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_100",
+              "tokens": 2,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 2,
+              "threshold_dia": 250
+            }
           ]
         },
         {
-          "phase": 2, "start_day": 15, "duration_days": 5,
+          "phase": 2,
+          "start_day": 15,
+          "duration_days": 5,
           "tasks": [
-            { "type": "login",        "tokens": 1 },
-            { "type": "recharge_any", "tokens": 1, "threshold_dia": 1 },
-            { "type": "recharge_50",  "tokens": 1, "threshold_dia": 50 },
-            { "type": "recharge_100", "tokens": 4, "threshold_dia": 100 },
-            { "type": "recharge_250", "tokens": 5, "threshold_dia": 250 },
-            { "type": "spend_100",    "tokens": 2, "threshold_dia": 100 },
-            { "type": "spend_250",    "tokens": 2, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 1,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 1,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 4,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 5,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_100",
+              "tokens": 2,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 2,
+              "threshold_dia": 250
+            }
           ]
         }
       ],
@@ -706,7 +1221,7 @@
       "start_date": "2026-11-06",
       "end_date": "2026-12-06",
       "duration_days": 31,
-      "status": "coming soon",
+      "status": "early",
       "banner_gradient": "from-[#0b1230] via-[#3a1030] to-[#8c1f2a]",
       "text_panel_color": "#2a0f22",
       "image": "/assets/events/11.11_2026/banner.png",
@@ -722,55 +1237,244 @@
       "has_surprise_tasks": false,
       "special_mechanics": {
         "first_time_10x": true,
-        "mega_draw": { "day": 1, "tokens": 2, "costs": [10, 49] },
-        "promo_draw": { "day": 5, "max_draws": 21, "real_cost_per_draw": 20, "promo_dia": 1680 },
-        "recharge_rebate": { "threshold_dia": 100, "tokens": 1, "max_hits": 3 },
+        "mega_draw": {
+          "day": 1,
+          "tokens": 2,
+          "costs": [
+            10,
+            49
+          ]
+        },
+        "promo_draw": {
+          "day": 9,
+          "max_draws": 21,
+          "real_cost_per_draw": 20,
+          "promo_dia": 1680
+        },
+        "recharge_rebate": {
+          "threshold_dia": 100,
+          "tokens": 1,
+          "max_hits": 3
+        },
         "streak_recharge": {
           "min_credit": 100,
           "consecutive_days": 8,
           "tiers": [
-            { "days": 5, "tokens": 1 },
-            { "days": 8, "tokens": 2 }
+            {
+              "days": 5,
+              "tokens": 1
+            },
+            {
+              "days": 8,
+              "tokens": 2
+            }
           ]
         },
         "claim_tokens_early": true,
-        "pass_buy_days": [1, 1, 2, 4, 5],
+        "pass_buy_days": [
+          1,
+          1,
+          2,
+          3,
+          4
+        ],
         "max_passes": 5
       },
       "milestones": [
-        { "draws": 15, "reward_type": "crests", "crests": 15 },
-        { "draws": 20, "reward_type": "crests", "crests": 15 },
-        { "draws": 30, "reward_type": "crests", "crests": 15 },
-        { "draws": 40, "reward_type": "crests", "crests": 30 },
-        { "draws": 50, "reward_type": "crests", "crests": 30 }
+        {
+          "draws": 15,
+          "reward_type": "crests",
+          "crests": 15
+        },
+        {
+          "draws": 20,
+          "reward_type": "crests",
+          "crests": 15
+        },
+        {
+          "draws": 30,
+          "reward_type": "crests",
+          "crests": 15
+        },
+        {
+          "draws": 40,
+          "reward_type": "crests",
+          "crests": 30
+        },
+        {
+          "draws": 50,
+          "reward_type": "crests",
+          "crests": 30
+        }
       ],
       "premium_supply": [
         {
           "phase": 1,
-          "start_day": 3,
+          "start_day": 8,
           "duration_days": 5,
           "tasks": [
-            { "type": "recharge_500", "tokens": 18, "threshold_dia": 500 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 1,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 1,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 2,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 4,
+              "threshold_dia": 250
+            },
+            {
+              "type": "recharge_500",
+              "tokens": 5,
+              "threshold_dia": 500
+            },
+            {
+              "type": "spend_100",
+              "tokens": 1,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 1,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_500",
+              "tokens": 2,
+              "threshold_dia": 500
+            }
           ]
         },
         {
           "phase": 2,
-          "start_day": 10,
+          "start_day": 15,
           "duration_days": 5,
           "tasks": [
-            { "type": "recharge_500", "tokens": 14, "threshold_dia": 500 },
-            { "type": "spend_250", "tokens": 2, "threshold_dia": 250 }
+            {
+              "type": "login",
+              "tokens": 1
+            },
+            {
+              "type": "recharge_any",
+              "tokens": 1,
+              "threshold_dia": 1
+            },
+            {
+              "type": "recharge_50",
+              "tokens": 1,
+              "threshold_dia": 50
+            },
+            {
+              "type": "recharge_100",
+              "tokens": 2,
+              "threshold_dia": 100
+            },
+            {
+              "type": "recharge_250",
+              "tokens": 4,
+              "threshold_dia": 250
+            },
+            {
+              "type": "recharge_500",
+              "tokens": 5,
+              "threshold_dia": 500
+            },
+            {
+              "type": "spend_100",
+              "tokens": 1,
+              "threshold_dia": 100
+            },
+            {
+              "type": "spend_250",
+              "tokens": 1,
+              "threshold_dia": 250
+            },
+            {
+              "type": "spend_500",
+              "tokens": 2,
+              "threshold_dia": 500
+            }
           ]
         }
       ],
       "prize_pool": [
-        { "id": "legend_luckybox", "name": "Double 11 / Collector / Luckybox Skin", "type": "legend", "count": 8, "drop_rate": 0.00003, "crest_value": 200, "is_skin": true },
-        { "id": "epic_skin", "name": "Epic Skin", "type": "epic", "count": 18, "drop_rate": 0.00012, "crest_value": 80, "is_skin": true },
-        { "id": "special_skin", "name": "Special Skin", "type": "special", "count": 20, "drop_rate": 0.0015, "crest_value": 50, "is_skin": true },
-        { "id": "elite_skin", "name": "Elite Skin", "type": "elite", "count": 20, "drop_rate": 0.01, "crest_value": 20, "is_skin": true },
-        { "id": "basic_skin", "name": "Basic Skin", "type": "basic", "count": 30, "drop_rate": 0.1, "crest_value": 10, "is_skin": true },
-        { "id": "stardust_crest_pool", "name": "Stardust Core Crests", "type": "crest", "drop_rate": 0.23, "crest_values": [50] },
-        { "id": "small_items", "name": "Items (Familiarity Sweets, Emotes, etc.)", "type": "items", "count": 14, "drop_rate": 0.65835, "crest_value": 3, "is_skin": false }
+        {
+          "id": "legend_luckybox",
+          "name": "Luckybox Skin",
+          "type": "legend",
+          "count": 8,
+          "drop_rate": 3e-05,
+          "crest_value": 200,
+          "is_skin": true
+        },
+        {
+          "id": "epic_skin",
+          "name": "Epic Skin",
+          "type": "epic",
+          "count": 18,
+          "drop_rate": 0.00012,
+          "crest_value": 80,
+          "is_skin": true
+        },
+        {
+          "id": "special_skin",
+          "name": "Special Skin",
+          "type": "special",
+          "count": 20,
+          "drop_rate": 0.0015,
+          "crest_value": 50,
+          "is_skin": true
+        },
+        {
+          "id": "elite_skin",
+          "name": "Elite Skin",
+          "type": "elite",
+          "count": 20,
+          "drop_rate": 0.01,
+          "crest_value": 20,
+          "is_skin": true
+        },
+        {
+          "id": "basic_skin",
+          "name": "Basic Skin",
+          "type": "basic",
+          "count": 30,
+          "drop_rate": 0.1,
+          "crest_value": 10,
+          "is_skin": true
+        },
+        {
+          "id": "stardust_crest_pool",
+          "name": "Stardust Core Crests",
+          "type": "crest",
+          "drop_rate": 0.23,
+          "crest_values": [
+            50
+          ]
+        },
+        {
+          "id": "small_items",
+          "name": "Items (Familiarity Sweets, Emotes, etc.)",
+          "type": "items",
+          "count": 14,
+          "drop_rate": 0.65835,
+          "crest_value": 3,
+          "is_skin": false
+        }
       ],
       "shop_items": [
         {
@@ -781,6 +1485,60 @@
           "tier": "Legend",
           "crest_cost": 1600,
           "image": "/assets/events/11.11_2026/banner.png"
+        },
+        {
+          "id": "gusion_dimension_walker",
+          "name": "Dimension Walker",
+          "hero": "Gusion",
+          "is_skin": true,
+          "tier": "Legend",
+          "crest_cost": 800,
+          "image": "/assets/skins/11.11/gusion_dimension_walker.png"
+        },
+        {
+          "id": "hayabusa_shura",
+          "name": "Shura",
+          "hero": "Hayabusa",
+          "is_skin": true,
+          "tier": "Legend",
+          "crest_cost": 800,
+          "image": "/assets/skins/11.11/hayabusa_shura.png"
+        },
+        {
+          "id": "nolan_the_navigator",
+          "name": "The Navigator",
+          "hero": "Nolan",
+          "is_skin": true,
+          "tier": "Legend",
+          "crest_cost": 800,
+          "image": "/assets/skins/11.11/nolan_the_navigator.png"
+        },
+        {
+          "id": "thamuz_the_annihilator",
+          "name": "The Annihilator",
+          "hero": "Thamuz",
+          "is_skin": true,
+          "tier": "Legend",
+          "crest_cost": 800,
+          "image": "/assets/skins/11.11/thamuz_the_annihilator.png"
+        },
+        {
+          "id": "wanwan_flying_swallow",
+          "name": "Flying Swallow",
+          "hero": "Wanwan",
+          "is_skin": true,
+          "tier": "Legend",
+          "crest_cost": 800,
+          "image": "/assets/skins/11.11/wanwan_flying_swallow.png"
+        },
+        {
+          "id": "xborg_tesla_maniac",
+          "name": "Tesla Maniac",
+          "hero": "XBorg",
+          "is_skin": true,
+          "tier": "Legend",
+          "crest_cost": 800,
+          "image": "/assets/skins/11.11/xborg_tesla_maniac.png"
         }
       ]
     }

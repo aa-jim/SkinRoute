@@ -12,10 +12,15 @@ const inter = localFont({
   display: "swap",
 });
 
-// Editorial serif for headings — gives the planner a "printed playbook" voice.
-const fraunces = localFont({
-  src: "./fonts/Fraunces-Variable.ttf",
-  variable: "--font-fraunces",
+// Rajdhani — geometric display sans for headings and the "playbook" voice.
+const rajdhani = localFont({
+  src: [
+    { path: "./fonts/Rajdhani-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/Rajdhani-Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/Rajdhani-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "./fonts/Rajdhani-Bold.ttf", weight: "700", style: "normal" },
+  ],
+  variable: "--font-rajdhani",
   display: "swap",
 });
 
@@ -40,7 +45,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${fraunces.variable} ${plexMono.variable} font-body bg-paper text-ink antialiased`}
+        className={`${inter.variable} ${rajdhani.variable} ${plexMono.variable} font-body bg-paper text-ink antialiased`}
       >
         {children}
         <SupportButton />

@@ -418,7 +418,11 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
   // ---------------------------------------------------------------------
   if (collectorRows) {
     const visibleRows = expanded ? collectorRows : collectorRows.slice(0, 10);
-    const displayTotals = visibleRows.reduce(
+    // Footer totals cover EVERY day from startDay, never just the visible
+    // (first-10) slice: the summary cards ("Diamonds Needed") and the PDF both
+    // report the whole plan, so a partial footer read as a contradiction
+    // (e.g. "Total from Day 1: 67 draws" under a "Total Draws 119" card).
+    const displayTotals = collectorRows.reduce(
       (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia, coa: a.coa + (r.coa ?? 0) }),
       { draws: 0, dia: 0, coa: 0 }
     );
@@ -570,7 +574,11 @@ export default function ScheduleTable({ plan, event, startDay = 1 }) {
     displayTotals = baseTotals;
   } else {
     visibleRows = expanded ? rows : rows.slice(0, 10);
-    displayTotals = visibleRows.reduce(
+    // Whole-plan total (all days from startDay), not the first-10 slice — the
+    // "Show all N days" button only controls which ROWS are listed, so a
+    // partial footer contradicted the "Total Draws" / "Diamonds Needed" cards
+    // and the PDF (which already sums every row).
+    displayTotals = rows.reduce(
       (a, r) => ({ draws: a.draws + r.draws, dia: a.dia + r.dia }),
       { draws: 0, dia: 0 }
     );

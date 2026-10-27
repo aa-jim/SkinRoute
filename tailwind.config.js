@@ -35,7 +35,7 @@ module.exports = {
         plum:  { DEFAULT: "#6E5590", dark: "#584373" }, // bingo / supply windows
       },
       fontFamily: {
-        heading: ["var(--font-fraunces)", "Georgia", "serif"],
+        heading: ["var(--font-rajdhani)", "ui-sans-serif", "sans-serif"],
         body: ["var(--font-inter)", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
