@@ -209,8 +209,19 @@ and a crest-yield calibration scalar.
     listed per-token costs.
   - `promo_draw` — `{ day, max_draws, real_cost_per_draw, promo_dia }`: a surge of draws
     on `day` spending real dia each, backed by `promo_dia` of promo diamonds.
-  - `recharge_rebate` — `{ threshold_dia, tokens, max_hits }`: awards `tokens` for any
-    day carrying ≥ `threshold_dia` recharge, capped at `max_hits`.
+  - `recharge_rebate` — `{ threshold_dia, tokens, max_hits, start_day, end_day }`: awards
+    `tokens` for any day carrying ≥ `threshold_dia` recharge, capped at `max_hits`. The
+    optional `start_day`/`end_day` bound the rebate to that window (e.g. days 1–3 for the
+    11.11 rebate) — without them the rebate can fire on any recharge day, which is what
+    let a later premium-supply purchase bank a rebate the game doesn't pay.
+  - `low_target` (under `special_mechanics`) — `{ max_crests, buffer_pct }`: routes a thin
+    target (≤ `max_crests` crests, e.g. 800) through the wallet-valid low-target planner that
+    prices the structure (which phase windows to buy) rather than funding everything. Days
+    1–7 are 0 draws/0 spend when the plan starts before phase 1; the promise-day tier is set
+    from recharge booked strictly before the promo day; mega draw bought from its day onward;
+    first-time 10x suppressed on pre-phase starts; phase claims earned-only. `buffer_pct`
+    inflates the realistic draw target (~60 from 56 at 7%). Events without `low_target`
+    parse `null` and use the legacy path byte-identically.
   - `streak_recharge` — `{ min_credit, consecutive_days, tiers }`: awards `tiers.tokens`
     once the recharge run reaches that many consecutive days (each ≥ `min_credit`). Days
     that lack their own recharge are covered by the streak-forcing loop so the tokens
@@ -222,6 +233,15 @@ and a crest-yield calibration scalar.
     own purchase day, satisfying the streak floor without extra packs.
   - `max_passes` — overrides the `[floor(span/7), 10]` pass cap, declared only when a
     single pass beyond the drip-cap still pays (11.11's 5th pass at 0.7 dia/BDT).
+  - `recharge_style` (optional, gated) — `{ fund_worst_hole, trim_surplus,
+    prefer_bigger_packs }`. Produces the 11.11 "few large purchases" shape: (1)
+    `prefer_bigger_packs` sorts `buildItemList` by dia desc so cost ties resolve to a single
+    bigger pack (`1× r_110` over `2× r_55`, same 110 dia / 210 BDT); (2)
+    `fund_worst_hole` sizes Step B2 containers to `max(ceil(-diaLeft), worstRemainingHole)`;
+    (3) `trim_surplus` removes the largest-BDT non-phase-start purchase day while the plan
+    ends with surplus, re-simming (`runSim = buildThemedCrestPlanWithPacks`, pure simulator —
+    does not re-trigger Step B2) and adopting only when cheaper & still funded. Every other
+    event parses this as null and stays byte-identical.
 - **`crest_rate_multiplier`** (optional, default 1) — multiplies the raw E[crest/draw]
   **before** the `1.0 / 0.95 / 0.85` confidence ladder, e.g. `1.15` moves 11.5 → 13.225
   → 114 / 119 / 133 draws. One scalar keeps optimistic < realistic < worst by

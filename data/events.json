@@ -241,14 +241,7 @@
           "name": "Crests",
           "type": "crest",
           "drop_rate": 0.8082,
-          "crest_values": [
-            20,
-            15,
-            12,
-            10,
-            8,
-            5
-          ]
+          "crest_values": [20, 15, 12, 10, 8, 5]
         }
       ]
     },
@@ -611,14 +604,7 @@
           "name": "Crests",
           "type": "crest",
           "drop_rate": 0.9067,
-          "crest_values": [
-            20,
-            15,
-            12,
-            10,
-            8,
-            5
-          ]
+          "crest_values": [20, 15, 12, 10, 8, 5]
         }
       ]
     },
@@ -917,14 +903,7 @@
           "name": "Crests",
           "type": "crest",
           "drop_rate": 0.9047,
-          "crest_values": [
-            20,
-            15,
-            12,
-            10,
-            8,
-            5
-          ]
+          "crest_values": [20, 15, 12, 10, 8, 5]
         }
       ]
     },
@@ -1221,10 +1200,15 @@
       "start_date": "2026-11-06",
       "end_date": "2026-12-06",
       "duration_days": 31,
-      "status": "coming_soon",
+      "status": "early",
       "banner_gradient": "from-[#0b1230] via-[#3a1030] to-[#8c1f2a]",
       "text_panel_color": "#2a0f22",
       "image": "/assets/events/11.11_2026/banner.png",
+      "recharge_style": {
+        "fund_worst_hole": true,
+        "trim_surplus": true,
+        "prefer_bigger_packs": true
+      },
       "draw_cost_1x": 100,
       "draw_cost_10x": 1000,
       "discount_draw_cost": {
@@ -1240,21 +1224,32 @@
         "mega_draw": {
           "day": 1,
           "tokens": 2,
-          "costs": [
-            10,
-            49
-          ]
+          "costs": [10, 49]
         },
         "promo_draw": {
           "day": 9,
           "max_draws": 21,
           "real_cost_per_draw": 20,
-          "promo_dia": 1680
+          "promo_dia": 1680,
+          "recharge_threshold_dia": 1000,
+          "promo_dia_per_draw": 80,
+          "tiers": [
+            {
+              "recharge_dia": 500,
+              "promo_dia": 1180
+            },
+            {
+              "recharge_dia": 1000,
+              "promo_dia": 1680
+            }
+          ]
         },
         "recharge_rebate": {
           "threshold_dia": 100,
           "tokens": 1,
-          "max_hits": 3
+          "max_hits": 3,
+          "start_day": 1,
+          "end_day": 3
         },
         "streak_recharge": {
           "min_credit": 100,
@@ -1271,14 +1266,13 @@
           ]
         },
         "claim_tokens_early": true,
-        "pass_buy_days": [
-          1,
-          1,
-          2,
-          3,
-          4
-        ],
-        "max_passes": 5
+        "pass_buy_days": [1, 1, 2, 3, 4],
+        "max_passes": 5,
+        "low_target": {
+          "max_crests": 1000,
+          "buffer_pct": 7,
+          "optimize_structure": true
+        }
       },
       "milestones": [
         {
@@ -1417,7 +1411,7 @@
           "name": "Luckybox Skin",
           "type": "legend",
           "count": 8,
-          "drop_rate": 3e-05,
+          "drop_rate": 3e-5,
           "crest_value": 200,
           "is_skin": true
         },
@@ -1462,9 +1456,7 @@
           "name": "Stardust Core Crests",
           "type": "crest",
           "drop_rate": 0.23,
-          "crest_values": [
-            50
-          ]
+          "crest_values": [50]
         },
         {
           "id": "small_items",
@@ -1478,20 +1470,20 @@
       ],
       "shop_items": [
         {
-          "id": "kagura_legend_1111",
-          "name": "Kagura Legend",
+          "id": "kagura_feast_of_eternity",
+          "name": "Feast of Eternity",
           "hero": "Kagura",
           "is_skin": true,
           "tier": "Legend",
           "crest_cost": 1600,
-          "image": "/assets/events/11.11_2026/banner.png"
+          "image": "/assets/events/11.11_2026/target/kagura_feast_of_eternity.png"
         },
         {
           "id": "gusion_dimension_walker",
           "name": "Dimension Walker",
           "hero": "Gusion",
           "is_skin": true,
-          "tier": "Legend",
+          "tier": "11.11",
           "crest_cost": 800,
           "image": "/assets/skins/11.11/gusion_dimension_walker.png"
         },
@@ -1500,7 +1492,7 @@
           "name": "Shura",
           "hero": "Hayabusa",
           "is_skin": true,
-          "tier": "Legend",
+          "tier": "11.11",
           "crest_cost": 800,
           "image": "/assets/skins/11.11/hayabusa_shura.png"
         },
@@ -1509,7 +1501,7 @@
           "name": "The Navigator",
           "hero": "Nolan",
           "is_skin": true,
-          "tier": "Legend",
+          "tier": "11.11",
           "crest_cost": 800,
           "image": "/assets/skins/11.11/nolan_the_navigator.png"
         },
@@ -1518,7 +1510,7 @@
           "name": "The Annihilator",
           "hero": "Thamuz",
           "is_skin": true,
-          "tier": "Legend",
+          "tier": "11.11",
           "crest_cost": 800,
           "image": "/assets/skins/11.11/thamuz_the_annihilator.png"
         },
@@ -1527,7 +1519,7 @@
           "name": "Flying Swallow",
           "hero": "Wanwan",
           "is_skin": true,
-          "tier": "Legend",
+          "tier": "11.11",
           "crest_cost": 800,
           "image": "/assets/skins/11.11/wanwan_flying_swallow.png"
         },
@@ -1536,7 +1528,7 @@
           "name": "Tesla Maniac",
           "hero": "XBorg",
           "is_skin": true,
-          "tier": "Legend",
+          "tier": "11.11",
           "crest_cost": 800,
           "image": "/assets/skins/11.11/xborg_tesla_maniac.png"
         }

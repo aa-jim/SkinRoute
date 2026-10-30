@@ -348,23 +348,23 @@ export default function StepFour() {
           )}
           <SummaryCard
             label="Total Draws"
-            value={p.drawsNeeded.draws.toLocaleString()}
+            value={Number(p.drawsNeeded?.draws ?? p.daySchedule?.totals?.draws ?? 0).toLocaleString()}
             icon={Layers}
             accent="green"
           />
           <SummaryCard
             label="Target Skin"
             value={
-              p.target.outfit1 && p.target.skin.outfit1_variant
+              p.target?.outfit1 && p.target?.skin?.outfit1_variant
                 ? <>
                     {p.target.skin.name}
                     <span className="block text-sm font-bold text-[#84621A] leading-tight">
                       + {p.target.skin.outfit1_variant.name}
                     </span>
                   </>
-                : p.target.skin.name
+                : (p.target?.skin?.name ?? "—")
             }
-            sublabel={p.target.skin.hero}
+            sublabel={p.target?.skin?.hero ?? ""}
             icon={Target}
             accent="coral"
           />
