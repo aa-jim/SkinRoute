@@ -46,6 +46,7 @@ import { register } from "node:module";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { createHash } from "node:crypto";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
@@ -373,6 +374,50 @@ for (const item of SKIN_ITEMS) {
         }
       }
     }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Baseline pin — 0/0/0 Kagura (0 dia, 0 passes, nothing owned, all FP claimed,
+// start day 1): the all-zero regression baseline. Pinned on 2026-10-28 after
+// the 11.11 pack-shape optimization (preferBiggerPacks + fund_worst_hole +
+// trim_surplus). If a legitimate change moves these numbers, update both the
+// pin and this comment.
+// ---------------------------------------------------------------------------
+const baselinePlan = buildPlanFor("baseline|0-0-0", E, TARGET, 0, { fp_50: true, fp_150: true, fp_250: true, fp_500: true }, 1);
+if (baselinePlan) {
+  const bRows = baselinePlan.daySchedule.rows;
+  const bDraws = bRows.reduce((s, r) => s + (r.draws ?? 0), 0);
+  const bDia = bRows.reduce((s, r) => s + (r.diaSpent ?? 0), 0);
+  const bBdt = baselinePlan.recharge?.totalBdt ?? 0;
+  const bDays = new Set(
+    bRows.flatMap((r) =>
+      (r.notes ?? []).filter((n) => /\(\d+ BDT\)/.test(n) || /\u00d7 weekly pass/.test(n)).map(() => r.day)
+    )
+  ).size;
+  const bEnd = bRows.at(-1)?.diaLeft ?? 0;
+
+  const pin = { draws: 119, dia: 3829, bdt: 6165, purchaseDays: 11, end: 3 };
+  const actual = { draws: bDraws, dia: bDia, bdt: bBdt, purchaseDays: bDays, end: bEnd };
+
+  for (const [k, expected] of Object.entries(pin)) {
+    if (actual[k] !== expected) fail("baseline|0-0-0", `${k} = ${actual[k]}, pinned ${expected}`);
+  }
+
+  // note-BDT + pass-BDT must equal recharge BDT (no purchase without a row)
+  const noted = notedPurchases(bRows);
+  if (noted.bdt !== bBdt) fail("baseline|0-0-0", `recharge table ${bBdt} BDT != purchase notes ${noted.bdt} BDT`);
+
+  // sha256 slice-16 over the stable shape subset — pinned on 2026-10-28 after
+  // the 11.11 pack-shape optimization. If a legitimate change moves it, update
+  // both the hash and this comment.
+  const shapeHash = createHash("sha256")
+    .update(JSON.stringify({ draws: bDraws, dia: bDia, bdt: bBdt, purchaseDays: bDays, end: bEnd }))
+    .digest("hex")
+    .slice(0, 16);
+  const PINNED_HASH = "6139b929f7dceebf";
+  if (shapeHash !== PINNED_HASH) {
+    fail("baseline|0-0-0", `shape hash ${shapeHash} != pinned ${PINNED_HASH}`);
   }
 }
 
