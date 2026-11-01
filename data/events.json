@@ -1,4 +1,4 @@
-{
+﻿{
   "events": [
     {
       "id": "exquisite_collection",
@@ -76,92 +76,92 @@
       ],
       "shop_items": [
         {
-          "id": "sun_celestial_rebel",
-          "name": "Celestial Rebel",
-          "hero": "Sun",
+          "id": "bruno_the_purifier",
+          "name": "The Purifier",
+          "hero": "Bruno",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 720,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/sun_celestial_rebel.jpeg"
+          "image": "/assets/skins/collector/bruno_the_purifier.png"
         },
         {
-          "id": "aamon_soul_reaver",
-          "name": "Soul Reaver",
-          "hero": "Aamon",
+          "id": "hanabi_riverland_phoenix",
+          "name": "Riverland Phoenix",
+          "hero": "Hanabi",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/aamon_soul_reaver.jpg"
+          "image": "/assets/skins/collector/hanabi_riverland_phoenix.jpg"
         },
         {
-          "id": "angela_floral_elf",
-          "name": "Floral Elf",
-          "hero": "Angela",
+          "id": "Louyi_elysium_guardian",
+          "name": "Elysium Guardian",
+          "hero": "Lou Yi",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/angela_floral_elf.jpg"
+          "image": "/assets/skins/collector/louyi_elysium_guardian.jpg"
         },
         {
-          "id": "brody_ore-chemist",
-          "name": "Ore-Chemist",
-          "hero": "Brody",
+          "id": "atlus_mecha_infernus",
+          "name": "Mecha Infernus",
+          "hero": "Atlus",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/brody_ore-chemist.jpg"
+          "image": "/assets/skins/collector/atlus_mecha_infernus.jpg"
         },
         {
-          "id": "paquito_blazing_tiger",
-          "name": "Blazing Tiger",
-          "hero": "Paquito",
+          "id": "harley_dream_caster",
+          "name": "Dream Caster",
+          "hero": "Harley",
           "tier": "collector",
           "base_crest_cost": 800,
           "crest_cost": 800,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/collector/paquito_blazing_tiger.jpg"
+          "image": "/assets/skins/collector/harley_dream_caster.jpg"
         },
         {
-          "id": "guinevere_lady_crane",
-          "name": "Lady Crane",
-          "hero": "Guinevere",
+          "id": "lesley_stellaris_ghost",
+          "name": "Stellaris Ghost",
+          "hero": "Lesley",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/guinevere_lady_crane.jpg"
+          "image": "/assets/skins/luckybox/lesley_stellaris_ghost.jpg"
         },
         {
-          "id": "kaja_skyblocker",
-          "name": "Skyblocker",
-          "hero": "Kaja",
+          "id": "zilong_changbanpo_commander",
+          "name": "Changbanpo Commander",
+          "hero": "Zilong",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/kaja_skyblocker.jpg"
+          "image": "/assets/skins/luckybox/zilong_changbanpo_commander.jpg"
         },
         {
-          "id": "uranus_video_game_dominator",
-          "name": "Video Game Dominator",
-          "hero": "Uranus",
+          "id": "zask_bone_flamen",
+          "name": "Bone Flamen",
+          "hero": "Zask",
           "tier": "luckybox",
           "base_crest_cost": 800,
           "crest_cost": 640,
           "is_skin": true,
           "limit": 1,
-          "image": "/assets/skins/luckybox/uranus_video_game_dominator.jpg"
+          "image": "/assets/skins/luckybox/zask_bone_flamen.jpg"
         }
       ],
       "prize_pool": [
