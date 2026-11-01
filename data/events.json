@@ -11,7 +11,7 @@
       "status": "active",
       "banner_gradient": "from-[#0f3d4a] via-[#1a5c6e] to-[#e8c15a]",
       "text_panel_color": "#412814",
-      "image": "/assets/events/exquisite_collection/banner.webp",
+      "image": "/assets/events/exquisite_collection/banner.png",
       "draw_cost_1x": 50,
       "draw_cost_10x": 500,
       "discount_draw_cost": {
