@@ -8,6 +8,14 @@
 - When making user-facing or planner changes, update the relevant docs + this file
 
 ## Recent Changes
+### 11.11 event reorg: `11.11_2026` → `kagura_legend` + new `11.11_2026` skin stub; mega draw capped to a 5-day window (Nov 06 2026)
+- **Change**: Removed the six 800-crest 11.11 skins (Gusion, Hayabusa, Nolan, Thamuz, Wanwan, X-Borg) from the `11.11_2026` event, renamed it to `kagura_legend` (`name`/`type_label`/`card_label` = `legend`) keeping only Kagura (1,600 crests, Legend tier). Created a new non-planable `11.11_2026` stub (`start_date`/`end_date` = null, `status: "coming soon"`) carrying only the six skin `shop_items`, so it can't be planned until full event data exists.
+- **Mega draw**: `kagura_legend.special_mechanics.mega_draw` is now `{ start_day: 1, end_day: 5, tokens: 2, costs: [10, 49] }` — tokens purchasable only within days 1–5, not day-1-only and not anytime across the 31-day event. `lib/idealSchedule.themedCrest.js` reads `start_day`/`end_day` (legacy `day` still accepted as a single-day window) and tracks `megaTokensBought` so tokens aren't re-bought across the window.
+- **Data**: `data/events.json` — event renamed + shop items split + mega window; new `11.11_2026` stub appended. `data/packs.json` untouched.
+- **Harness**: `scripts/verify-special.mjs` — strips the pre-existing file BOM before `JSON.parse`; mega check/print are window-aware; Grid 2 now iterates non-target shop skins (empty, since the six moved to the non-planable stub).
+- **Report (verified)**: `verify:special` **PASS** (145 plans, ALL INVARIANTS HOLD; Kagura baseline pinned `draws 119 / dia 3829 / bdt 6165 / purchaseDays 11 / end 3 / hash 6139b929f7dceebf` unchanged). `next lint` (3 pre-existing `` warnings) + `next build` exit 0.
+- **Docs**: `docs/events.md` (mega draw window + shop items now Kagura-only, 800-crest skins moved to `11.11_2026` stub), `AGENTS.md` (this entry).
+
 ### 11.11 low-target planner: wallet-valid 800-crest schedules (Oct 30 2026)
 - **Problem (user report)**: planning `gusion_dimension_walker` (0 dia, FP all claimed, realistic) produced a 1,089-dia plan with negative balances (day 1 read -109) — the simulator drew daily/mega/promo unconditionally and the low-target branch early-returned a hardcoded `2× r_565` template that skipped funding; real search code was unreachable. Days 1–7 drew with no balance; day 15's 10x (500) preempted phase 2's 16 free tokens.
 - **Fix — low-target path in `lib/planOrchestrator.js` + `lib/idealSchedule.themedCrest.js`** (gated on `special_mechanics.low_target` + `targetCrests <= max_crests`, so Kagura's 1,600-crest legacy path stays byte-identical):

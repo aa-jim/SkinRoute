@@ -53,8 +53,9 @@ const repoRoot = path.resolve(scriptDir, "..");
 
 register(pathToFileURL(path.join(scriptDir, "next-alias-hook.mjs")).href, import.meta.url);
 
-const events = JSON.parse(fs.readFileSync(path.join(repoRoot, "data", "events.json"), "utf8")).events;
-const packsData = JSON.parse(fs.readFileSync(path.join(repoRoot, "data", "packs.json"), "utf8"));
+const readJson = (p) => JSON.parse(fs.readFileSync(p, "utf8").replace(/^\uFEFF/, ""));
+const events = readJson(path.join(repoRoot, "data", "events.json")).events;
+const packsData = readJson(path.join(repoRoot, "data", "packs.json"));
 const { buildPlan } = await import(pathToFileURL(path.join(repoRoot, "lib", "planOrchestrator.js")).href);
 
 const QUICK = process.argv.includes("--quick");
@@ -243,11 +244,16 @@ function checkKaguraMechanics(key, plan, startDay) {
     }
   }
 
-  // Mega draw tokens (day-1 purchase).
-  if (megaDraw && startDay <= (megaDraw.day ?? 1)) {
-    const megaRow = rows.find((r) => r.day === (megaDraw.day ?? 1));
-    const wantsMega = megaRow && megaRow.notes.some((n) => n.includes("mega draw"));
-    if (!wantsMega) fail(key, `mega draw day ${megaDraw.day} has no mega-draw purchase`);
+  // Mega draw tokens — purchasable within the capped window (not day-1-only,
+  // not anytime). Required when the plan runs through any day of the window.
+  if (megaDraw) {
+    const mdStart = megaDraw.start_day ?? megaDraw.day ?? 1;
+    const mdEnd = megaDraw.end_day ?? megaDraw.day ?? 1;
+    if (startDay <= mdEnd && rows.some((r) => r.day >= mdStart && r.day <= mdEnd)) {
+      const megaRow = rows.find((r) => r.day >= mdStart && r.day <= mdEnd);
+      const wantsMega = megaRow && megaRow.notes.some((n) => n.includes("mega draw"));
+      if (!wantsMega) fail(key, `mega draw window days ${mdStart}-${mdEnd} has no mega-draw purchase`);
+    }
   }
 
   // First-time 10x fires exactly once.
@@ -349,11 +355,13 @@ for (const dia of GRID_DIA) {
 }
 
 // ---------------------------------------------------------------------------
-// Grid 2 — low-target shop skins (800 crests each). These are the plans that
-// used to finish around day 9 and still draw/ship packs through day 31.
+// Grid 2 — low-target shop skins. The six 800-crest 11.11 skins moved to the
+// non-planable `11.11_2026` stub (null dates, coming soon), so this grid now
+// only covers Kagura's own shop items (none besides the 1,600-crest target).
 // ---------------------------------------------------------------------------
 let lowTargetSample = null;
-for (const item of SKIN_ITEMS) {
+const lowTargetSkins = SKIN_ITEMS.filter((s) => s.id !== TARGET_ITEM.id);
+for (const item of lowTargetSkins) {
   for (const dia of LOW_DIA) {
     for (const startDay of LOW_START) {
       const key = `${E.id}|${item.id}|dia${dia}|start${startDay}`;
@@ -423,7 +431,7 @@ if (baselinePlan) {
 
 // ---------------------------------------------------------------------------
 console.log("");
-console.log(`verify-special: ${plans} plans checked (${GRID_DIA.length} dia x ${GRID_START.length} starts x ${GRID_FP.length} fp on Kagura + ${SKIN_ITEMS.length} low-target skins x ${LOW_DIA.length} dia x ${LOW_START.length} starts)`);
+console.log(`verify-special: ${plans} plans checked (${GRID_DIA.length} dia x ${GRID_START.length} starts x ${GRID_FP.length} fp on Kagura + ${lowTargetSkins.length} low-target skins x ${LOW_DIA.length} dia x ${LOW_START.length} starts)`);
 if (failures.length > 0) {
   console.error(`FAILED: ${failures.length} invariant violation(s)`);
   for (const f of failures.slice(0, 40)) console.error(`  - ${f}`);
@@ -434,7 +442,7 @@ console.log("ALL INVARIANTS HOLD");
 console.log(`  event: ${E.id} (${E.name}), draws(target realistic) = ${KAGURA_TARGET_DRAWS}`);
 console.log(`  premium supply: ${phases.length} phases (${phases.map((p) => `p${p.phase} d${p.start_day}-${phaseEnd(p)}`).join(", ")})`);
 console.log(`  streak: ${streak ? streak.consecutive_days + " days" : "none"}, rebate: ${rebate ? rebate.max_hits + " hits" : "none"}`);
-console.log(`  promo: ${promo ? `${promo.max_draws} draws on day ${promo.day}` : "none"}, mega: ${megaDraw ? `day ${megaDraw.day}` : "none"}`);
+console.log(`  promo: ${promo ? `${promo.max_draws} draws on day ${promo.day}` : "none"}, mega: ${megaDraw ? `days ${megaDraw.start_day ?? megaDraw.day}-${megaDraw.end_day ?? megaDraw.day}` : "none"}`);
 if (lowTargetSample) {
   console.log(`  800-crest skin @ dia0/start1: ${lowTargetSample.rows}/${lowTargetSample.draws} draws, Tk ${lowTargetSample.bdt}, ends day ${lowTargetSample.lastDay}`);
 }
