@@ -205,8 +205,9 @@ and a crest-yield calibration scalar.
   the historical path byte-identically:
   - `first_time_10x` — one 10x draw at the discounted (50%) daily price, bought as soon
     as the balance covers it.
-  - `mega_draw` — `{ day, tokens, costs }`: one-time tokens bought on `day` at the
-    listed per-token costs.
+  - `mega_draw` — `{ start_day, end_day, tokens, costs }` (legacy `{ day, ... }`
+    still accepted as a single-day window): one-time tokens purchasable only within
+    the `[start_day, end_day]` window — neither day-1-only nor anytime across the event.
   - `promo_draw` — `{ day, max_draws, real_cost_per_draw, promo_dia }`: a surge of draws
     on `day` spending real dia each, backed by `promo_dia` of promo diamonds.
   - `recharge_rebate` — `{ threshold_dia, tokens, max_hits, start_day, end_day }`: awards
@@ -256,10 +257,13 @@ and a crest-yield calibration scalar.
   `promo_dia: 1680` of promo diamonds.
 - **`pass_buy_days`**: `[1,1,2,3,4]` — the five passes are spread over the first five days so
   each credits its own `recharge_task_value` toward the 8-day consecutive-recharge streak.
-- **Shop items**: Kagura at **1,600 crests** + six **800-crest** skins (Gusion, Hayabusa,
-  Nolan, Thamuz, Wanwan, X-Borg). An 800-crest target needs only ~56 draws, so its schedule
-  **finishes around day 9 of 31** — the planner stops there and never bills the day-15 phase
-  packs (see `architecture.md` → "A plan never draws past `targetDraws`").
+- **Shop items**: Kagura at **1,600 crests** (Legend tier) only. The six former
+  **800-crest** 11.11 skins (Gusion, Hayabusa, Nolan, Thamuz, Wanwan, X-Borg) were
+  moved out of this event and now live as shop items only in a non-planable
+  `11.11_2026` stub (null dates, `coming soon`), pending full event data.
+- An 800-crest target needs only ~56 draws, so its schedule **finishes around day 9**
+  and the planner stops there, never billing the day-15 phase packs
+  (see `architecture.md` → "A plan never draws past `targetDraws`").
 - **`has_surprise_tasks`**: `false` (no surprise window), so the optional day-1 pass is
   dropped unless the price comparison keeps it.
 
